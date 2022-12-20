@@ -9,7 +9,7 @@ sast:
   stage: test
 
 deploy:
-  image: node:gallium
+  image: node:fermium
   only:
     - tags
   stage: deploy
