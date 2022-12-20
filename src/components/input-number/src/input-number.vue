@@ -85,11 +85,8 @@ export default {
   },
   watch: {
     currentValue (value) {
-      value = Number(value)
-      if (!this.upDisabled && !this.downDisabled) {
-        this.$emit('change', value)
-        this.$emit('input', value)
-      }
+      this.$emit('change', value)
+      this.$emit('input', value)
     }
   },
   computed: {
