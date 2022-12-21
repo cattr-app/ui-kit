@@ -1,6 +1,6 @@
 {
   "name": "@cattr/ui-kit",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "A UI Component Library with Vue.js",
   "homepage": "https://at.aotu.io",
   "main": "dist/at.js",
