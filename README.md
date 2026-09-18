@@ -1,78 +1,78 @@
-<p align="center">
-  <a href="https://at.aotu.io/">
-    <img width="200" src="http://storage.360buyimg.com/mtd/home/logo-at1502718221686.svg">
-  </a>
-</p>
+# Cattr UI
 
-# AT UI
+UI-библиотека Cattr на Vue 2. Проект является форком [AT UI](https://github.com/at-ui/at-ui) и сохраняет его API, дополняя оригинальную библиотеку стилями, темой и исправлениями, необходимыми Cattr.
 
-[![NPM][npm-version-image]][npm-version-url] [![david-dm][david-dm-image]][david-dm-url] [![travis][travis-image]][travis-url]
+> Это внутренняя библиотека Cattr, а не официальный релиз AT UI. Для новых проектов стоит учитывать, что она основана на устаревшем стеке Vue 2 и Webpack 2.
 
-AT-UI is a modular front-end UI framework for developing fast and powerful web interfaces based on Vue.js.
+## Отличия от AT UI
 
-[中文 README](README.zh-CN.md)
+- пакет публикуется как `@amazingcat/cattr-ui`;
+- исходники AT UI Style включены в `src/stylesheet`, отдельный пакет стилей не нужен;
+- переменные, сетка, шрифты и стили компонентов адаптированы под интерфейс Cattr;
+- поддерживается импорт отдельных компонентов;
+- добавлено событие `rowClick` для строк таблицы;
+- включены исправления поведения `InputNumber`, `Tabs`, `Table` и других компонентов, используемых в Cattr.
 
-## Features
-
-- Based on `Vue`
-- A npm + webpack + babel front-end development workflow
-- Support ES2015
-- CSS Style independent, make consistent user interfaces (See: [AT-UI-Style](https://github.com/at-ui/at-ui-style))
-- Friendly API
-
-## Environment Support
-
-- Modern browsers and Internet Explorer 9+
-- [Electron](http://electron.atom.io/)
-- [NW.js](http://nwjs.io)
-
-## Links
-
-- [Home Page](https://at-ui.github.io/at-ui/)
-- [Vue](https://vuejs.org/)
-- [Webpack](https://webpack.js.org/)
-- [AT-UI for Angular](https://github.com/icepoint0/at-angular) (Developed by [@icepoint0](https://github.com/icepoint0), Thanks for contribution)
-
-## Install
-
-- Recommended use `npm`
+## Установка
 
 ```bash
-npm install at-ui
+yarn add @amazingcat/cattr-ui
 ```
 
-- Or using `<script>` tag for global use
+## Подключение
 
-```html
-<script type="text/javascript" src="at.min.js"></script>
+Подключение всей библиотеки:
+
+```js
+import Vue from 'vue'
+import CattrUI from '@amazingcat/cattr-ui'
+import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'
+
+Vue.use(CattrUI)
 ```
 
-## Usage
+После этого компоненты доступны глобально:
 
-Because the style of `AT-UI` is independent. It's a separate project. So we should install `AT-UI-Style` in need before we use `AT-UI`. Use npm or script tag according to your preference.
+```vue
+<template>
+  <at-button type="primary">Сохранить</at-button>
+</template>
+```
+
+Для импорта отдельного компонента:
+
+```js
+import Vue from 'vue'
+import Button from '@amazingcat/cattr-ui/src/components/button'
+import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'
+
+Vue.use(Button)
+```
+
+## Разработка
+
+Проект использует Node.js 14 (`lts/fermium`) и Yarn 3.2.
 
 ```bash
-npm install at-ui-style
+yarn install
+yarn dev
 ```
 
-or
+Основные команды:
 
-```html
-<link rel="stylesheet" href="at.min.css" />
-```
+| Команда | Назначение |
+| --- | --- |
+| `yarn dev` | Запустить локальную документацию и стенд разработки |
+| `yarn lint` | Проверить JavaScript- и Vue-файлы линтером |
+| `yarn build:locale` | Собрать локализации |
+| `yarn build:component` | Собрать библиотеку компонентов |
+| `yarn build:doc` | Собрать документацию |
+| `yarn dist` | Выполнить полную сборку |
 
-## Contribution
+По умолчанию dev-сервер доступен по адресу <http://localhost:7200/>.
 
-Finding bugs, sending pull requests or improving our docs - any contribution is welcome and highly appreciated. To get started, head over to our [contribution guidelines](https://github.com/at-ui/at-ui/blob/master/.github/CONTRIBUTING.md). Thanks!
+## Upstream и лицензия
 
-## License
+Исходный проект: [AT UI](https://github.com/at-ui/at-ui).
 
-MIT
-
-
-[npm-version-image]: https://img.shields.io/npm/v/at-ui.svg?style=flat-square
-[npm-version-url]: https://www.npmjs.com/package/at-ui
-[david-dm-image]: https://david-dm.org/AT-UI/at-ui.svg?style=flat-square
-[david-dm-url]: https://david-dm.org/AT-UI/at-ui
-[travis-image]: https://img.shields.io/travis/AT-UI/at-ui/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/AT-UI/at-ui
+Проект распространяется по лицензии [MIT](LICENSE).

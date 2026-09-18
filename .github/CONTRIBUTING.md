@@ -1,64 +1,57 @@
+# Участие в разработке Cattr UI
 
-# Contributing to AT-UI
+Cattr UI — внутренний форк [AT UI](https://github.com/at-ui/at-ui) для интерфейса Cattr. Изменения в этом репозитории должны сохранять совместимость с существующим приложением Cattr и не должны выдаваться за изменения официального AT UI.
 
+## Перед началом работы
 
-Thank you for choosing AT-UI. Please take a few moments to review the following guidelines to get you started.
+- Проверьте, нет ли уже задачи или merge request с таким изменением.
+- Убедитесь, что проблема воспроизводится на актуальной версии `@amazingcat/cattr-ui`.
+- Если ошибка присутствует и в оригинальном AT UI, добавьте ссылку на соответствующую upstream-задачу или изменение.
+- Для изменений публичного API опишите влияние на Cattr и обратную совместимость.
 
-## Team members
+## Локальная разработка
 
-AT-UI is developed as an open source project by [AOTU Labs](https://aotu.io/)
-
-## Documentation
-
-The AT-UI documentation is maintained as a collection of Markdown files power by [vue-markdown-loader](https://www.npmjs.com/package/vue-markdown-loader). Any pull requests are highly appreciated. Especially for internationalization.
-
-## Issue
-
-Issues are exclusively for bug reports, feature requests and design-related topics. A bug issue is a demonstrable problem that is caused by the code in the repository. Good bug reports are extremely helpful - thank you!
-
-Before submitting an issue, please check if similar questions have already been issued.
-
-## Pull requests
-
-**Working on your first Pull Request?** You can learn how from this *free* series
-[How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
-
-All pull requests are welcome. Thanks for taking the time to contribute.
-
-- Create an issue about the features, such as new components.
-- Fork the repo to your own account.
-- Clone your fork.
-- Create a new branch base on `dev`, if you want to add new component, the branch name should be formatted as `component-[Component Name]`. (e.g. `component-steps`) And the commit info should be formatted as `[Component Name]: Info about commit`.
-- Make sure that running `npm run prepublish` outputs the correct files.
-- Rebase before creating a PR to keep commit history clear. (Merge request to branch `dev`)
-- Provide some description about your PR.
-
-## Develop
-
-Clone and install the respoitory.
+Проект использует Node.js 14 (`lts/fermium`) и Yarn 3.2.
 
 ```bash
-git clone git@github.com:AT-UI/at-ui.git
-
-npm install
+git clone git@git.amazingcat.net:cattr/core/ui-kit.git
+cd ui-kit
+nvm use
+yarn install
+yarn dev
 ```
 
-Run the project.
+Dev-сервер по умолчанию доступен по адресу <http://localhost:7200/>.
 
-```bash
-npm run dev
+## Рабочий процесс
 
-# open http://localhost:7200/
-```
+1. Создайте ветку от актуального `master`. Используйте понятный префикс, например `feature/`, `fix/` или `chore/`.
+2. Вносите только относящиеся к задаче изменения. Не удаляйте upstream-копирайты и сведения о лицензии.
+3. При изменении поведения компонента обновите документацию или добавьте пример.
+4. Перед отправкой merge request выполните проверки:
 
-If you add new language config, please run the command `npm run build:locale` first.
+   ```bash
+   yarn lint
+   yarn prepublish
+   ```
 
-```bash
-npm run build:locale
-```
+5. Создайте merge request в `master` и укажите:
+   - что изменено;
+   - зачем это требуется Cattr;
+   - как изменение было проверено;
+   - есть ли несовместимые изменения или влияние на стили.
 
-To build components
+## Полезные команды
 
-```bash
-npm run build:component
-```
+| Команда | Назначение |
+| --- | --- |
+| `yarn dev` | Запустить документацию и стенд разработки |
+| `yarn lint` | Проверить JavaScript- и Vue-файлы |
+| `yarn build:locale` | Собрать локализации |
+| `yarn build:component` | Собрать компоненты |
+| `yarn build:doc` | Собрать документацию |
+| `yarn prepublish` | Подготовить пакет к публикации |
+
+## Upstream
+
+Исправления, полезные оригинальному проекту без Cattr-специфики, по возможности следует оформлять отдельно, чтобы их было проще сопоставить с [AT UI](https://github.com/at-ui/at-ui). Cattr-специфичные темы, стили и API остаются в этом форке.

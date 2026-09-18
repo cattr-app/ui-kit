@@ -5,9 +5,9 @@ __metadata:
   version: 6
   cacheKey: 8
 
-"@cattr/ui-kit@workspace:.":
+"@amazingcat/cattr-ui@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@cattr/ui-kit@workspace:."
+  resolution: "@amazingcat/cattr-ui@workspace:."
   dependencies:
     autoprefixer: ^7.2.5
     babel-core: ^6.26.0
