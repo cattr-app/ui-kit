@@ -1,6 +1,6 @@
 {
   "name": "@amazingcat/cattr-ui",
-  "version": "1.3.9",
+  "version": "0.0.0",
   "description": "A UI Component Library with Vue.js",
   "homepage": "https://cattr.app",
   "main": "dist/at.js",
@@ -19,12 +19,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@git.amazingcat.net:AmazingTime/core/ui-kit.git"
-  },
+  "repository": "github:cattr-app/ui-kit",
   "bugs": {
-    "url": "https://git.amazingcat.net/AmazingTime/core/ui-kit/-/issues"
+    "url": "https://github.com/cattr-app/ui-kit/issues"
   },
   "keywords": [
     "at",
