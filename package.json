@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "nodemon build/dev-server",
     "lint": "eslint --ext .js,.vue src docs build --ignore-pattern src/stylesheet test/unit/specs test/e2e/specs",
-    "dist": "npm run build:locale && npm run build:component && npm run build:doc",
+    "dist": "npm run build:docs",
+    "build:package": "npm run build:locale && npm run build:component",
+    "build:docs": "npm run build:package && npm run build:doc",
     "build:doc": "webpack --config build/webpack.prod.conf.js -p",
     "build:component": "node build/component",
     "build:locale": "node build/locale",
