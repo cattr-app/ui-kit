@@ -27,22 +27,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 14
+          node-version-file: .nvmrc
 
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Activate pinned Yarn
-        run: corepack prepare yarn@3.2.3 --activate
-
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Build documentation
-        run: yarn build:docs
+        run: pnpm build:docs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

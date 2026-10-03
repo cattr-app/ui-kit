@@ -8,12 +8,12 @@
   "scripts": {
     "build": "npm run build-clean && npm run copy && npm run build-scss && npm run build-scss-minify && npm run build-autoprefix",
     "build-clean": "rimraf css",
-    "build-scss": "node-sass --output-style expanded --source-map true src/index.scss css/at.css",
-    "build-scss-minify": "node-sass --output-style compressed --source-map true src/index.scss css/at.min.css",
+    "build-scss": "sass --style=expanded --source-map src/index.scss css/at.css",
+    "build-scss-minify": "sass --style=compressed --source-map src/index.scss css/at.min.css",
     "build-autoprefix": "postcss --use autoprefixer -c postcss.json css/*.css -d css/",
-    "copy": "copyfiles -f src/fonts/*.* css/fonts/",
+    "copy": "copyfiles -f src/core/fonts/*.* css/fonts/",
     "prepublish": "npm run build",
-    "start": "npm run build-scss -- --watch"
+    "start": "sass --watch --style=expanded --source-map src/index.scss:css/at.css"
   },
   "keywords": [
     "at",
@@ -29,7 +29,7 @@
     "autoprefixer": "^7.1.1",
     "copyfiles": "^1.2.0",
     "eslint-config-o2team": "^0.1.6",
-    "node-sass": "^4.13.1",
+    "sass": "^1.105.1",
     "postcss-cli": "^4.1.0",
     "rimraf": "^2.6.1"
   }

@@ -12,22 +12,18 @@ jobs:
   publish-npm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 14
+          node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org/
       - name: Enable Corepack
         run: corepack enable
 
-      - name: Activate pinned Yarn
-        run: corepack prepare yarn@3.2.3 --activate && yarn --version
-
-
       - name: Install dependencies
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Configure Git
         run: |
@@ -37,6 +33,6 @@ jobs:
       - run: npm --no-git-tag-version version from-git
 
       - name: Build
-        run: yarn build:package
+        run: pnpm build:package
 
       - run: npm publish

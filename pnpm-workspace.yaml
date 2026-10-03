@@ -1,0 +1,11 @@
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: false
+  ejs: false
+  es5-ext: true
+  highlight.js: true
+  nodemon: true
+  phantomjs-prebuilt: true
+  uglifyjs-webpack-plugin: true
+packages:
+  - src/stylesheet
