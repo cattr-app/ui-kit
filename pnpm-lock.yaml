@@ -306,8 +306,8 @@ importers:
         specifier: ^3.12.0
         version: 3.12.0
       webpack-bundle-analyzer:
-        specifier: ^2.9.2
-        version: 2.13.1(supports-color@4.5.0)
+        specifier: ^3.3.2
+        version: 3.9.0(supports-color@4.5.0)
       webpack-dashboard:
         specifier: ^0.4.0
         version: 0.4.0(supports-color@4.5.0)(webpack@3.12.0)
@@ -498,6 +498,10 @@ packages:
   acorn-jsx@3.0.1:
     resolution: {integrity: sha512-AU7pnZkguthwBjKgCg6998ByQNIMjbuDQZ8bb78QAFZwPfmKia8AIzgY/gWgqCjnht8JLdXmB4YxA0KaV60ncQ==}
 
+  acorn-walk@7.2.0:
+    resolution: {integrity: sha512-OPdCF6GsMIP+Az+aWfAAOEt2/+iVDKE7oy6lJ098aoe59oAmK76qV6Gw60SbZ8jHuG2wH058GF4pLFbYamYrVA==}
+    engines: {node: '>=0.4.0'}
+
   acorn@2.7.0:
     resolution: {integrity: sha512-pXK8ez/pVjqFdAgBkF1YPVRacuLQ9EXBKaKWaeh58WNfMkCmZhOZzu+NtKSPD5PHmCCHheQ5cD29qM1K4QTxIg==}
     engines: {node: '>=0.4.0'}
@@ -515,6 +519,11 @@ packages:
 
   acorn@5.7.4:
     resolution: {integrity: sha512-1D++VG7BhrtvQpNbBzovKNc1FLGGEE/oGe7b9xJm/RFHMBeUaUGpluV9RLjZa47YFdPcDAenEYuq9pQPcMdLJg==}
+    engines: {node: '>=0.4.0'}
+    hasBin: true
+
+  acorn@7.4.1:
+    resolution: {integrity: sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==}
     engines: {node: '>=0.4.0'}
     hasBin: true
 
@@ -953,10 +962,9 @@ packages:
   better-assert@1.0.2:
     resolution: {integrity: sha512-bYeph2DFlpK1XmGs6fvlLRUN29QISM3GBuUwSFsMY2XRx4AvC0WNCS57j4c/xGrK2RS24C1w3YoBOsw9fT46tQ==}
 
-  bfj-node4@5.3.1:
-    resolution: {integrity: sha512-SOmOsowQWfXc7ybFARsK3C4MCOWzERaOMV/Fl3Tgjs+5dJWyzo3oa127jL44eMbQiAN17J7SvAs2TRxEScTUmg==}
-    engines: {node: '>= 4.0.0'}
-    deprecated: Switch to the `bfj` package for fixes and new features!
+  bfj@6.1.2:
+    resolution: {integrity: sha512-BmBJa4Lip6BPRINSZ0BPEIfB1wUY/9rwbwvIHQA1KjX9om29B6id0wnWXq7m3bn5JrUVjeOTnVuhPT1FiHwPGw==}
+    engines: {node: '>= 6.0.0'}
 
   big.js@3.2.0:
     resolution: {integrity: sha512-+hN/Zh2D08Mx65pZ/4g5bsmNiZUuChDiQfTUQ7qJr4/kuopCr88xZsAXv6mBoZEsUI4OuGHlX59qE94K2mMW8Q==}
@@ -1192,8 +1200,8 @@ packages:
   chardet@0.4.2:
     resolution: {integrity: sha512-j/Toj7f1z98Hh2cYo2BVr85EpIRWqUi7rtRSGxh/cqUjqrnJe9l9UE7IUGd2vQ2p+kSHLkSzObQPZPLUC6TQwg==}
 
-  check-types@7.4.0:
-    resolution: {integrity: sha512-YbulWHdfP99UfZ73NcUDlNJhEIDgm9Doq9GhpyXbF+7Aegi3CVV7qqMCKTTqJxlvEvnQBp9IA+dxsGN6xK/nSg==}
+  check-types@8.0.3:
+    resolution: {integrity: sha512-YpeKZngUmG65rLudJ4taU7VLkOCTMhNl/u4ctNC56LQS/zJTyNH0Lrtwm1tfTsbLlwvlfsA2d1c8vCf/Kh2KwQ==}
 
   cheerio@0.19.0:
     resolution: {integrity: sha512-Fwcm3zkR37STnPC8FepSHeSYJM5Rd596TZOcfDUdojR4Q735aK1Xn+M+ISagNneuCwMjK28w4kX+ETILGNT/UQ==}
@@ -2436,9 +2444,9 @@ packages:
   graceful-readlink@1.0.1:
     resolution: {integrity: sha512-8tLu60LgxF6XpdbK8OW3FA+IfTNBn1ZHGHKF4KQbEeSkajYw5PlYJcKluntgegDPTg8UkHjpet1T82vk6TQ68w==}
 
-  gzip-size@4.1.0:
-    resolution: {integrity: sha512-1g6EPVvIHuPmpAdBBpsIVYLgjzGV/QqcFRJXpMyrqEWG10JhOaTjQeCcjMDyX0Iqfm/Q5M9twR/mbDk5f5MqkA==}
-    engines: {node: '>=4'}
+  gzip-size@5.1.1:
+    resolution: {integrity: sha512-FNHi6mmoHvs1mxZAds4PpdCS6QG8B4C1krxJsMutgxl5t3+GlRTzzI3NEkifXx2pVsOvJdOGSmIgDhQ55FwdPA==}
+    engines: {node: '>=6'}
 
   har-schema@2.0.0:
     resolution: {integrity: sha512-Oqluz6zhGX8cyRaTQlFMPw80bSJVG2x/cFb8ZPhUILGgHka9SsokCCOQgpveePerqidZOrT14ipqfJb7ILcW5Q==}
@@ -2548,6 +2556,10 @@ packages:
   home-or-tmp@2.0.0:
     resolution: {integrity: sha512-ycURW7oUxE2sNiPVw1HVEFsW+ecOpJ5zaj7eC0RlwhibhRBod20muUN8qu/gzx956YrLolVvs1MTXwKgC2rVEg==}
     engines: {node: '>=0.10.0'}
+
+  hoopy@0.1.4:
+    resolution: {integrity: sha512-HRcs+2mr52W0K+x8RzcLzuPPmVIKMSv97RGHy0Ea9y/mpcaK+xTrjICA04KAHi4GRzxliNqNJEFYWHghy3rSfQ==}
+    engines: {node: '>= 6.0.0'}
 
   hosted-git-info@2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
@@ -4973,9 +4985,9 @@ packages:
   webidl-conversions@2.0.1:
     resolution: {integrity: sha512-OZ7I/f0sM+T28T2/OXinNGfmvjm3KKptdyQy8NPRZyLfYBn+9vt72Bfr+uQaE9OvWyxJjQ5kHFygH2wOTUb76g==}
 
-  webpack-bundle-analyzer@2.13.1:
-    resolution: {integrity: sha512-rwxyfecTAxoarCC9VlHlIpfQCmmJ/qWD5bpbjkof+7HrNhTNZIwZITxN6CdlYL2axGmwNUQ+tFgcSOiNXMf/sQ==}
-    engines: {node: '>= 4'}
+  webpack-bundle-analyzer@3.9.0:
+    resolution: {integrity: sha512-Ob8amZfCm3rMB1ScjQVlbYYUEJyEjdEtQ92jqiFUYt5VkEeO2v5UMbv49P/gnmCZm3A6yaFQzCBvpZqN4MUsdA==}
+    engines: {node: '>= 6.14.4'}
     hasBin: true
 
   webpack-core@0.6.9:
@@ -5110,8 +5122,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@4.1.0:
-    resolution: {integrity: sha512-ZGh/8kF9rrRNffkLFV4AzhvooEclrOH0xaugmqGsIfFgOE/pIz4fMc4Ef+5HSQqTEug2S9JZIWDR47duDSLfaA==}
+  ws@6.2.6:
+    resolution: {integrity: sha512-XTrf1gv7kXoVf1hbC3PAyAiPgR8Wz1blcrYIjEsUmr08BLksT41R8KbjmS9408C2ERx7v1JDLD/BkpLEttjfKA==}
     peerDependencies:
       bufferutil: ^4.0.1
       utf-8-validate: ^5.0.2
@@ -5327,6 +5339,8 @@ snapshots:
     dependencies:
       acorn: 3.3.0
 
+  acorn-walk@7.2.0: {}
+
   acorn@2.7.0:
     optional: true
 
@@ -5335,6 +5349,8 @@ snapshots:
   acorn@4.0.13: {}
 
   acorn@5.7.4: {}
+
+  acorn@7.4.1: {}
 
   adjust-sourcemap-loader@1.2.0:
     dependencies:
@@ -6043,10 +6059,11 @@ snapshots:
     dependencies:
       callsite: 1.0.0
 
-  bfj-node4@5.3.1:
+  bfj@6.1.2:
     dependencies:
       bluebird: 3.7.2
-      check-types: 7.4.0
+      check-types: 8.0.3
+      hoopy: 0.1.4
       tryer: 1.0.1
 
   big.js@3.2.0: {}
@@ -6386,7 +6403,7 @@ snapshots:
 
   chardet@0.4.2: {}
 
-  check-types@7.4.0: {}
+  check-types@8.0.3: {}
 
   cheerio@0.19.0:
     dependencies:
@@ -7979,10 +7996,10 @@ snapshots:
 
   graceful-readlink@1.0.1: {}
 
-  gzip-size@4.1.0:
+  gzip-size@5.1.1:
     dependencies:
       duplexer: 0.1.2
-      pify: 3.0.0
+      pify: 4.0.1
 
   har-schema@2.0.0: {}
 
@@ -8089,6 +8106,8 @@ snapshots:
     dependencies:
       os-homedir: 1.0.2
       os-tmpdir: 1.0.2
+
+  hoopy@0.1.4: {}
 
   hosted-git-info@2.8.9: {}
 
@@ -10996,20 +11015,21 @@ snapshots:
   webidl-conversions@2.0.1:
     optional: true
 
-  webpack-bundle-analyzer@2.13.1(supports-color@4.5.0):
+  webpack-bundle-analyzer@3.9.0(supports-color@4.5.0):
     dependencies:
-      acorn: 5.7.4
-      bfj-node4: 5.3.1
+      acorn: 7.4.1
+      acorn-walk: 7.2.0
+      bfj: 6.1.2
       chalk: 2.4.2
       commander: 2.20.3
       ejs: 2.7.4
       express: 4.22.3(supports-color@4.5.0)
       filesize: 3.6.1
-      gzip-size: 4.1.0
+      gzip-size: 5.1.1
       lodash: 4.18.1
       mkdirp: 0.5.6
       opener: 1.5.2
-      ws: 4.1.0
+      ws: 6.2.6
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -11176,10 +11196,9 @@ snapshots:
       options: 0.0.6
       ultron: 1.0.2
 
-  ws@4.1.0:
+  ws@6.2.6:
     dependencies:
       async-limiter: 1.0.1
-      safe-buffer: 5.1.2
 
   wtf-8@1.0.0: {}
 
