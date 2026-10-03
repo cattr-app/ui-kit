@@ -29,8 +29,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - run: npm --no-git-tag-version version from-git
+      - name: Configure Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
 
+      - run: npm --no-git-tag-version version from-git
 
       - name: Build
         run: yarn dist
