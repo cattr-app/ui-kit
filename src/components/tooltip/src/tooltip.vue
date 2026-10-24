@@ -4,7 +4,7 @@
       <slot></slot>
     </span>
 
-    <transition :name="transition" @after-leave="doDestory">
+    <transition :name="transition">
       <div
         v-if="show"
         ref="popover"

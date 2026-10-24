@@ -1,7 +1,7 @@
 ---
 id: 30-w1-tooltip
 title: Tooltip → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -37,3 +37,7 @@ scripts/node.sh pnpm build
 ## Найдено по ходу
 
 ## Заметки агента
+- Шаблон уже был на Vue 3 (один корень `.at-tooltip`, `ref="trigger"` внутри, `v-if` внутри `<transition>`, без `value`); единственная правка — убран `@after-leave="doDestory"`.
+- Своих событий и таймеров нет: `emits` (`update:modelValue`, `toggle`) и очистка в `beforeUnmount` приходят из mixin popover, в компоненте не дублируются.
+- Публичный API не менялся сверх записи «Tooltip, Popover» в CHANGELOG-MIGRATION.md; changelog не дополнялся.
+- Метод `doDestory` в `src/mixins/popover.js` теперь не нужен Tooltip; удалить его можно после миграции Popover (не трогал, mixin вне scope).
