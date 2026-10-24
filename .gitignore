@@ -5,14 +5,7 @@ test/unit/coverage
 test/e2e/reports
 .vscode
 dist/
+.vite/
 test
 .history
 .idea
-
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions

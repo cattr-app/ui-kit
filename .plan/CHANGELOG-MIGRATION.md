@@ -6,10 +6,10 @@
 
 ## Требования к окружению
 
-- `[TODO 10-01]` Peer dependency: `vue ^3.5`. Vue 2.x больше не поддерживается.
-- `[TODO 10-01]` Пакет поставляется как ESM (`"type": "module"`, поле `exports`). UMD-сборки `dist/at.js`/`dist/at.min.js` удалены.
-  Импорт отдельных компонентов: `import { AtButton } from '@amazingcat/cattr-ui'` (tree-shaking через `sideEffects`) или `@amazingcat/cattr-ui/src/components/button`.
-- `[TODO 10-01]` Локали: `@amazingcat/cattr-ui/locale/<lang>` (ESM) вместо `dist/locale/<lang>.js` (UMD).
+- Peer dependency: `vue ^3.5`. Vue 2.x больше не поддерживается.
+- Пакет поставляется как ESM (`"type": "module"`, поле `exports`, точка входа `dist/index.js`). UMD-сборки `dist/at.js`/`dist/at.min.js` удалены, глобальной переменной `at` больше нет. Сборщик потребителя должен понимать ESM (Vite, webpack 5).
+  Импорт отдельных компонентов: `import { AtButton } from '@amazingcat/cattr-ui'` (имена `At*` с 20-01; tree-shaking через `sideEffects`) или `@amazingcat/cattr-ui/src/components/button`.
+- Локали: `import de from '@amazingcat/cattr-ui/locale/de'` (ESM, default export) вместо `@amazingcat/cattr-ui/dist/locale/de.js` (UMD). Прямой путь `dist/...` через `exports` закрыт.
 - Внутренние импорты вида `at-ui/src/...` удалены. Alias `at-ui` в конфиге потребителя больше не нужен.
 - Название `at-ui` в документации, баннерах и workspace-пакете стилей заменено на `cattr-ui`. CSS-классы `at-*`, теги `<at-*>` и ключи локали `at.*` не менялись — правок в проекте не требует.
 
@@ -42,5 +42,5 @@
 
 ## Документация и разработка
 
-- `[TODO 10-01]` Сборка: `pnpm build` (Vite). Скрипты `build:component`, `build:locale`, `build:doc` заменены.
+- Сборка: `pnpm build` (Vite library mode, ESM, `vue` external). Скрипты `build:component`, `build:locale`, `build:doc`, `prepublish` удалены; `build:package` оставлен алиасом `pnpm build` для CI. Стили: `pnpm build:style`. Требуется Node ≥ 24.
 - `[TODO 10-02]` Линтер: ESLint 10 flat config + eslint-plugin-vue 10 + Prettier 3. Команды `pnpm lint`, `pnpm format`, `pnpm format:check`.

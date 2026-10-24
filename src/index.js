@@ -113,18 +113,62 @@ function install (Vue, opts = {}) {
   Vue.prototype.$Message = Message
 }
 
-/**
- * Global Install
- */
-if (typeof window !== 'undefined' && window.Vue) {
-  install(window.Vue)
+const { use: setLocale, i18n } = locale
+
+export { install, setLocale as locale, i18n }
+export {
+  Button,
+  ButtonGroup,
+  Tag,
+  Radio,
+  RadioGroup,
+  RadioButton,
+  Checkbox,
+  CheckboxGroup,
+  Input,
+  InputNumber,
+  Textarea,
+  Badge,
+  Switch,
+  Slider,
+  Tooltip,
+  Popover,
+  Alert,
+  Progress,
+  LoadingBar,
+  Modal,
+  Select,
+  Option,
+  OptionGroup,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
+  Breadcrumb,
+  BreadcrumbItem,
+  Pagination,
+  Menu,
+  MenuItem,
+  MenuItemGroup,
+  Submenu,
+  Table,
+  Card,
+  Collapse,
+  CollapseItem,
+  Steps,
+  Step,
+  Rate,
+  Tabs,
+  TabPane,
+  Timeline,
+  TimelineItem,
+  Notification,
+  Dialog,
+  Message
 }
 
-module.exports = {
+export default {
   install,
   locale: locale.use,
   i18n: locale.i18n,
   ...components
 }
-
-module.exports.default = module.exports
