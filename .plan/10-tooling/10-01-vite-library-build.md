@@ -1,7 +1,7 @@
 ---
 id: 10-01
 title: Сборка библиотеки на Vite, Vue 3 в зависимостях, удаление Webpack/Babel
-status: todo
+status: done
 depends_on: [00-02, 00-03, 00-04]
 parallel: false
 model: opus
@@ -51,3 +51,11 @@ ESM-only, `exports`, peer `vue ^3.5`, пути локалей, удаление 
 
 ## Заметки агента
 Ожидаемо: после этой задачи `src` не работает в рантайме Vue 3 (Vue.extend, $children и т.д.). Задача только про сборку.
+- Версии: vue 3.5.44 (peer `^3.5.0`), vite 8.3.5 (rolldown 1.2.15), @vitejs/plugin-vue 6.0.10, sass 1.106.1, deepmerge 4.3.1. Lockfile: +705/−8235 строк.
+- dist: `index.js` 134.6 kB (gzip 32.3 kB, не минифицирован), `locale/*.js` 0.5 kB ×6, всего 164K. `index.js` импортирует `./locale/en-US.js` (дефолтная локаль) и `vue`; deepmerge забандлен (external только `vue`) — при желании вынести `dependencies` в external.
+- `allowBuilds`: остался только `@parcel/watcher` (опц. зависимость sass, без него `ERR_PNPM_IGNORED_BUILDS`). В `node.sh` стоит `CI=1` → для смены lockfile нужен `pnpm install --no-frozen-lockfile`.
+- Отклонения: `build:package` оставлен алиасом `pnpm build` — его вызывает `.github/workflows/npm-publish.yml` (50-02). `dev`/`build:docs` — заглушки с `exit 1` (deploy-docs иначе выложил бы dist библиотеки). Скрипт `lint` удалён вместе с eslint 4 (вернёт 10-02); `.eslintrc.js` и `eslint-config-o2team` в `src/stylesheet/package.json` не тронуты (10-02).
+- Правка компонента для сборки: `table.vue` — `:key` перенесён с `<tr>` на `<template v-for>` (единственная ошибка компилятора Vue 3 по всем SFC).
+- `require('../utils/NodeList.js')` в `src/mixins/popover.js` rolldown превратил в ленивый init — сборка/ESM корректны, правка не нужна (20-04 может заменить на import).
+- 20-01: импорт dist в node падает `SyntaxError: The requested module 'vue' does not provide an export named 'default'` — `import Vue from 'vue'` в locale/index.js, loading-bar.js, notic.js, dialog.js, message.js. Сейчас именованные экспорты — `Button`, … (не `At*`), `locale` экспортирован как `use`. deepmerge 4: опция `clone` устарела.
+- 40-01/40-02: docs/markdown/{en,zh}/{installation,quickstart}.md и zh/introduction.md описывают webpack/UMD.
