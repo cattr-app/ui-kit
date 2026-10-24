@@ -87,6 +87,14 @@
 - `AtRadioButton` теперь работает и без группы по собственному `modelValue` (`v-model` на кнопке). `size`/`fill`/`text-color` по-прежнему задаются только на `AtRadioGroup`; `size` группы теперь реактивен (в 1.x читался один раз при создании).
 - Выбор `disabled` радио/кнопки не эмитит событий; повторный выбор уже выбранного значения тоже.
 
+### Checkbox, CheckboxGroup
+
+- v-model: prop `modelValue` + `update:modelValue` вместо `value` + `input` (у `AtCheckboxGroup` — массив `label` отмеченных, у одиночного `AtCheckbox` — `Boolean`). `v-model` в шаблонах работает как раньше; `:value`/`@input` → `:model-value`/`@update:model-value`.
+- Событие `on-change` сохранено у обоих (у группы — новый массив, у одиночного — `true`/`false`). Props `label`, `name`, `checked`, `disabled` без изменений; `size`/`indeterminate` у компонентов нет ни в 1.x, ни в 2.0.
+- Было: `AtCheckbox` внутри группы эмитил собственный `input` (boolean) и мутировал массив `value` группы на месте (нативный `v-model` по тому же массиву). Стало: чекбокс в группе ничего не эмитит, группа эмитит `update:modelValue` + `on-change` с **новым** массивом (исходный не мутируется; добавленный `label` идёт в конец). Что править: слушать события на `AtCheckboxGroup`; если код полагался на мутацию исходного массива (без `v-model`) — перейти на `v-model`/`@on-change`.
+- Связь группа ↔ чекбокс: было `findComponentsDownward`/`findComponentUpward` (прямой обход дерева, состояние синхронизировалось только в `mounted`/`watch value`) → стало provide/inject: чекбокс на любой глубине внутри группы, отмеченность реактивно вычисляется из `modelValue` группы. Prop `checked` внутри группы больше не влияет на отображение (в 1.x визуально отмечал чекбокс без изменения массива) — отмечать через `modelValue` группы.
+- Изменение `disabled` чекбокса событий не эмитит.
+
 ### Switch
 
 - v-model: prop `value` → `modelValue`. Было: `<at-switch v-model="on">` с prop `value`. Стало: `v-model="on"` работает как раньше, `:value="on"` → `:model-value="on"`.

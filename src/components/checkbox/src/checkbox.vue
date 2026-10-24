@@ -3,31 +3,19 @@
     class="at-checkbox"
     :class="{
       'at-checkbox--focus': focus,
-      'at-checkbox--checked': currentValue,
+      'at-checkbox--checked': isChecked,
       'at-checkbox--disabled': disabled,
     }"
   >
     <span class="at-checkbox__input">
       <span class="at-checkbox__inner"></span>
       <input
-        v-if="isGroup"
-        v-model="model"
         type="checkbox"
         class="at-checkbox__original"
         :name="name"
         :value="label"
         :disabled="disabled"
-        @change="change"
-        @focus="focus = true"
-        @blur="focus = false"
-      />
-      <input
-        v-else
-        type="checkbox"
-        class="at-checkbox__original"
-        :name="name"
-        :disabled="disabled"
-        :checked="currentValue"
+        :checked="isChecked"
         @change="change"
         @focus="focus = true"
         @blur="focus = false"
@@ -40,14 +28,12 @@
 </template>
 
 <script>
-import { findComponentUpward } from '../../../utils/util'
-import Emitter from '../../../mixins/emitter'
+import { CheckboxGroupContext } from './context'
 
 export default {
   name: 'AtCheckbox',
-  mixins: [Emitter],
   props: {
-    value: {
+    modelValue: {
       type: [String, Number, Boolean, Array],
       default: false,
     },
@@ -62,50 +48,45 @@ export default {
       default: false,
     },
   },
+  emits: ['update:modelValue', 'on-change'],
+  setup() {
+    return { group: CheckboxGroupContext.inject(null) }
+  },
   data() {
     return {
-      model: [],
       focus: false,
-      isGroup: false,
-      currentValue: this.value,
+      currentValue: this.checked || this.modelValue,
     }
+  },
+  computed: {
+    isChecked() {
+      if (this.group) return this.group.modelValue.includes(this.label)
+      return Boolean(this.currentValue)
+    },
   },
   watch: {
-    value() {
-      this.updateModel()
+    modelValue(value) {
+      this.currentValue = value
     },
-  },
-  mounted() {
-    this.parent = findComponentUpward(this, 'AtCheckboxGroup')
-    if (this.parent) {
-      this.isGroup = true
-      this.parent.updateModel()
-    } else {
-      this.updateModel()
-    }
-
-    if (this.checked) {
-      this.currentValue = this.checked
-    }
   },
   methods: {
-    updateModel() {
-      this.currentValue = this.value
-    },
     change(evt) {
-      if (this.disabled) return false
+      if (this.disabled) return
 
       const checked = evt.target.checked
-      this.currentValue = checked
 
-      const value = checked
-      this.$emit('input', value)
-
-      if (this.isGroup) {
-        this.parent.change(this.model)
-      } else {
-        this.$emit('on-change', value)
+      if (this.group) {
+        const current = this.group.modelValue
+        const next = checked
+          ? [...current.filter(item => item !== this.label), this.label]
+          : current.filter(item => item !== this.label)
+        this.group.update(next)
+        return
       }
+
+      this.currentValue = checked
+      this.$emit('update:modelValue', checked)
+      this.$emit('on-change', checked)
     },
   },
 }
