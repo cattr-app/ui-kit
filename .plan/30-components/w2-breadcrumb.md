@@ -1,7 +1,7 @@
 ---
 id: 30-w2-breadcrumb
 title: Breadcrumb, BreadcrumbItem → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -38,3 +38,8 @@ scripts/node.sh pnpm build
 - (из 10-02) `breadcrumb-item.vue` — ошибка `vue/no-v-html`, решить аналогично popover.
 
 ## Заметки агента
+- `$parent.separator` (читался один раз в `mounted`, без реактивности) → `BreadcrumbContext` (`reactive({ separator: toRef(props, 'separator') })`); item `inject(null)`, без родителя разделитель `/`. Теперь смена `separator` у родителя реактивна и нет пустого первого рендера.
+- `v-html` для `separator` оставлен (HTML-разделитель — API 1.x) с `eslint-disable-next-line vue/no-v-html` и комментарием, как в popover.
+- Навигация: `href` → `window.location.href`, иначе `this.$router.replace/push(to)`; без `$router` клик ничего не делает (раньше падал с TypeError). `emits: []` в обоих компонентах.
+- Последний разделитель по-прежнему рендерится в DOM и скрывается CSS (`:last-child`), как в 1.x. Публичное API не менялось — запись в CHANGELOG не нужна.
+- Вне задачи: класс текста `at_breadcrumb__text` (подчёркивание вместо дефиса) — опечатка 1.x, оставлен как есть.

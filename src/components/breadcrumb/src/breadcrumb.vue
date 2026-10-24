@@ -5,6 +5,9 @@
 </template>
 
 <script>
+import { reactive, toRef } from 'vue'
+import { BreadcrumbContext } from './context'
+
 export default {
   name: 'AtBreadcrumb',
   props: {
@@ -12,6 +15,14 @@ export default {
       type: String,
       default: '/',
     },
+  },
+  emits: [],
+  setup(props) {
+    BreadcrumbContext.provide(
+      reactive({
+        separator: toRef(props, 'separator'),
+      }),
+    )
   },
 }
 </script>
