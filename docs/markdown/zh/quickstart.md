@@ -161,4 +161,44 @@ app.mount('#app')
 
 ## 自定义主题
 
-`Cattr UI` 的样式随组件库一起发布，位于 `@amazingcat/cattr-ui/src/stylesheet/src`，各个组件的样式变量都存放在 `@amazingcat/cattr-ui/src/stylesheet/src/variables/default.scss` 文件中。用户可根据实际需要，自定义组件的样式
+`Cattr UI` 的样式随组件库一起发布，位于 `@amazingcat/cattr-ui/src/stylesheet/src`，各个组件的样式变量都存放在 `@amazingcat/cattr-ui/src/stylesheet/src/variables/default.scss` 文件中。用户可根据实际需要，自定义组件的样式。
+
+样式基于 Sass 模块系统（`@use` / `@forward`）编写。`default.scss` 中的所有变量都带有 `!default`，并由入口文件转发，因此主题在加载样式时配置：新建自己的 SCSS 入口文件，并用它代替 `index.scss` 引入。
+
+```scss
+// src/styles/cattr-ui.scss
+@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' as cattr with (
+  $brand-blue-500: #ff5722,   // 链接、主要按钮、激活状态等
+  $font-size-base: 13px
+);
+
+// 在该文件中可通过命名空间使用同样的变量和 mixin
+.my-link {
+  color: cattr.$link-color;
+  @include cattr.ellipsis(200px);
+}
+```
+
+```js
+import './styles/cattr-ui.scss'
+```
+
+单文件组件中的每个 `<style lang="scss">` 块都是单独编译的，入口文件里的配置在那里不可见。如果自己的样式也需要使用主题变量，请把配置放在一个 partial 文件中，并在各处加载它：
+
+```scss
+// src/styles/_theme.scss
+@forward '@amazingcat/cattr-ui/src/stylesheet/src/variables' with (
+  $brand-blue-500: #ff5722
+);
+@forward '@amazingcat/cattr-ui/src/stylesheet/src/mixins';
+
+// src/styles/cattr-ui.scss —— 入口文件，主题放在最前面
+@use 'theme';
+@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss';
+
+// 任意组件：<style lang="scss">
+@use '@/styles/theme' as *;
+.my-link { color: $link-color; }
+```
+
+`with (…)` 只接受 `default.scss` 中定义的变量（以及 `$ease-*` 缓动函数），变量名写错会导致编译错误。一个模块只能被配置一次，且只能在第一次 `@use` 时配置，因此请只加载一次带配置的 `index.scss`，并放在其他样式文件之前。在 `@import` 之前覆盖变量的旧方式仍可编译，但会输出弃用警告：Dart Sass 已弃用 `@import`，并将在 Sass 3 中移除。

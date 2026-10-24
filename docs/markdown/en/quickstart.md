@@ -155,3 +155,43 @@ app.use(LoadingBar)     // adds $Loading
 ## Customize Theme
 
 The styles of `Cattr UI` are included in the package (`@amazingcat/cattr-ui/src/stylesheet`). The variables for each component are stored in the file `src/stylesheet/src/variables/default.scss`. User can customize the style of components according to actual needs.
+
+The stylesheet is written with Sass modules (`@use` / `@forward`). Every variable in `default.scss` is declared with `!default` and forwarded by the entry point, so a theme is configured when the stylesheet is loaded: create your own SCSS entry and import it instead of `index.scss`.
+
+```scss
+// src/styles/cattr-ui.scss
+@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' as cattr with (
+  $brand-blue-500: #ff5722,   // links, primary buttons, active states…
+  $font-size-base: 13px
+);
+
+// the same variables and mixins are available in this file through the namespace
+.my-link {
+  color: cattr.$link-color;
+  @include cattr.ellipsis(200px);
+}
+```
+
+```js
+import './styles/cattr-ui.scss'
+```
+
+Each `<style lang="scss">` block of a single-file component is compiled separately, so a configuration made in the entry file is not visible there. If your own styles need the themed variables, keep the configuration in a partial and load it everywhere:
+
+```scss
+// src/styles/_theme.scss
+@forward '@amazingcat/cattr-ui/src/stylesheet/src/variables' with (
+  $brand-blue-500: #ff5722
+);
+@forward '@amazingcat/cattr-ui/src/stylesheet/src/mixins';
+
+// src/styles/cattr-ui.scss — the entry, the theme goes first
+@use 'theme';
+@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss';
+
+// any component: <style lang="scss">
+@use '@/styles/theme' as *;
+.my-link { color: $link-color; }
+```
+
+The `with (…)` map accepts only variables defined in `default.scss` (and the `$ease-*` timing functions); a misspelled name is a compile error. A module can be configured only once and only by its first `@use`, so load `index.scss` with your configuration once, before any other file of the stylesheet. The old way, setting variables before `@import`, still compiles but prints deprecation warnings: `@import` is deprecated in Dart Sass and will be removed in Sass 3.
