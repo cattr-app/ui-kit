@@ -43,8 +43,8 @@ touches: [src/stylesheet/package.json, src/stylesheet/CONTRIBUTING.md, src/style
 ```sh
 grep -rniE "\bat-ui\b|\bat ui\b|aotu|o2team|at-ui-style" src docs README.md package.json --exclude-dir=css | grep -vE "docs/markdown/(en|zh)/changelog.md|README.md:.*форк" && exit 1 || true
 scripts/node.sh pnpm --filter cattr-ui-style build
-# baseline webpack-сборка на текущем lockfile (postinstall phantomjs падает без bzip2, поэтому --ignore-scripts; webpack 3 на Node 24 требует legacy openssl):
-scripts/node.sh pnpm install --frozen-lockfile --ignore-scripts
+# baseline webpack-сборка на текущем lockfile (webpack 3 на Node 24 требует legacy openssl):
+scripts/node.sh pnpm install --frozen-lockfile
 CATTR_UI_DOCKER_ARGS="-e NODE_OPTIONS=--openssl-legacy-provider" scripts/node.sh pnpm build:package
 ls dist/at.js dist/at.min.js dist/locale
 ```
