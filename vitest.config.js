@@ -13,6 +13,12 @@ export default mergeConfig(
       environment: 'happy-dom',
       include: ['test/**/*.spec.js'],
       globals: false,
+      coverage: {
+        provider: 'v8',
+        include: ['src/**/*.{js,vue}'],
+        exclude: ['src/stylesheet/**', 'src/locale/lang/**'],
+        reporter: ['text', 'text-summary'],
+      },
     },
   }),
 )
