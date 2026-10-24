@@ -28,7 +28,6 @@
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "copyfiles": "^1.2.0",
-    "eslint-config-o2team": "^0.1.6",
     "sass": "^1.105.1",
     "postcss-cli": "^4.1.0",
     "rimraf": "^2.6.1"

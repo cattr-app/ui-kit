@@ -24,7 +24,11 @@
     "build:package": "pnpm build",
     "build:style": "pnpm --filter cattr-ui-style build",
     "dev": "echo 'docs dev server is not available yet, see .plan/40-docs/40-01' >&2 && exit 1",
-    "build:docs": "echo 'docs build is not available yet, see .plan/40-docs/40-01' >&2 && exit 1"
+    "build:docs": "echo 'docs build is not available yet, see .plan/40-docs/40-01' >&2 && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "publishConfig": {
     "access": "public"
@@ -54,10 +58,17 @@
     "deepmerge": "^4.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@vitejs/plugin-vue": "^6.0.10",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-vue": "^10.11.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "sass": "^1.106.1",
     "vite": "^8.3.5",
-    "vue": "^3.5.44"
+    "vue": "^3.5.44",
+    "vue-eslint-parser": "^10.4.1"
   },
   "packageManager": "pnpm@12.9.0+sha512.8f64efa0b792986ca98ae568791bcd7722807e274c4f0c1d9853c62116495c584119db98762a2a5343b1684d361b9ae26fdd16d551666d7635346d3fae830ddd"
 }

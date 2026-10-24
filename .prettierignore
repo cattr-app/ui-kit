@@ -1,0 +1,9 @@
+dist
+node_modules
+pnpm-lock.yaml
+src/stylesheet/css
+docs/markdown/**
+.plan/**
+# owned by the stylesheet package, out of scope for repo-wide formatting (plan README rule 10)
+src/stylesheet/**
+!src/stylesheet/package.json
