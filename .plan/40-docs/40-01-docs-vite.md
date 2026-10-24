@@ -43,5 +43,6 @@ scripts/node.sh pnpm exec eslint docs vite.docs.config.js
 Команды разработки.
 
 ## Найдено по ходу
+- (из 10-02) В `docs/` остаются 7 ошибок `no-undef` (`require` в `router/index.js`, `directives/clipboard.js`; `process` в `main.js`, `router/index.js`) — уйдут при переходе на Vite/ESM.
 
 ## Заметки агента

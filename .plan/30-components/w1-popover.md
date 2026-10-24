@@ -34,5 +34,6 @@ scripts/node.sh pnpm build
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
 ## Найдено по ходу
+- (из 10-02) `popover.vue` — 2 ошибки `vue/no-v-html` (title/content). Решить: оставить с `eslint-disable-next-line` и обоснованием или сменить API; выбор отметить в changelog.
 
 ## Заметки агента

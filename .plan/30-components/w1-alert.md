@@ -35,5 +35,6 @@ scripts/node.sh pnpm build
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
 ## Найдено по ходу
+- (из 10-02) Prop `message` одновременно `required` и с `default` — ошибка `vue/no-required-prop-with-default`, решить (убрать одно из двух) и отразить в changelog.
 
 ## Заметки агента

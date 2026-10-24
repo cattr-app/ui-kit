@@ -36,5 +36,6 @@ scripts/node.sh pnpm build
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
 ## Найдено по ходу
+- (из 10-02) `handleKeyup` (Enter): кламп `numVal > totalPage` был мёртвым присваиванием (сразу перезаписывался), в 10-02 переписано эквивалентно в `const page = numVal <= 0 ? 1 : numVal` — номер страницы сверху не ограничивается, починить. Prop `total` одновременно `required` и с `default` (`vue/no-required-prop-with-default`), решить. Ключ `v-for` по `pageRange` поставлен `:key="index"` (эквивалент неключёвому), можно перейти на `num`.
 
 ## Заметки агента

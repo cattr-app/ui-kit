@@ -38,5 +38,6 @@ scripts/node.sh pnpm build
 `$Message` API без изменений по вызову; импорт `import { Message } from '@amazingcat/cattr-ui'`. Если потребитель вызывал `Message` **до** `app.use` — теперь иконки/локаль внутри не отрендерятся; вызывать после `app.use`.
 
 ## Найдено по ходу
+- (из 10-02) `message.js`: `options.icon = options.icon` (`no-self-assign`) не удалён — создаёт собственный ключ `icon: undefined` в `data`, что перекрывает дефолт из `message.vue`; поведение решить при переписывании сервиса.
 
 ## Заметки агента

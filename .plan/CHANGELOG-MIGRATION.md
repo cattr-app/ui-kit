@@ -43,4 +43,4 @@
 ## Документация и разработка
 
 - Сборка: `pnpm build` (Vite library mode, ESM, `vue` external). Скрипты `build:component`, `build:locale`, `build:doc`, `prepublish` удалены; `build:package` оставлен алиасом `pnpm build` для CI. Стили: `pnpm build:style`. Требуется Node ≥ 24.
-- `[TODO 10-02]` Линтер: ESLint 10 flat config + eslint-plugin-vue 10 + Prettier 3. Команды `pnpm lint`, `pnpm format`, `pnpm format:check`.
+- Линтер: ESLint 10 flat config (`eslint.config.js`) + eslint-plugin-vue 10 + Prettier 3 (`.prettierrc`). Команды `pnpm lint`, `pnpm lint:fix`, `pnpm format`, `pnpm format:check`. `.eslintrc.js` и `eslint-config-o2team` удалены.

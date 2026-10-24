@@ -35,5 +35,6 @@ scripts/node.sh pnpm build
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
 ## Найдено по ходу
+- (из 10-02) `breadcrumb-item.vue` — ошибка `vue/no-v-html`, решить аналогично popover.
 
 ## Заметки агента
