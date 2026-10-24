@@ -1,7 +1,7 @@
 ---
 id: 50-06
 title: Тесты и отчёт покрытия в GitHub Actions
-status: in-progress
+status: done
 depends_on: [50-03]
 parallel: true
 model: opus
@@ -38,3 +38,8 @@ docker run --rm -v "$PWD:/repo" -w /repo rhysd/actionlint:latest -color
 ## Найдено по ходу
 
 ## Заметки агента
+- Покрытие (v8): statements 81.67%, branches 74.22%, functions 80.43%, lines 82.93%; пороги 80/70/78/80 проходят, нарушение проверено (`--coverage.thresholds.lines=99` → exit 1); `reportOnFailure: true`.
+- Отклонение: reporter `lcovonly` вместо `lcov` — HTML-отчёт кладёт в `coverage/lcov-report/*.js`, и `eslint .` (нет `coverage/**` в ignores eslint.config) падает локально после `test:coverage`. Если добавить `coverage/**` в ignores, можно вернуть `lcov` ради HTML в артефакте.
+- ci.yml: `Test with coverage` → `Coverage summary` (node-однострочник по `coverage-summary.json` в `$GITHUB_STEP_SUMMARY`, проверен локально) → `upload-artifact@v4` (`coverage/`, 14 дней, `if: always()`) → `davelosert/vitest-coverage-report-action@v2` только на `pull_request`; job-level `permissions: contents: read, pull-requests: write`; добавлен `workflow_dispatch`.
+- `schedule` не добавлен: lockfile frozen, зависимости не дрейфуют между прогонами, еженедельный прогон ничего нового не покажет.
+- Риск: в PR из форков токен read-only, шаг комментария упадёт (403) — при появлении внешних PR добавить условие `head.repo.full_name == github.repository`. actionlint чистый, lint/format:check зелёные.
