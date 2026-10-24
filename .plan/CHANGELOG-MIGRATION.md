@@ -34,7 +34,7 @@
 
 ## v-model
 
-- `[TODO 30-*]` Все компоненты с `v-model` переходят на prop `modelValue` + событие `update:modelValue`.
+- Все компоненты с `v-model` переходят на prop `modelValue` + событие `update:modelValue`.
   `v-model="x"` в шаблонах продолжает работать. Ручные биндинги `:value` + `@input` заменить на `:model-value` + `@update:model-value`.
   Затронуты: Input, InputNumber, Textarea, Checkbox, CheckboxGroup, Radio, RadioGroup, Select, Switch, Slider, Rate, Modal, Tabs, Collapse.
 
@@ -71,8 +71,6 @@
 - Новые props (в 1.x были внутренним `data`, их заполнял `$Modal`): `showCancelButton`, `showConfirmButton` (Boolean, по умолчанию `true`), `inputValue` (начальное значение поля при `showInput`), `inputPlaceholder`. При `showInput` поле получает фокус при открытии.
 - Новое событие `after-leave` — после завершения анимации закрытия (на нём `$Modal` размонтирует диалог). Внутренние `callback`/`action` из `data` удалены.
 - Слоты: `<div slot="header">` → `<template #header>`, `slot="footer"` → `#footer` (синтаксис Vue 3); имена слотов `header`/`footer`/default без изменений. Слушатели на кнопках внутри своего `#footer`: `@click`, без `.native`.
-
-(заполняется задачами 30-*)
 
 ### Pagination
 
@@ -193,8 +191,6 @@
 
 ## Сервисы
 
-- `[TODO 20-03, 30-w3-*]` До завершения миграции сервисов `$Message`, `$Modal`, `$Notify`, `$Loading` существуют, но при вызове бросают `… is not migrated to Vue 3 yet`. Промежуточные сборки ветки `feat/vue-3` для потребителя непригодны до закрытия этапа 30.
-
 - `Message` (`$Message`): API вызова без изменений — `Message('text')`, `Message({ message, type, icon, duration, onClose })`, `Message.info/success/warning/error/loading(...)`, `Message.close(id)`, `Message.closeAll()`, вызов возвращает функцию закрытия.
   Импорт для `<script setup>`: `import { Message } from '@amazingcat/cattr-ui'`; также можно поставить отдельно: `app.use(Message)` (кладёт `$Message` в `globalProperties`).
   Было: работало сразу после импорта. Стало: сервис рендерится в контексте приложения, установившего плагин, — вызывать **после** `app.use(CattrUI)`, иначе `<at-*>`-компоненты и локаль внутри сервиса не отрендерятся (для `Message` сейчас некритично — иконки CSS-классами, текстов локали нет, — но для `$Modal`/`$Notify` обязательно; полагаться не стоит).
@@ -220,8 +216,6 @@
   Титулы статусных диалогов по умолчанию (объектная форма без `title`): были китайские `信息/成功/警告/错误` → стали английские `Info/Success/Warning/Error` (ключей `at.modal.info…` в локалях нет; для перевода передавать `title`). В строковой форме `$Modal.info('text')` заголовка по-прежнему нет.
   Поведенческие исправления: 1) очередь — было: каждый вызов сразу открывал новый диалог поверх предыдущего, а промис/коллбек первого мог получить ответ второго; стало: диалоги показываются по одному, следующий — после анимации закрытия текущего. 2) Escape, крестик и клик по маске считаются `'cancel'` (было: промис и коллбек не вызывались вовсе и очередь «зависала»). 3) `callback` из `options` (или вторым аргументом `Dialog(options, cb)`) вызывается как `cb(action)`, для `prompt` — `cb(value, action)`, и **вместе** с промисом (было: при `options.callback` промис не разрешался, коллбек получал `(action, instance)`); при наличии `callback` отклонение промиса не даёт `unhandledrejection`. 4) `$Modal.close()` закрывает текущий и очищает очередь; промисы закрытых так диалогов, как и в 1.x, не разрешаются.
   Опции передаются в `AtModal` как props (`title`, `content`, `type`, `okText`, `cancelText`, `maskClosable`, `showClose`, `showCancelButton`, `showConfirmButton`, `showInput`, `inputValue`, `inputPlaceholder`, `width`, `styles`…); неизвестные ключи игнорируются. Объект `options` не мутируется.
-
-(заполняется задачами 30-w3-modal, 30-w3-notification, 30-w3-loading-bar)
 
 ## Документация и разработка
 
