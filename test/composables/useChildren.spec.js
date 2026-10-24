@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { defineComponent, h, nextTick, reactive, ref, toRef } from 'vue'
 import { mount } from '@vue/test-utils'
+import { renderToString } from 'vue/server-renderer'
 import { createContext } from '../../src/utils/context.js'
 import { useChild, useChildren } from '../../src/composables/useChildren.js'
 
@@ -49,7 +50,7 @@ describe('useChildren', () => {
           h(Item, { name: 'c' }),
         ]),
     })
-    const list = wrapper.findComponent(List)
+    const list = wrapper.getComponent(List)
 
     await nextTick()
     expect(list.vm.names()).toEqual(['a', 'c'])
@@ -66,6 +67,19 @@ describe('useChildren', () => {
     await nextTick()
     expect(list.vm.names()).toEqual(['a', 'c'])
     expect(wrapper.text()).toBe('a:0c:1')
+  })
+
+  it('knows the index on the first render, before mount (no -1 frame, SSR)', async () => {
+    const App = {
+      setup: () => () => h(List, null, () => [h(Item, { name: 'a' }), h(Item, { name: 'b' })]),
+    }
+
+    // first synchronous render, before the post-mount re-sort is flushed
+    const wrapper = mount(App)
+    expect(wrapper.text()).toBe('a:0b:1')
+
+    // no onMounted on the server
+    expect(await renderToString(h(App))).toContain('<li>a:0</li><li>b:1</li>')
   })
 
   it('is a no-op without a parent', () => {

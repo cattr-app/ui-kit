@@ -31,6 +31,19 @@ describe('AtSteps + AtStep', () => {
     expect(wrapper.findAll('.at-step__line')).toHaveLength(2)
   })
 
+  it('numbers steps on the first render, not "0" until mounted', () => {
+    const wrapper = mount({
+      template: `
+        <at-steps :current="0">
+          <at-step title="A"></at-step>
+          <at-step title="B"></at-step>
+        </at-steps>`,
+    })
+
+    // checked synchronously: no nextTick, the post-mount re-render has not run yet
+    expect(wrapper.findAll('.at-step__order').map(o => o.text())).toEqual(['1', '2'])
+  })
+
   it('sizes horizontal steps by their count', async () => {
     const wrapper = await mountSteps(':current="0"')
     const width = parseFloat(wrapper.find('.at-step').element.style.width)
