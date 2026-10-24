@@ -34,7 +34,7 @@ touches: [docs/**, vite.docs.config.js, package.json, pnpm-lock.yaml]
 
 ## Проверка
 ```sh
-scripts/node.sh pnpm install
+scripts/node.sh pnpm install --no-frozen-lockfile
 scripts/node.sh pnpm build:docs
 scripts/node.sh pnpm exec eslint docs vite.docs.config.js
 ```

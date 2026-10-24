@@ -28,7 +28,7 @@ touches: [package.json, pnpm-lock.yaml, vitest.config.js, test/**, .gitignore]
 
 ## Проверка
 ```sh
-scripts/node.sh pnpm install
+scripts/node.sh pnpm install --no-frozen-lockfile
 scripts/node.sh pnpm test
 scripts/node.sh pnpm lint
 ```

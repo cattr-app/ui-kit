@@ -26,7 +26,7 @@ touches: [package.json, pnpm-lock.yaml, pnpm-workspace.yaml, vite.config.js, bui
 3. `package.json`: `"type": "module"`, `"main"`/`"module"`: `dist/index.js`, `exports`: `"."`, `"./locale/*": "./dist/locale/*.js"`, `"./src/*": "./src/*"`, `"./package.json"`; `sideEffects: ["**/*.css", "**/*.scss"]`; `files: ["dist", "src"]`; `engines.node: ">=24"`; scripts: `build` (vite build), `build:style` (`pnpm --filter cattr-ui-style build`), `dev`/`build:docs` оставить заглушками с `echo "see 40-01"` чтобы CI не падал молча. Скрипт `prepublish` удалить.
 4. Удалить `build/`, `.babelrc`. Обновить `.gitignore` (убрать yarn-записи, добавить `.vite/`).
 5. `src/index.js`: заменить `module.exports = {...}` на именованные экспорты + `export default { install, ... }`; `if (window.Vue) install(window.Vue)` удалить. Остальная логика без изменений (20-01).
-6. `pnpm install` (не frozen), коммит lockfile. Проверить `pnpm-workspace.yaml` → оставить только `packages: [src/stylesheet]` и реально нужные `allowBuilds`.
+6. `pnpm install --no-frozen-lockfile`, коммит lockfile. Проверить `pnpm-workspace.yaml` → оставить только `packages: [src/stylesheet]` и реально нужные `allowBuilds`.
 7. Changelog: снять `[TODO 10-01]` в разделах «Требования к окружению» и «Документация и разработка».
 
 ## Критерии приёмки
@@ -37,7 +37,7 @@ touches: [package.json, pnpm-lock.yaml, pnpm-workspace.yaml, vite.config.js, bui
 
 ## Проверка
 ```sh
-scripts/node.sh pnpm install
+scripts/node.sh pnpm install --no-frozen-lockfile
 scripts/node.sh pnpm build
 scripts/node.sh pnpm build:style
 ls dist dist/locale

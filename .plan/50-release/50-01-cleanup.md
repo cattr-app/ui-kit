@@ -23,7 +23,7 @@ touches: [src/**, test/**, package.json, pnpm-lock.yaml, pnpm-workspace.yaml]
 
 ## Проверка
 ```sh
-scripts/node.sh pnpm install
+scripts/node.sh pnpm install --no-frozen-lockfile
 scripts/node.sh pnpm lint --max-warnings 0
 scripts/node.sh pnpm format:check
 scripts/node.sh pnpm test

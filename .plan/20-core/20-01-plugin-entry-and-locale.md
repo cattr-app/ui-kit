@@ -42,5 +42,8 @@ scripts/node.sh pnpm exec eslint src/index.js src/locale src/mixins src/componen
 `app.use`, именованные экспорты, формат i18n-хука.
 
 ## Найдено по ходу
+- (из 10-01) `import Vue from 'vue'` остаётся в `src/locale/index.js`, `modal/src/dialog.js`, `message/src/message.js`, `notification/src/notic.js`, `loading-bar/src/loading-bar.js` — из-за него `import('./dist/index.js')` падает с `does not provide an export named 'default'`. locale чинится здесь, сервисы — в 20-03/30-w3-*.
+- (из 10-01) `deepmerge` 4.x: опция `clone` устарела; после переписывания locale проверить, нужен ли deepmerge вообще (единственное использование). Если остаётся — вынести в `rollupOptions.external` вместе с `vue`, чтобы не бандлить зависимость из `dependencies`.
+- (из 10-01) Экспорты в `src/index.js` сейчас без префикса (`Button`, а не `AtButton`); changelog обещает `At*` — привести здесь.
 
 ## Заметки агента

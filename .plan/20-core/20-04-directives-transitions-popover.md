@@ -37,5 +37,6 @@ scripts/node.sh pnpm build
 Если `v-clickoutside` экспортировался наружу — нет (не экспортируется). Popover/Tooltip: `v-model` → `modelValue` (запись сделают 30-w1-popover/tooltip, здесь только упомянуть в заметках).
 
 ## Найдено по ходу
+- (из 10-01) `src/mixins/popover.js` подключает `NodeList.js` через `require` под `typeof window` — rolldown это пережёвывает, но при переписывании mixin заменить на обычный import.
 
 ## Заметки агента

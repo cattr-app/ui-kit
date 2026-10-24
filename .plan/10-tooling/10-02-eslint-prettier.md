@@ -50,7 +50,7 @@ touches: [package.json, pnpm-lock.yaml, eslint.config.js, .prettierrc, .prettier
 
 ## Проверка
 ```sh
-scripts/node.sh pnpm install
+scripts/node.sh pnpm install --no-frozen-lockfile
 scripts/node.sh pnpm format:check
 scripts/node.sh pnpm lint ; scripts/node.sh sh -c "pnpm exec eslint . -f json | node -e 'let d=\"\";process.stdin.on(\"data\",c=>d+=c).on(\"end\",()=>{const m={};for(const f of JSON.parse(d))for(const x of f.messages)m[x.ruleId]=(m[x.ruleId]||0)+1;console.log(m)})'"
 scripts/node.sh pnpm build
