@@ -1,8 +1,8 @@
-@use "sass:math";
 /**
  * Badge Style
  */
-@import '../variables/index.scss';
+@use 'sass:math';
+@use '../variables' as *;
 
 .at-badge {
   position: relative;

@@ -12,8 +12,8 @@
 </template>
 
 <style lang="scss">
-@import '../../src/stylesheet/src/variables/index.scss';
-@import '../assets/style/mixin';
+@use '../../src/stylesheet/src/variables' as *;
+@use '../assets/style/mixin' as *;
 
 /**
  * Footer

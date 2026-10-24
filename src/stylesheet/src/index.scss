@@ -1,15 +1,23 @@
 /**
  * Cattr UI
+ *
+ * Theme variables (variables/default.scss) are all `!default` and forwarded from here, so a
+ * project overrides them on load:
+ *
+ *   @use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' with ($brand-blue-500: #ff5722);
+ *
+ * The forward must stay first: core/ and components/ load the variables module too, and
+ * a module can be configured only by its first load.
  */
 
-/* Mixin */
-@import './mixins/index.scss';
-
 /* Variables */
-@import './variables/index.scss';
+@forward 'variables';
+
+/* Mixins */
+@forward 'mixins';
 
 /* Core */
-@import './core/index.scss';
+@use 'core';
 
 /* Components */
-@import './components/index.scss';
+@use 'components';

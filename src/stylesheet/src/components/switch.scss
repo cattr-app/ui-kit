@@ -1,7 +1,7 @@
 /**
  * Switch Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-switch {
   position: relative;

@@ -1,7 +1,8 @@
 /**
  * Button Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
+@use '../mixins' as *;
 
 $btn-hover-tint-percent: 15%;
 $btn-active-shade-percent: 10%;

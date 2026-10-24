@@ -157,9 +157,6 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: 'modern-compiler',
-        // src/stylesheet still uses @import, global functions and `/` division; migrating it
-        // is out of scope for the docs site, keep the dev/build console readable.
-        silenceDeprecations: ['import', 'global-builtin', 'slash-div', 'color-functions'],
       },
     },
   },

@@ -1,7 +1,8 @@
 /**
  * Modal Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
+@use '../mixins' as *;
 
 .at-modal {
   position: relative;

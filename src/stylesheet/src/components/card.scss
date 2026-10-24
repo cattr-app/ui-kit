@@ -1,7 +1,7 @@
 /**
  * Card Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-card {
   position: relative;

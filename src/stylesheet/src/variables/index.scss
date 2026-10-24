@@ -2,5 +2,5 @@
  * Variables
  */
 
-@import './default.scss';
-@import './timing-function.scss';
+@forward 'default';
+@forward 'timing-function';

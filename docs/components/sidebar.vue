@@ -65,7 +65,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '../../src/stylesheet/src/variables/index.scss';
+@use '../../src/stylesheet/src/variables' as *;
 
 .at-sidebar {
   display: inline-block;

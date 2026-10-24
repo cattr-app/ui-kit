@@ -1,7 +1,8 @@
 /**
  * Default Variables
  */
-@import '../mixins/index.scss';
+@use 'sass:math';
+@use '../mixins' as *;
 
  /* Prefix */
 $css-prefix: at!default;
@@ -137,7 +138,7 @@ $font-size-lg               : 18px!default;
 $font-size-lger             : 20px!default;
 
 $line-height-base           : 1.5!default;
-$line-height-computed       : floor($font-size-base * $line-height-base)!default;
+$line-height-computed       : math.floor($font-size-base * $line-height-base)!default;
 
 /* Link */
 $link-color                 : $brand-blue-500!default;
@@ -383,7 +384,7 @@ $alert-border-color-info    : $blue-100!default;
 /* Badge */
 $badge-height               : 18px!default;
 $badge-padding              : 0 6px!default;
-$badge-border-radius        : $badge-height / 2!default;
+$badge-border-radius        : math.div($badge-height, 2)!default;
 $badge-font-size            : $font-size-smer!default;
 $badge-font-color           : $color-white!default;
 

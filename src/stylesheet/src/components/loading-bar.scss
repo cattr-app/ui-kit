@@ -1,7 +1,7 @@
 /**
  * LoadingBar Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-loading-bar {
   position: fixed;

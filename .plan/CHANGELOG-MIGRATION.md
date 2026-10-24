@@ -246,6 +246,21 @@
   Что править: если в проекте есть свои стили на `.at-*-enter`, `.at-*-leave` или на `.fade-enter`/`.slide-up-enter` (или своих `<transition name>`), переименовать в `-enter-from`/`-leave-from`; иначе стартовое состояние перехода не применится и элемент появится без анимации.
 - Готовый CSS (`src/stylesheet/css/at.css`, `at.min.css`, собирается `pnpm build:style`): автопрефиксы теперь по `browserslist` пакета стилей — `last 2 versions, not dead` (было `last 2 versions, ie > 8`). Селекторы и значения не изменились; убраны устаревшие префиксы `-webkit-box-*`, `-ms-flex*`, `-webkit-transform`/`-webkit-transition`/`-webkit-animation` и т.п. Карты исходников теперь внешние и актуальные (`at.css.map`, `at.min.css.map`), а не base64 внутри CSS.
   Что править: ничего, если не нужна поддержка IE / старых WebKit; иначе прогнать CSS через свой autoprefixer со своим `browserslist`.
+- Исходники стилей (`src/stylesheet/src/**`) переведены с `@import` на модули Sass (`@use`/`@forward`, `math.div`, `color.mix`, `string.*`, `meta.*`); сборка и docs идут без `DEPRECATION WARNING`. `index.scss` делает `@forward` переменных (`variables/default.scss`, `variables/timing-function.scss` — все с `!default`) и миксинов, затем `@use` `core/` и `components/`. CSS на выходе прежний (селекторы и значения совпадают).
+  Было: переменные темы переопределялись глобально перед `@import`:
+  ```scss
+  $brand-blue-500: #ff5722;
+  @import '~@amazingcat/cattr-ui/src/stylesheet/src/index.scss';
+  ```
+  Стало: конфигурация модуля при загрузке (проверено `sass` 1.106.1):
+  ```scss
+  @use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' as cattr with (
+    $brand-blue-500: #ff5722,
+    $font-size-base: 13px
+  );
+  .my-link { color: cattr.$link-color; @include cattr.ellipsis(200px); }
+  ```
+  Что править: заменить «переменные + `@import`» на свой SCSS-вход с `@use … with (…)` и импортировать его вместо `index.scss`; загружать стили с конфигурацией один раз и раньше любых других файлов из `src/stylesheet` (модуль конфигурируется только при первой загрузке). В своих `.scss`/`<style lang="scss">` переменные и миксины библиотеки больше не глобальные: `@use '@amazingcat/cattr-ui/src/stylesheet/src/variables' as *;` и `@use '@amazingcat/cattr-ui/src/stylesheet/src/mixins' as *;` (или `cattr.$…` через namespace). Каждый `<style lang="scss">` в SFC компилируется отдельно и конфигурацию из входа не видит — если тема нужна и в своих компонентах, вынести её в `_theme.scss` (`@forward '…/src/stylesheet/src/variables' with (…)` + `@forward '…/mixins'`), во входе `@use 'theme'; @use '…/index.scss';`, в компонентах `@use '@/styles/theme' as *;` (проверено). Неизвестное имя в `with (…)` — ошибка компиляции. Старый путь (`$var: …; @import …`) пока работает, но с `DEPRECATION WARNING [import]` и исчезнет в Sass 3. Мелочь: `core/grid.scss` больше не перезаписывает глобальные `$screen-*`/`$container-*` своими значениями — после `@import index.scss` `$screen-sm-max` теперь `767px` из `default.scss` (было `991px`), сетка при этом не изменилась.
 
 ## Документация и разработка
 

@@ -1,7 +1,7 @@
 /**
  * Collapse Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-collapse {
   border: 1px solid $collapse-border-color;

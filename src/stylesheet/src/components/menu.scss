@@ -1,8 +1,9 @@
-@use "sass:math";
 /**
  * Menu Style
  */
-@import '../variables/index.scss';
+@use 'sass:math';
+@use '../variables' as *;
+@use '../mixins' as *;
 
 .at-menu {
   position: relative;
