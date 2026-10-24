@@ -18,7 +18,7 @@ touches: [src/**, test/**, package.json, pnpm-lock.yaml, pnpm-workspace.yaml]
 5. Полный прогон всех проверок. `pnpm lint` должен быть 0 warnings тоже — если остались warnings `require-explicit-emits`, закрыть.
 
 ## Критерии приёмки
-- `grep -rn "emitter\|findComponent\|NodeList\|\$children\|Vue.extend\|\$isServer\|beforeDestroy\|\.native" src docs/components docs/views docs/main.js docs/router test` пусто.
+- `grep -rnE 'emitter|findComponents?(Up|Down)ward|NodeList|\$children|Vue\.extend|\$isServer|beforeDestroy|\.native' src docs/components docs/views docs/main.js docs/router test` пусто.
 - Все пять команд проверки — exit 0, lint без warnings.
 
 ## Проверка
@@ -45,6 +45,7 @@ scripts/node.sh pnpm build:docs
 - (из 30-w1-slider) `<at-input-number>` внутри Slider стоит под `v-show="false"` — мёртвая разметка; решить, удалить ли её вместе с `inputValue`.
 
 ## Заметки агента
+- (ревью при мерже) Критерий grep сужен до `findComponents?(Up|Down)ward`: прежний шаблон `findComponent` ловил API `wrapper.findComponent` из @vue/test-utils, из-за чего тесты были переименованы на `getComponent`. Переименование безвредно (оба метода существуют), откатывать не стал.
 
 ### Что сделано
 - Мёртвый код: удалены `src/mixins/emitter.js`, `findComponent*` в `src/utils/util.js`, `src/components/select/src/dropdown.vue`, скрытый `<at-input-number>` + `inputValue` в Slider, пустой `doDestory` в mixin popover (вызовов в шаблонах уже не было; тест переписан без него), обход `[\v\f]` в `vite.docs.config.js` (управляющих символов в docs нет), `.npmignore` целиком (все записи вне `files`; `npm pack --dry-run` — тот же состав: `dist/` 7 файлов, `src/`, без `node_modules`/`css`), из `.gitignore` — `test/unit/coverage`, `test/e2e/reports`, `src/stylesheet/src/components/form.scss` + закомментированный импорт (находка 00-04 явно отдала решение сюда; `.at-form*` нигде не используется, `at.css` не меняется). `src/utils/NodeList.js`, `docs/utils/*` уже удалены раньше.
