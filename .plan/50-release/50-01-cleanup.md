@@ -35,6 +35,9 @@ scripts/node.sh pnpm build:docs
 Проверить, что в `CHANGELOG-MIGRATION.md` не осталось пометок `[TODO …]`.
 
 ## Найдено по ходу
+- (из 40-02-en) Баги компонентов, найденные при прогоне всех docs-страниц: (а) `rate.vue` — при `v-model` один клик эмитит `on-change` дважды (из `confirmValue` и из watcher `modelValue`), watcher также эмитит на внешнее изменение; (б) `textarea.vue` — watcher `store` эмитит `update:modelValue`/`change`, когда `modelValue` меняет родитель (расходится с Input/Select/Switch); (в) `Message.close(id)`/`Notification.close(id)` описаны в changelog как публичные, но `id` наружу не возвращается — либо вернуть `id` (например, свойством на функции закрытия), либо убрать `close(id)` из changelog, оставив функцию закрытия и `closeAll()`. Решить и починить здесь с тестами.
+- (из 40-02-en) Обход `[\v\f]` в `transforms.before` в `vite.docs.config.js` можно удалить после мержа 40-02-zh (символ `\v` убран из обоих `color.md`).
+- (из 40-02-en) В демо `table.md` атрибут `sort` на `<at-table>` — несуществующий prop, проваливается в DOM; убрать из обоих языков или не трогать.
 - (из 30-w2-steps/collapse) `useChild` регистрирует ребёнка в `onMounted`, поэтому первый кадр рендерится с `index = -1` (у Steps — номер «0» и без ширины, у CollapseItem без `name` раскрытие после mount). Возможное улучшение `useChildren`: регистрировать в `setup` с `el = null` и пересортировывать в `onMounted`. Решить, нужно ли; при SSR это заметно.
 - (из 30-w1-slider) `<at-input-number>` внутри Slider стоит под `v-show="false"` — мёртвая разметка; решить, удалить ли её вместе с `inputValue`.
 
