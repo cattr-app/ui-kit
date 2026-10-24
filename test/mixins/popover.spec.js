@@ -114,7 +114,7 @@ describe('popover mixin', () => {
       },
       { attachTo: document.body },
     )
-    const host = wrapper.findComponent(Host)
+    const host = wrapper.getComponent(Host)
 
     await wrapper.find('.trigger').trigger('click')
     expect(wrapper.vm.open).toBe(true)
@@ -143,13 +143,13 @@ describe('popover mixin', () => {
     expect(vm.show).toBe(false)
   })
 
-  it('keeps listeners after the hide transition (doDestory)', async () => {
+  it('keeps listeners after a hide, the popover can be shown again', async () => {
     const wrapper = mountHost({ trigger: 'click' })
     const trigger = wrapper.find('.trigger')
 
     await trigger.trigger('click')
     await trigger.trigger('click')
-    wrapper.vm.doDestory()
+    expect(wrapper.vm.show).toBe(false)
     await trigger.trigger('click')
 
     expect(wrapper.vm.show).toBe(true)

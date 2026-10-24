@@ -23,7 +23,7 @@ describe('integration: Table + Pagination', () => {
     expect(wrapper.findAll('tbody tr')).toHaveLength(10)
     expect(wrapper.findAll('tbody tr')[0].text()).toContain('row-1')
 
-    const pagination = wrapper.findComponent(AtPagination)
+    const pagination = wrapper.getComponent(AtPagination)
     const page2 = pagination.findAll('.at-pagination__item').find(li => li.text() === '2')
     await page2.trigger('click')
 
@@ -43,7 +43,7 @@ describe('integration: Pagination + Select (page sizer)', () => {
     })
     await nextTick()
 
-    const select = wrapper.findComponent(AtSelect)
+    const select = wrapper.getComponent(AtSelect)
     expect(select.exists()).toBe(true)
 
     await select.find('.at-select__selection').trigger('click')
@@ -51,7 +51,7 @@ describe('integration: Pagination + Select (page sizer)', () => {
     expect(options.length).toBeGreaterThan(1)
 
     await options[1].trigger('click')
-    const pagination = wrapper.findComponent(AtPagination)
+    const pagination = wrapper.getComponent(AtPagination)
     expect(wrapper.vm.sizes).toHaveLength(1)
     expect(pagination.emitted('update:pageSize')).toHaveLength(1)
     expect(pagination.emitted('update:pageSize')[0]).toEqual([wrapper.vm.sizes[0]])

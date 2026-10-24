@@ -25,7 +25,7 @@ describe('AtPagination', () => {
       data: () => ({ page: 1 }),
       template: '<at-pagination v-model:current="page" :total="50" />',
     })
-    const pagination = wrapper.findComponent(AtPagination)
+    const pagination = wrapper.getComponent(AtPagination)
 
     await wrapper.findAll('.at-pagination__item')[2].trigger('click')
 

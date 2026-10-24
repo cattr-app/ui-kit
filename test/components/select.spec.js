@@ -22,7 +22,7 @@ async function mountSelect(attrs = '', value = '', options = OPTIONS, data = {})
   return wrapper
 }
 
-const select = () => wrapper.findComponent(AtSelect)
+const select = () => wrapper.getComponent(AtSelect)
 const dropdown = () => wrapper.find('.at-select__dropdown')
 const isOpen = () => dropdown().element.style.display !== 'none'
 const options = () => wrapper.findAll('.at-select__option')

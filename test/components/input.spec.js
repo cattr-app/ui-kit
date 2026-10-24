@@ -18,7 +18,7 @@ describe('AtInput', () => {
       data: () => ({ value: '' }),
       template: '<at-input v-model="value" />',
     })
-    const input = wrapper.findComponent(AtInput)
+    const input = wrapper.getComponent(AtInput)
 
     await wrapper.find('input').setValue('abc')
 

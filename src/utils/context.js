@@ -25,7 +25,7 @@ export function getCurrentApp() {
 
 /**
  * Typed provide/inject pair for parent ↔ child links (RadioGroup → Radio, Tabs → TabPane, …).
- * Replaces `dispatch`/`broadcast` (mixins/emitter) and `findComponent*` (utils/util).
+ * Replaces the Vue 2 `dispatch`/`broadcast` event bus and the component-tree walking helpers.
  *
  *   // radio/src/context.js
  *   export const RadioGroupContext = createContext('AtRadioGroup')

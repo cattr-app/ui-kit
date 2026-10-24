@@ -31,7 +31,7 @@ describe('AtRadioGroup + AtRadio', () => {
 
   it('emits update:modelValue and radio-group-change with the clicked radio label', async () => {
     const wrapper = mountGroup(template)
-    const group = wrapper.findComponent(AtRadioGroup)
+    const group = wrapper.getComponent(AtRadioGroup)
     const second = wrapper.findAllComponents(AtRadio)[1]
 
     await second.find('input').setValue()
@@ -50,7 +50,7 @@ describe('AtRadioGroup + AtRadio', () => {
         <at-radio label="a">A</at-radio>
         <at-radio label="b" disabled>B</at-radio>
       </at-radio-group>`)
-    const group = wrapper.findComponent(AtRadioGroup)
+    const group = wrapper.getComponent(AtRadioGroup)
 
     wrapper.findAll('input')[1].element.dispatchEvent(new Event('change'))
     await nextTick()
@@ -93,7 +93,7 @@ describe('AtRadioButton', () => {
 
     await wrapper.findAll('input')[1].setValue()
 
-    expect(wrapper.findComponent(AtRadioGroup).emitted('update:modelValue')).toEqual([['b']])
+    expect(wrapper.getComponent(AtRadioGroup).emitted('update:modelValue')).toEqual([['b']])
     expect(wrapper.vm.value).toBe('b')
   })
 })

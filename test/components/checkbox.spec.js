@@ -77,7 +77,7 @@ describe('AtCheckboxGroup + AtCheckbox', () => {
 
   it('adds and removes the label through the group', async () => {
     const wrapper = mountGroup(['b'])
-    const group = wrapper.findComponent(AtCheckboxGroup)
+    const group = wrapper.getComponent(AtCheckboxGroup)
     const [first, second] = wrapper.findAllComponents(AtCheckbox)
 
     await first.find('input').setValue(true)
@@ -95,7 +95,7 @@ describe('AtCheckboxGroup + AtCheckbox', () => {
 
   it('does not emit when a disabled checkbox receives change', async () => {
     const wrapper = mountGroup(['a'])
-    const group = wrapper.findComponent(AtCheckboxGroup)
+    const group = wrapper.getComponent(AtCheckboxGroup)
 
     const input = wrapper.findAll('input')[2].element
     input.checked = true

@@ -39,7 +39,7 @@ describe('AtCollapse + AtCollapseItem', () => {
 
   it('emits update:modelValue and on-change with an array on header click', async () => {
     const wrapper = await mountCollapse()
-    const collapse = wrapper.findComponent(AtCollapse)
+    const collapse = wrapper.getComponent(AtCollapse)
 
     await wrapper.findAll('.at-collapse__header')[0].trigger('click')
 
@@ -66,7 +66,7 @@ describe('AtCollapse + AtCollapseItem', () => {
 
     await wrapper.findAll('.at-collapse__header')[2].trigger('click')
 
-    expect(wrapper.findComponent(AtCollapse).emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.getComponent(AtCollapse).emitted('update:modelValue')).toBeUndefined()
     expect(activeOf(wrapper)).toEqual([false, true, false])
   })
 

@@ -60,6 +60,8 @@ export default {
     this.popoverListeners = []
   },
   methods: {
+    // Trigger listeners survive a hide (the popover can be shown again); they are
+    // removed in beforeUnmount.
     toggle() {
       this.show = !this.show
       this.$emit('toggle', this.show)
@@ -155,9 +157,6 @@ export default {
         popover.style.left = `${this.position.left}px`
       })
     },
-    // Called by host templates on `@after-leave`. Listeners must survive a hide (the
-    // popover can be shown again), they are removed in beforeUnmount.
-    doDestory() {},
     addTriggerListener(el, event, handler) {
       el.addEventListener(event, handler)
       this.popoverListeners.push([el, event, handler])

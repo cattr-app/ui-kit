@@ -58,7 +58,7 @@ describe('AtTooltip', () => {
       },
       { attachTo: document.body },
     )
-    const tooltip = wrapper.findComponent(AtTooltip)
+    const tooltip = wrapper.getComponent(AtTooltip)
 
     await wrapper.find('.at-tooltip__trigger').trigger('mouseenter')
     expect(wrapper.vm.open).toBe(true)

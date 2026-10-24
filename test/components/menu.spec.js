@@ -55,7 +55,7 @@ describe('AtMenu + AtMenuItem + AtSubmenu', () => {
 
     await item(wrapper, 'Four-One').trigger('click')
 
-    expect(wrapper.findComponent(AtMenu).emitted('on-select')).toEqual([['4-1']])
+    expect(wrapper.getComponent(AtMenu).emitted('on-select')).toEqual([['4-1']])
     expect(activeItems(wrapper)).toEqual(['Four-One'])
     expect(submenus(wrapper)[2].classes()).toContain('at-menu__submenu--active')
   })
@@ -65,7 +65,7 @@ describe('AtMenu + AtMenuItem + AtSubmenu', () => {
 
     await item(wrapper, 'Two').trigger('click')
 
-    expect(wrapper.findComponent(AtMenu).emitted('on-select')).toBeUndefined()
+    expect(wrapper.getComponent(AtMenu).emitted('on-select')).toBeUndefined()
     expect(activeItems(wrapper)).toEqual(['One'])
   })
 
@@ -122,7 +122,7 @@ describe('AtMenu + AtMenuItem + AtSubmenu', () => {
     expect(outer.find('.at-dropdown__popover').exists()).toBe(true)
 
     await item(wrapper, 'Three-One').trigger('click')
-    expect(wrapper.findComponent(AtMenu).emitted('on-select')).toEqual([['3-1']])
+    expect(wrapper.getComponent(AtMenu).emitted('on-select')).toEqual([['3-1']])
     expect(outer.classes()).not.toContain('at-menu__submenu--opened')
 
     await outer.trigger('mouseenter')

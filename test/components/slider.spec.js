@@ -31,7 +31,7 @@ describe('AtSlider', () => {
       data: () => ({ value: 0 }),
       template: '<at-slider v-model="value" />',
     })
-    const slider = wrapper.findComponent(AtSlider)
+    const slider = wrapper.getComponent(AtSlider)
 
     await mockTrack(wrapper).trigger('click', { clientX: 230 })
 

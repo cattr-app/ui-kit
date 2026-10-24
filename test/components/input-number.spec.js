@@ -19,7 +19,7 @@ describe('AtInputNumber', () => {
       data: () => ({ num: 1 }),
       template: '<at-input-number v-model="num" :step="0.3" />',
     })
-    const input = wrapper.findComponent(AtInputNumber)
+    const input = wrapper.getComponent(AtInputNumber)
 
     await wrapper.find('.at-input-number__up').trigger('click')
     expect(wrapper.vm.num).toBe(1.3)

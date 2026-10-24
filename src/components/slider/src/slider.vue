@@ -1,17 +1,5 @@
 <template>
   <div class="at-slider">
-    <!-- S InputNumber -->
-    <at-input-number
-      v-show="false"
-      v-model="inputValue"
-      class="at-slider__input"
-      :step="step"
-      :disabled="disabled"
-      :min="min"
-      :max="max"
-    ></at-input-number>
-    <!-- E InputNumber -->
-
     <!-- S slider track -->
     <div
       ref="slider"
@@ -56,14 +44,12 @@
 
 <script>
 import AtTooltip from '../../tooltip'
-import AtInputNumber from '../../input-number'
 
 const HIDE_DELAY = 200
 
 export default {
   name: 'AtSlider',
   components: {
-    AtInputNumber,
     AtTooltip,
   },
   props: {
@@ -94,7 +80,6 @@ export default {
       // local copy of modelValue: the dot follows it right away, without waiting
       // for the parent to pass the emitted value back
       currentValue: this.modelValue,
-      inputValue: this.modelValue,
       isHover: false,
       isDrag: false,
       startX: 0,
@@ -109,12 +94,6 @@ export default {
     },
   },
   watch: {
-    // value typed into the (hidden) AtInputNumber, comes in through its v-model
-    inputValue(val) {
-      const num = Number(val)
-      if (val === '' || val === null || isNaN(num) || num === this.currentValue) return
-      this.setPosition(this.toPercent(num))
-    },
     modelValue(val) {
       if (typeof val !== 'number' || isNaN(val) || val < this.min) {
         this.$emit('update:modelValue', this.min)
@@ -127,7 +106,6 @@ export default {
       }
 
       this.currentValue = val
-      this.inputValue = val
 
       // programmatic change (not an echo of our own emit): report it as 1.x did
       if (!this.isDrag && val !== this.oldValue) {
@@ -223,7 +201,6 @@ export default {
 
       if (value !== this.currentValue) {
         this.currentValue = value
-        this.inputValue = value
         this.$emit('update:modelValue', value)
       }
 

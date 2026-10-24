@@ -135,9 +135,6 @@ export default defineConfig({
       wrapperDiv: false,
       // the docs styles target `.at-markdown > section`
       transforms: {
-        // Stray control characters (e.g. \v in color.md) used to be dropped by the old HTML
-        // pipeline; the Vue 3 runtime throws on them inside attribute lists.
-        before: raw => raw.replace(/[\v\f]/g, ' '),
         after: html => `<section>${html}</section>`,
       },
       markdownOptions: { html: true, linkify: false, typographer: false, highlight },

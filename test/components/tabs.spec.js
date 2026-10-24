@@ -37,7 +37,7 @@ describe('AtTabs + AtTabPane', () => {
 
   it('emits update:modelValue and on-change with { index, name } on nav click', async () => {
     const wrapper = await mountTabs()
-    const tabs = wrapper.findComponent(AtTabs)
+    const tabs = wrapper.getComponent(AtTabs)
 
     await navItems(wrapper)[0].trigger('click')
 
@@ -53,7 +53,7 @@ describe('AtTabs + AtTabPane', () => {
 
     await navItems(wrapper)[2].trigger('click')
 
-    expect(wrapper.findComponent(AtTabs).emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.getComponent(AtTabs).emitted('update:modelValue')).toBeUndefined()
     expect(activeNav(wrapper)).toEqual([false, true, false])
   })
 
@@ -68,7 +68,7 @@ describe('AtTabs + AtTabPane', () => {
       },
       panes: `<at-tab-pane v-for="n in list" :key="n" :name="n" :label="n">{{ n }}</at-tab-pane>`,
     })
-    const tabs = wrapper.findComponent(AtTabs)
+    const tabs = wrapper.getComponent(AtTabs)
 
     await navItems(wrapper)[1].find('.at-tabs-nav__close').trigger('click')
     await nextTick()
