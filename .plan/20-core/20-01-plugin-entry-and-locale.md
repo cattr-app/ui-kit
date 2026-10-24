@@ -1,7 +1,7 @@
 ---
 id: 20-01
 title: Точка входа плагина (app.use), globalProperties, локаль без Vue.prototype
-status: todo
+status: done
 depends_on: [10-03]
 parallel: false
 model: opus
@@ -48,3 +48,10 @@ scripts/node.sh pnpm exec eslint src/index.js src/locale src/mixins src/componen
 - (из 10-01) Экспорты в `src/index.js` сейчас без префикса (`Button`, а не `AtButton`); changelog обещает `At*` — привести здесь.
 
 ## Заметки агента
+- Контракт для 20-03: `src/utils/context.js` → `CATTR_UI_KEY` (Symbol('cattr-ui'); `install` делает `app.provide(CATTR_UI_KEY, { app })`), `setCurrentApp(app)`, `getCurrentApp()` (последний app, вызвавший `app.use(CattrUI)`, иначе `null`).
+- `deepmerge` больше не нужен (vue-i18n merge удалён) → убран из `dependencies` и lockfile. `t()` подстановку `{name}` не делает: компоненты `values` не используют; `values` передаются только в хук. `i18n(null)` сбрасывает хук, `i18n(undefined)` оставляет текущий.
+- `version`: `define: { __CATTR_UI_VERSION__ }` в vite.config.js (работает в build и vitest; при использовании `src/` напрямую — `undefined`). `import pkg ... with { type: 'json' }` отброшен: тянул весь package.json в dist.
+- Сервисы с ленивой заглушкой (`createInstance` бросает `... not migrated to Vue 3 yet (plan 20-03)`): `message/src/message.js`, `notification/src/notic.js`, `loading-bar/src/loading-bar.js`, `modal/src/dialog.js`. Логика не мигрирована, `import Vue` в src больше нет.
+- Каталогов компонентов 47, не 49: 43 с `install` + 4 сервиса (`dialog`, `message`, `notification`, `loading-bar`) без него. Раньше `install` регистрировал функции Message/Dialog/Notification как компоненты (по `fn.name`) — теперь только 43 компонента.
+- Default export теперь `{ install, version }` (без `locale`/`i18n`/компонентов) — записано в changelog.
+- `import('./dist/index.js')` в Node больше не падает. `mount.spec` с `<at-button>` проходит; предупреждение про `this.style` в button.vue → w1-button. eslint по `src/mixins` даёт старую ошибку `require` в `mixins/popover.js` (20-04), `message.js` `no-self-assign` (20-03). `pnpm lint` 89 errors / 6 warnings до и после.

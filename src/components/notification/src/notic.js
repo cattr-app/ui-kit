@@ -1,7 +1,11 @@
-import Vue from 'vue'
 import NotificationVue from './notification.vue'
 
-const NotificationConstructor = Vue.extend(NotificationVue)
+// The Vue 2 constructor was dropped in 20-01 so that importing the library does not fail.
+// The service itself is migrated to createVNode/render in 20-03 / 30-w3-*.
+// eslint-disable-next-line no-unused-vars
+const createInstance = (component, options) => {
+  throw new Error('Notification is not migrated to Vue 3 yet (plan 20-03)')
+}
 
 const noticeType = ['success', 'error', 'warning', 'info']
 const instances = []
@@ -10,7 +14,7 @@ let seed = 1
 let zindexSeed = 1010
 
 const Notification = options => {
-  if (Vue.prototype.$isServer) return
+  if (typeof window === 'undefined') return
   options = options || {}
 
   const onClose = options.onClose
@@ -20,7 +24,7 @@ const Notification = options => {
     Notification.close(id, onClose)
   }
 
-  instance = new NotificationConstructor({
+  instance = createInstance(NotificationVue, {
     data: options,
   })
 

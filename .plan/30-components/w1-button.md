@@ -38,5 +38,6 @@ scripts/node.sh pnpm build
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
 ## Найдено по ходу
+- (из 20-01) `button.vue` `styleList` читает `this.style` (не prop) → `[Vue warn]: Property "style" was accessed during render` в `test/helpers/mount.spec.js`; в Vue 3 `style` — fallthrough attr (`this.$attrs.style`).
 
 ## Заметки агента

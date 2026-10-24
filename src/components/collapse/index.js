@@ -1,7 +1,7 @@
 import Collapse from './src/collapse.vue'
 
-Collapse.install = function (Vue) {
-  Vue.component(Collapse.name, Collapse)
+Collapse.install = app => {
+  app.component(Collapse.name, Collapse)
 }
 
 export default Collapse

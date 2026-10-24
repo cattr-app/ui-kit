@@ -39,5 +39,6 @@ scripts/node.sh pnpm build
 
 ## Найдено по ходу
 - (из 10-02) `message.js`: `options.icon = options.icon` (`no-self-assign`) не удалён — создаёт собственный ключ `icon: undefined` в `data`, что перекрывает дефолт из `message.vue`; поведение решить при переписывании сервиса.
+- (из 20-01) Контракт: `src/utils/context.js` → `CATTR_UI_KEY` (Symbol, `app.provide(CATTR_UI_KEY, { app })`), `setCurrentApp(app)`, `getCurrentApp()` (→ последний app с `app.use(CattrUI)` или `null`). В `message.js`, `notic.js`, `loading-bar.js`, `dialog.js` `Vue.extend` заменён заглушкой `createInstance(component, options)`, которая бросает `<Service> is not migrated to Vue 3 yet (plan 20-03)`; `$isServer` → `typeof window === 'undefined'`, в `dialog.js` `Vue.nextTick` → `nextTick` из `vue`. Сервисы пока без `install` — `src/index.js` сам пишет их в `globalProperties`.
 
 ## Заметки агента

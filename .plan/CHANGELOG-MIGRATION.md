@@ -15,12 +15,22 @@
 
 ## Подключение
 
-- `[TODO 20-01]` Было: `Vue.use(CattrUI, { locale, i18n })`. Стало: `app.use(CattrUI, { locale, i18n })`.
-  Авторегистрация через `window.Vue` удалена.
-- `[TODO 20-01]` Глобальные сервисы доступны как `app.config.globalProperties.$Message/$Modal/$Notify/$Loading` (в Options API `this.$Message` работает как раньше)
+- Было: `Vue.use(CattrUI, { locale, i18n })`. Стало: `app.use(CattrUI, { locale, i18n })` (`createApp(App).use(CattrUI, opts)`).
+  Авторегистрация через `window.Vue` удалена. Плагин можно ставить только после `createApp`, глобального `Vue` больше нет.
+- Глобальные сервисы доступны как `app.config.globalProperties.$Message/$Modal/$Notify/$Loading` (в Options API `this.$Message` работает как раньше)
   и как именованные экспорты `import { Message, Dialog, Notification, LoadingBar } from '@amazingcat/cattr-ui'` для `<script setup>`.
-- `[TODO 20-01]` i18n-хук: `CattrUI.i18n(fn)` вызывается с `(key, values)`; для vue-i18n 11 передавать `(key, values) => i18n.global.t(key, values)`.
-  Автоопределение `Vue.locale`/`$t` через прототип удалено.
+- Именованные экспорты компонентов переименованы под имя компонента: было `import { Button, Select } from '@amazingcat/cattr-ui'`,
+  стало `import { AtButton, AtSelect } from '@amazingcat/cattr-ui'` (`AtAlert` … `AtTooltip`, 43 шт., имя экспорта = `component.name`).
+  Сервисы экспортируются без префикса: `Message`, `Dialog`, `Notification`, `LoadingBar`. Также экспортируются `install`, `version`, `locale`, `i18n`.
+- Default export сокращён до `{ install, version }`: `CattrUI.Button`, `CattrUI.locale(...)`, `CattrUI.i18n(...)` и т.п. больше нет.
+  Что править: компоненты брать именованными экспортами, локаль/хук передавать в `app.use(CattrUI, { locale, i18n })`
+  или вызывать `import { locale, i18n } from '@amazingcat/cattr-ui'`.
+- Отдельная регистрация компонента: `app.use(AtButton)` (`AtButton.install = app => app.component(AtButton.name, AtButton)`), вместо `Vue.use(Button)`.
+- i18n-хук: `fn(key, values)`; если вернул `null`/`undefined`, берётся строка из встроенной локали (`en-US` или переданной в `locale`).
+  Для vue-i18n 11: `app.use(CattrUI, { i18n: (key, values) => i18n.global.t(key, values) })`.
+  Учтите, что `i18n.global.t` для отсутствующего ключа возвращает сам ключ, а не `undefined`, — тогда fallback на встроенную локаль не сработает;
+  либо добавить ключи `at.*` в сообщения vue-i18n, либо проверять `i18n.global.te(key)` и возвращать `undefined`.
+  Автоопределение `Vue.locale`/`$t` через прототип и слияние встроенной локали с сообщениями vue-i18n (deepmerge) удалены; зависимость `deepmerge` убрана.
 
 ## v-model
 
