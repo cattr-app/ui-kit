@@ -1,11 +1,11 @@
 /**
  * popover mixins
  * https://github.com/yuche/vue-strap/blob/master/src/utils/popoverMixins.js
+ *
+ * The host component provides `ref="trigger"` (element the listeners are bound to) and
+ * `ref="popover"` (positioned element). `v-model` controls `show`.
  */
-let $
-if (typeof window !== 'undefined') {
-  $ = require('../utils/NodeList.js').default
-}
+const HIDE_DELAY = 200
 
 export default {
   props: {
@@ -23,19 +23,41 @@ export default {
       type: String,
       default: 'top',
     },
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
   },
+  emits: ['update:modelValue', 'toggle'],
   data() {
     return {
-      show: this.value,
+      show: this.modelValue,
       position: {
         top: 0,
         left: 0,
       },
     }
+  },
+  watch: {
+    modelValue(value) {
+      if (value === this.show) return
+      // mark the change as coming from the parent so it is not echoed back
+      this.popoverSyncing = true
+      this.show = value
+    },
+    show(value) {
+      if (this.popoverSyncing) {
+        this.popoverSyncing = false
+        return
+      }
+      this.$emit('update:modelValue', value)
+    },
+  },
+  created() {
+    // plain instance fields, not reactive
+    this.popoverTimer = null
+    this.popoverSyncing = false
+    this.popoverListeners = []
   },
   methods: {
     toggle() {
@@ -54,17 +76,19 @@ export default {
     },
     handleMouseEnter() {
       this.showPopover()
-      clearTimeout(this._timer)
+      clearTimeout(this.popoverTimer)
     },
     handleMouseLeave() {
-      this._timer = setTimeout(() => {
+      clearTimeout(this.popoverTimer)
+      this.popoverTimer = setTimeout(() => {
         this.hidePopover()
-      }, 200)
+      }, HIDE_DELAY)
     },
     setPopoverPosition() {
       this.$nextTick(() => {
         const popover = this.$refs.popover
         const trigger = this.$refs.trigger
+        if (!popover || !trigger) return
 
         switch (this.placement) {
           case 'top':
@@ -131,35 +155,39 @@ export default {
         popover.style.left = `${this.position.left}px`
       })
     },
-    doDestory() {
-      if (this._trigger) {
-        $(this._trigger).off()
-      }
+    // Called by host templates on `@after-leave`. Listeners must survive a hide (the
+    // popover can be shown again), they are removed in beforeUnmount.
+    doDestory() {},
+    addTriggerListener(el, event, handler) {
+      el.addEventListener(event, handler)
+      this.popoverListeners.push([el, event, handler])
+    },
+    removeTriggerListeners() {
+      this.popoverListeners.forEach(([el, event, handler]) => {
+        el.removeEventListener(event, handler)
+      })
+      this.popoverListeners = []
     },
   },
   mounted() {
     const trigger = this.$refs.trigger
-    // const parent = this.$refs.parent
-    // const events = {
-    //   hover: 'mouseenter mouseleave',
-    //   focus: 'focus blur'
-    // }
-    // let showEvent = events[this.trigger] || 'click'
 
     if (!trigger) {
       return console.error('Could not find trigger ref in your component that uses popovermixin')
     }
 
-    this._trigger = trigger
-
     if (this.trigger === 'click') {
-      $(trigger).on('click', this.toggle)
+      this.addTriggerListener(trigger, 'click', this.toggle)
     } else if (this.trigger === 'hover') {
-      $(trigger).on('mouseenter', this.handleMouseEnter)
-      $(trigger).on('mouseleave', this.handleMouseLeave)
+      this.addTriggerListener(trigger, 'mouseenter', this.handleMouseEnter)
+      this.addTriggerListener(trigger, 'mouseleave', this.handleMouseLeave)
     } else if (this.trigger === 'focus') {
-      $(trigger).on('focus', this.showPopover)
-      $(trigger).on('blur', this.hidePopover)
+      this.addTriggerListener(trigger, 'focus', this.showPopover)
+      this.addTriggerListener(trigger, 'blur', this.hidePopover)
     }
+  },
+  beforeUnmount() {
+    clearTimeout(this.popoverTimer)
+    this.removeTriggerListeners()
   },
 }

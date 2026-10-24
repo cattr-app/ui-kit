@@ -1,7 +1,7 @@
 ---
 id: 20-04
 title: Директива clickoutside, CollapseTransition, mixin popover под Vue 3
-status: todo
+status: done
 depends_on: [20-01]
 parallel: true
 model: opus
@@ -40,3 +40,10 @@ scripts/node.sh pnpm build
 - (из 10-01) `src/mixins/popover.js` подключает `NodeList.js` через `require` под `typeof window` — rolldown это пережёвывает, но при переписывании mixin заменить на обычный import.
 
 ## Заметки агента
+- Mixin: prop `modelValue`, `emits: ['update:modelValue', 'toggle']`, `watch(show)` эмитит `update:modelValue` на любое изменение `show`, кроме пришедшего из `modelValue` (флаг `popoverSyncing`, без эха). Поля `popoverTimer/popoverSyncing/popoverListeners` — нереактивные, в `created`. Changelog: Tooltip/Popover.
+- `doDestory` оставлен пустым: в старом коде `$(el).off()` без аргументов был no-op (баг NodeList), реальное снятие слушателей — в `beforeUnmount`. 30-*: можно убрать `@after-leave="doDestory"` из шаблонов вместе с методом.
+- 30-w1-tooltip/popover: `popover.vue` содержит мёртвый `watch.value` — удалить (mixin сам следит за `modelValue`); проверено smoke-тестом, `v-model` на AtTooltip/AtPopover работает в обе стороны, клик снаружи закрывает и обновляет `v-model`.
+- 30-w2-dropdown: от mixin только `show`/`trigger`; объявить `emits` для `on-dropdown-command` (mixin уже объявляет `emits`), убрать `$on`. AtDropdown/AtSelect сейчас падают на `this.$on` (не из-за 20-04).
+- 30-w3-select: **конфликт имён** — mixin объявляет `modelValue: Boolean` для открытия, а Select переводит свой `v-model` выбора на `modelValue`. Select должен переопределить prop `modelValue` и не опираться на `show` mixin'а (иначе `show` инициализируется выбранным значением, а `watch(show)` эмитит `update:modelValue` с булевым). Вариант: не подключать mixin в select.vue, а брать только `setPopoverPosition`. `select/src/dropdown.vue` без `ref="trigger"` — `console.error` в mounted (как и раньше).
+- Тест transition: VTU по умолчанию стабит `<transition>` → `global.stubs.transition: false`; `scrollHeight` застаблен (50). Проверены все 6 хуков: before/enter синхронно после `nextTick`, after* — через fallback Vue (нет CSS-длительности → resolve на следующем кадре), `transitionend` не эмулировался.
+- `grep functional: true src` не пуст: `src/components/table/src/render.js` (30-w4-table). Lint: до 89 err/6 warn, после 88/6.
