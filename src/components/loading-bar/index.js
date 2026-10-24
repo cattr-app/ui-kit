@@ -1,35 +1,19 @@
-import LoadingBar from './src/loading-bar'
+import LoadingBarClass from './src/loading-bar.js'
 
-let loadingBarInstance
+const HIDE_DELAY = 800
+
+let loadingBarInstance = null
 let width = 2
-let timer
+let timer = null
+let hideTimer = null
 
 function getLoadingBarInstance() {
-  loadingBarInstance = loadingBarInstance || new LoadingBar({ width })
+  loadingBarInstance = loadingBarInstance || new LoadingBarClass({ width })
   return loadingBarInstance
 }
 
 function update(options) {
-  const instance = getLoadingBarInstance()
-
-  instance.update(options)
-}
-
-function hide() {
-  setTimeout(() => {
-    update({
-      percent: 0,
-      show: false,
-    })
-    destroy()
-  }, 800)
-}
-
-function destroy() {
-  const instance = getLoadingBarInstance()
-  clearTimer()
-  loadingBarInstance = null
-  instance.destroy()
+  getLoadingBarInstance().update(options)
 }
 
 function clearTimer() {
@@ -39,9 +23,34 @@ function clearTimer() {
   }
 }
 
-export default {
+function clearHideTimer() {
+  if (hideTimer) {
+    clearTimeout(hideTimer)
+    hideTimer = null
+  }
+}
+
+function hide() {
+  clearHideTimer()
+  hideTimer = setTimeout(() => {
+    hideTimer = null
+    destroy()
+  }, HIDE_DELAY)
+}
+
+function destroy() {
+  clearTimer()
+  clearHideTimer()
+  if (!loadingBarInstance) return
+  loadingBarInstance.destroy()
+  loadingBarInstance = null
+}
+
+const LoadingBar = {
   start() {
     if (timer) return
+    // A pending hide from a previous finish()/error() must not remove the new bar.
+    clearHideTimer()
 
     let percent = 0
 
@@ -65,6 +74,7 @@ export default {
   },
   update(percent) {
     clearTimer()
+    clearHideTimer()
     update({
       percent,
       status: 'success',
@@ -89,9 +99,18 @@ export default {
     })
     hide()
   },
-  config(options) {
+  config(options = {}) {
     if (options.width) {
       width = options.width
+      loadingBarInstance?.update({ width })
     }
   },
+  /** Remove the bar immediately and stop all timers. */
+  destroy,
 }
+
+LoadingBar.install = app => {
+  app.config.globalProperties.$Loading = LoadingBar
+}
+
+export default LoadingBar

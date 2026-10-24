@@ -1,39 +1,37 @@
 import LoadingBarVue from './loading-bar.vue'
+import { mountService } from '../../../utils/mount-service.js'
 
-// The Vue 2 constructor was dropped in 20-01 so that importing the library does not fail.
-// The service itself is migrated to createVNode/render in 20-03 / 30-w3-*.
-// eslint-disable-next-line no-unused-vars
-const createInstance = (component, options) => {
-  throw new Error('LoadingBar is not migrated to Vue 3 yet (plan 20-03)')
+const STATE_KEYS = ['percent', 'status', 'show', 'width']
+
+const pick = options => {
+  const patch = {}
+  for (const key of STATE_KEYS) {
+    if (options[key] !== undefined) patch[key] = options[key]
+  }
+  return patch
 }
-let instance
 
+/**
+ * A single loading bar element mounted into `document.body`.
+ * `options`: initial `{ percent, status, show, width }` (props of `AtLoadingBar`).
+ */
 class LoadingBar {
-  constructor(options) {
-    options = options || {}
-
-    instance = createInstance(LoadingBarVue, {
-      data: options,
-    })
-
-    instance.vm = instance.$mount()
-    document.body.appendChild(instance.vm.$el)
+  constructor(options = {}) {
+    // `null` without a DOM (SSR): update/destroy become no-ops.
+    this.service = mountService(LoadingBarVue, pick(options))
   }
 
-  update(newOptions) {
-    if (newOptions.percent) {
-      instance.percent = newOptions.percent
-    }
-    if (newOptions.status) {
-      instance.status = newOptions.status
-    }
-    if (newOptions.show) {
-      instance.show = newOptions.show
-    }
+  get el() {
+    return this.service?.el ?? null
+  }
+
+  update(newOptions = {}) {
+    this.service?.update(pick(newOptions))
   }
 
   destroy() {
-    document.body.removeChild(instance.vm.$el)
+    this.service?.unmount()
+    this.service = null
   }
 }
 

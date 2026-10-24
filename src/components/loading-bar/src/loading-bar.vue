@@ -16,13 +16,11 @@
 <script>
 export default {
   name: 'AtLoadingBar',
-  data() {
-    return {
-      show: false,
-      status: 'success',
-      percent: 0,
-      width: 2,
-    }
+  props: {
+    percent: { type: Number, default: 0 },
+    status: { type: String, default: 'success' },
+    show: { type: Boolean, default: false },
+    width: { type: Number, default: 2 },
   },
   computed: {
     barStyle() {
