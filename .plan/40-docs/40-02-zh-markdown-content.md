@@ -1,7 +1,7 @@
 ---
 id: 40-02-zh
 title: Обновить примеры в markdown под Vue 3 API (zh)
-status: in-progress
+status: done
 depends_on: [40-01, 30-w4-table]
 parallel: false
 model: opus  # переопределено при ревью 40-01: правка демо требует решений (битый HTML, render-примеры table, menu.md), не механика
@@ -45,4 +45,13 @@ scripts/node.sh pnpm build:docs
 - (из 40-01) Падают в рантайме: `table.md` en/zh — `render: (h, params) => …` (`h is not a function`, в Vue 3 `h` импортируется из `vue`). `color.md` en/zh:25 — символ `\v` перед `class` (сейчас заменяется на пробел в `transforms.before` в `vite.docs.config.js`; после правки контента можно убрать).
 - (из 40-01) Молча ломаются (`slot="…"` в Vue 3 — обычный атрибут, контент уходит в default-слот): card, collapse, dropdown, input, menu, modal, popover, switch, tabs, timeline, tooltip (en и zh), а также в тексте changelog. `new Vue`/`Vue.use`/`Vue.prototype` в примерах кода (не живых демо): installation, i18n, introduction, quickstart, message, modal, notification, loadingbar.
 
+- (из 40-02-zh) `app.use(Dialog)` без `app.use(CattrUI)` не работает: `Dialog.install` (`src/components/modal/src/dialog.js:218`) только кладёт `$Modal` в `globalProperties` и не вызывает `setCurrentApp`, а `modal.vue` использует глобальные `<at-button>`/`<at-input>` (локальных импортов нет, `src/components/modal/src/modal.vue:63`) — у `mountService` нет `appContext`, кнопки не резолвятся. То же для `Message/Notification/LoadingBar.install` (там некритично: `<at-*>` не используются). В quickstart.md (zh) добавлено предупреждение; починка — 50-01 или отдельная задача.
+- (из 40-02-zh) `docs/markdown/zh/menu.md` содержит раздел «每次只展开一个子菜单» дважды (стр. ~144 и ~238, в en — один раз). Унаследовано, оставлено как есть.
+
 ## Заметки агента
+- Демо приведены к варианту en (сверено по коммиту `docs(en)`: структура тегов во всех `:::demo` совпадает, кроме унаследованного дубля в menu.md). Описательный текст — на китайском.
+- Переписаны installation/quickstart/i18n/introduction (ESM, `createApp().use(CattrUI, { locale, i18n })`, стили из `src/stylesheet/src/index.scss`, локали `@amazingcat/cattr-ui/locale/<lang>`, оговорка про `i18n.global.t`/`te`); CDN/UMD и `cattr-ui-style` убраны. changelog.md: раздел «2.0.0（Vue 3）» со ссылкой на `blob/main/CHANGELOG.md` (файла пока нет — появится в 50-03).
+- Таблицы props/events/slots сверены с `props`/`emits` компонентов: `value`→`modelValue`, добавлены `update:*`, Pagination `update:current/update:pageSize`, `toggle` у Tooltip/Popover/Dropdown, `$Modal` опции/титулы/`callback`, Notification тип по умолчанию пустой и `closeAll`, Tabs без `unclosable`, имена `'0','1'`, Table: колонки, `on-sort-change`, `rowClick`, слот `emptyText`.
+- Проверка: временный vitest-спек (не закоммичен) монтирует все 40 `zh/*.md` с memory-router, vue-i18n и CattrUI, ловит `console.warn/error`, `warnHandler`, `errorHandler`, `.demo-error`, плюс прокликивает кнопки/вкладки/переключатели/модалки — 0 предупреждений (на исходных файлах тот же спек ловит collapse/dropdown/table).
+- `build:docs`: для `zh/` ни одного `does not compile`. Обход `\v` в `vite.docs.config.js` не трогал (в zh символа больше нет).
+- Замечание к демо (как в en): `:model-value="[0, 1]"` в collapse.md — новый массив на каждый ре-рендер страницы, после клика в демо с `v-model="value"` первое демо сбрасывается в исходное состояние. Не баг библиотеки, но лучше перейти на `v-model` с данными в обоих языках.

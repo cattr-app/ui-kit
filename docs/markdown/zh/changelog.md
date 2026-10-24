@@ -1,6 +1,15 @@
 
 # 更新日志
 
+## 2.0.0（Vue 3）
+
+- 组件库迁移到 `Vue 3.5`（`peerDependencies`: `vue ^3.5`），不再支持 Vue 2.x；以 ESM 格式发布，移除 UMD 版本和 CDN 引入方式
+- 通过 `createApp(App).use(CattrUI, { locale, i18n })` 安装；组件以 `AtButton`、`AtSelect` 等具名导出，服务以 `Message`、`Dialog`、`Notification`、`LoadingBar` 导出
+- 所有 `v-model` 组件改为 `modelValue` 属性 + `update:modelValue` 事件；`Tabs`、`Collapse`、`Tooltip`、`Popover`、`Dropdown` 的 `v-model` 变为双向，`Pagination` 支持 `v-model:current` / `v-model:page-size`
+- 插槽改用 Vue 3 语法（`<template #title>`），移除 `native` 修饰符；`Table` 列的 `render` 签名改为 `render({ item, column, index })`，`h` 从 `vue` 导入
+- i18n 钩子改为 `(key, values) => i18n.global.t(key, values)`（vue-i18n 11）；移除 `Form`、`FormItem`
+- 完整的不兼容变更列表及迁移方法见 [CHANGELOG.md](https://github.com/cattr-app/ui-kit/blob/main/CHANGELOG.md)
+
 > AT UI 分叉之前的历史：以下记录为上游 AT UI 版本的更新内容。
 
 ----
@@ -18,7 +27,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.3.0</p>
       <p class="time"><span>2017-11-10</span></p>
       <ul class="content">
@@ -39,7 +48,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.2.0</p>
       <p class="time"><span>2017-11-01</span></p>
       <ul class="content">
@@ -79,7 +88,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.1.0</p>
       <p class="time"><span>2017-08-01</span></p>
       <ul class="content">
@@ -88,7 +97,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.0.0</p>
       <p class="time"><span>2017-06-27</span></p>
       <ul class="content">

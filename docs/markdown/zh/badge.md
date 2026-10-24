@@ -114,7 +114,7 @@ Info <at-badge value="123" status="info"></at-badge>
 | value | 绑定的值 | String / Number | - | - |
 | maxNum | 允许的最大值，超出则用 `+` 号显示 | Number | - | 99 |
 | dot | 是否显示为小红点 | Boolean | - | false |
-| status | 徽标的类型 | String | `success`, `warning`, `info` | - |
+| status | 徽标的类型 | String | `error`, `success`, `warning`, `info` | `error` |
 | show | 是否显示徽标 | Boolean | - | true |
 
 <script>

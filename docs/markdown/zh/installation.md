@@ -2,69 +2,50 @@
 
 ----
 
+## 环境要求
+
+- `Vue` 3.5 及以上版本（`peerDependencies`: `vue ^3.5`），不再支持 Vue 2.x
+- 组件库以 ESM 格式发布，需要支持 ESM 的构建工具，如 `Vite` 或 `webpack 5`
+
 ## 使用 npm 安装
 
-推荐使用 `npm` 的方式进行开发，享受 `node` 生态圈和 `webpack` 工具链带来的便利。通过 `npm` 安装的模块包，我们可以轻松的使用 `import` 或者 `require` 的方式引用
+推荐使用 `npm` 或 `pnpm` 的方式进行开发，享受 `node` 生态圈和 `Vite` 工具链带来的便利。通过 `npm` 安装的模块包，可以使用 `import` 的方式引用
 
 ```bash
-npm install @amazingcat/cattr-ui
-
-npm install cattr-ui-style
+npm install vue @amazingcat/cattr-ui
 ```
 
-## 浏览器标签引入
+组件样式随组件库一起发布，无需安装单独的样式包。
 
-可以采用传统的 `<script>` 和 `<link>` 标签的方式引入资源，并且全局使用 `Cattr UI`。
-
-可以在 [jsDelivr](https://www.jsdelivr.com/package/npm/@amazingcat/cattr-ui) 上找到最新版本的资源文件，然后在页面中直接引入
-
-```html
-<!-- 引入Vue -->
-<script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
-<!-- 引入样式 -->
-<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/cattr-ui-style/css/at.min.css">
-<!-- 引入组件库 -->
-<script src="//cdn.jsdelivr.net/npm/@amazingcat/cattr-ui/dist/at.min.js"></script>
-```
+> 2.0 起不再提供 UMD 版本（`dist/at.min.js`）和 CDN `<script>` 引入方式，也没有全局变量 `at`。
 
 #### 示例：
 
-通过浏览器资源标签引入的方式，我们可以迅速用 `Cattr UI` 写出一个 DEMO 页面，可复制下列代码或者直接查看 [示例页面](https://jsbin.com/dezafos/edit?html,output)
+在项目的入口文件中创建应用并安装 `Cattr UI`：
+
+```js
+// main.js
+import { createApp } from 'vue'
+import CattrUI from '@amazingcat/cattr-ui'
+import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'
+import App from './App.vue'
+
+createApp(App).use(CattrUI).mount('#app')
+```
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>Cattr UI Example</title>
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/cattr-ui-style/css/at.min.css">
-  <script src="//cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/@amazingcat/cattr-ui/dist/at.min.js"></script>
-  <style>
-    #app {
-      display: flex;
-      height: 100%;
-      justify-content: center;
-      align-items: center;
-    }
-  </style>
-</head>
-<body>
-  <div id="app">
-    <at-button @click="showMessage">Show message</at-button>
-  </div>
+<!-- App.vue -->
+<template>
+  <at-button @click="showMessage">Show message</at-button>
+</template>
 
-  <script>
-    new Vue({
-      el: '#app',
-      methods: {
-        showMessage: function () {
-          this.$Message('Thanks for using Cattr UI')
-        }
+<script>
+  export default {
+    methods: {
+      showMessage () {
+        this.$Message('Thanks for using Cattr UI')
       }
-    })
-  </script>
-</body>
-</html>
+    }
+  }
+</script>
 ```

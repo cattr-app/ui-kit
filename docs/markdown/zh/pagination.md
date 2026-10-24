@@ -90,9 +90,9 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |-----------------------------  |-------- |
-| current | 当前页码 | Number | - | 1 |
+| current | 当前页码，可通过 `v-model:current` 双向绑定 | Number | - | 1 |
 | total | 总的数据条目数 | Number | - | 0 |
-| page-size | 每页最多展示的条目数 | Number | - | 10 |
+| page-size | 每页最多展示的条目数，可通过 `v-model:page-size` 双向绑定 | Number | - | 10 |
 | page-size-opts | 改变每页显示数量的 `select` 选择框配置项 | Array | - | [10, 20, 30, 40] |
 | show-total | 是否显示总条目数 | Boolean | - | false |
 | show-sizer | 是否显示每页展示数量的 `select` 选择框 | Boolean | - | false |
@@ -106,6 +106,14 @@
 |---------- |-------------- |---------- |
 | page-change | 页码改变时触发的回调 | 页码 |
 | pagesize-change | 切换每页显示的条数时触发的回调 | 每页的条目数 |
+| update:current | 页码改变时触发（用于 `v-model:current`） | 页码 |
+| update:pageSize | 切换每页显示的条数时触发（用于 `v-model:page-size`） | 每页的条目数 |
+
+## Pagination slot
+
+| 名称      | 说明 |
+|----------|-------- |
+| total | 自定义总条目数的显示内容（需设置 `show-total`） |
 
 <style lang="scss" scoped>
   .at-pagination + .at-pagination {

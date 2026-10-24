@@ -13,23 +13,27 @@
 ```html
 <at-dropdown>
   <span>下拉菜单 <i class="icon icon-chevron-down"></i></span>
-  <at-dropdown-menu slot="menu">
-    <at-dropdown-item>深圳</at-dropdown-item>
-    <at-dropdown-item>广州</at-dropdown-item>
-    <at-dropdown-item disabled>上海</at-dropdown-item>
-    <at-dropdown-item divided>北京</at-dropdown-item>
-    <at-dropdown-item>杭州</at-dropdown-item>
-  </at-dropdown-menu>
+  <template #menu>
+    <at-dropdown-menu>
+      <at-dropdown-item>深圳</at-dropdown-item>
+      <at-dropdown-item>广州</at-dropdown-item>
+      <at-dropdown-item disabled>上海</at-dropdown-item>
+      <at-dropdown-item divided>北京</at-dropdown-item>
+      <at-dropdown-item>杭州</at-dropdown-item>
+    </at-dropdown-menu>
+  </template>
 </at-dropdown>
 <at-dropdown>
   <at-button size="small">下拉菜单 <i class="icon icon-chevron-down"></i></at-button>
-  <at-dropdown-menu slot="menu">
-    <at-dropdown-item>深圳</at-dropdown-item>
-    <at-dropdown-item>广州</at-dropdown-item>
-    <at-dropdown-item disabled>上海</at-dropdown-item>
-    <at-dropdown-item divided>北京</at-dropdown-item>
-    <at-dropdown-item>杭州</at-dropdown-item>
-  </at-dropdown-menu>
+  <template #menu>
+    <at-dropdown-menu>
+      <at-dropdown-item>深圳</at-dropdown-item>
+      <at-dropdown-item>广州</at-dropdown-item>
+      <at-dropdown-item disabled>上海</at-dropdown-item>
+      <at-dropdown-item divided>北京</at-dropdown-item>
+      <at-dropdown-item>杭州</at-dropdown-item>
+    </at-dropdown-menu>
+  </template>
 </at-dropdown>
 ```
 :::
@@ -41,22 +45,26 @@
 :::demo
 ```html
 <at-dropdown>
-  <at-button size="small">Hover 菜单 <i class="icon icon-chevron-down"></at-button>
-  <at-dropdown-menu slot="menu">
-    <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
-    <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
-    <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
-    <at-dropdown-item name="beijin" divided>北京</at-dropdown-item>
-  </at-dropdown-menu>
+  <at-button size="small">Hover 菜单 <i class="icon icon-chevron-down"></i></at-button>
+  <template #menu>
+    <at-dropdown-menu>
+      <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
+      <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
+      <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
+      <at-dropdown-item name="beijin" divided>北京</at-dropdown-item>
+    </at-dropdown-menu>
+  </template>
 </at-dropdown>
 <at-dropdown trigger="click">
-  <at-button size="small">Click 菜单 <i class="icon icon-chevron-down"></at-button>
-  <at-dropdown-menu slot="menu">
-    <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
-    <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
-    <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
-    <at-dropdown-item name="beijin" divided>北京</at-dropdown-item>
-  </at-dropdown-menu>
+  <at-button size="small">Click 菜单 <i class="icon icon-chevron-down"></i></at-button>
+  <template #menu>
+    <at-dropdown-menu>
+      <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
+      <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
+      <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
+      <at-dropdown-item name="beijin" divided>北京</at-dropdown-item>
+    </at-dropdown-menu>
+  </template>
 </at-dropdown>
 ```
 :::
@@ -68,13 +76,15 @@
 :::demo
 ```html
 <at-dropdown placement="bottom-right">
-  <at-button size="small">Hover 菜单 <i class="icon icon-chevron-down"></at-button>
-  <at-dropdown-menu slot="menu">
-    <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
-    <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
-    <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
-    <at-dropdown-item name="beijin" divided>北京</at-dropdown-item>
-  </at-dropdown-menu>
+  <at-button size="small">Hover 菜单 <i class="icon icon-chevron-down"></i></at-button>
+  <template #menu>
+    <at-dropdown-menu>
+      <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
+      <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
+      <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
+      <at-dropdown-item name="beijin" divided>北京</at-dropdown-item>
+    </at-dropdown-menu>
+  </template>
 </at-dropdown>
 ```
 :::
@@ -86,12 +96,14 @@
 :::demo
 ```html
 <at-dropdown placement="bottom-right" @on-dropdown-command="handleCommand">
-  <at-button size="small">Hover 菜单 <i class="icon icon-chevron-down"></at-button>
-  <at-dropdown-menu slot="menu">
-    <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
-    <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
-    <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
-  </at-dropdown-menu>
+  <at-button size="small">Hover 菜单 <i class="icon icon-chevron-down"></i></at-button>
+  <template #menu>
+    <at-dropdown-menu>
+      <at-dropdown-item name="shenzhen">深圳</at-dropdown-item>
+      <at-dropdown-item name="guangzhou">广州</at-dropdown-item>
+      <at-dropdown-item name="shanghai" disabled>上海</at-dropdown-item>
+    </at-dropdown-menu>
+  </template>
 </at-dropdown>
 ```
 :::
@@ -102,18 +114,28 @@
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | trigger | 触发 `Dropdown` 的方式 | String | `click`, `hover`, `focus` | `hover` |
 | placement | 下拉框的对齐方式 | String | `top`, `top-left`, `top-right`, `bottom`, `bottom-left`, `bottom-right` | `bottom` |
+| modelValue | 是否显示下拉菜单，可使用 `v-model` 双向绑定 | Boolean | - | false |
 
 ## Dropdown 事件
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| on-dropdown-command | 菜单项点击的时候触发 | 点击的菜单的 `name` 值 |
+| on-dropdown-command | 菜单项点击的时候触发（禁用的菜单项不触发），之后菜单关闭 | 点击的菜单的 `name` 值 |
+| update:modelValue | 下拉菜单显示或隐藏时触发（用于 `v-model`） | 是否显示 |
+| toggle | 以 `click` 方式触发时，点击切换显示状态后触发 | 是否显示 |
+
+## Dropdown slot
+
+| 名称      | 说明 |
+|----------|-------- |
+| - | 触发下拉菜单的元素 |
+| menu | 下拉菜单，使用 `<template #menu>` 包裹 `at-dropdown-menu` |
 
 ## DropdownItem 参数
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| name | 菜单的值 | String | - | - |
+| name | 菜单的值 | String / Number | - | - |
 | disabled | 是否禁用 | Boolean | - | false |
 | divided | 是否添加分割线 | Boolean | - | false |
 

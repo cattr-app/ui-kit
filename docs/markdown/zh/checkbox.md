@@ -46,21 +46,31 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| label | 选中状态的值 | String | - | - |
+| modelValue | 独立使用时的选中状态，可通过 `v-model` 绑定 | Boolean | - | false |
+| label | 选中状态的值（在多选框组中使用） | String / Number / Boolean | - | - |
+| name | 原生 `name` 属性 | String | - | - |
 | disabled | 是否禁用按钮 | Boolean | - | false |
-| checked | 是否已勾选 | Boolean | - | false |
+| checked | 是否已勾选（仅独立使用时有效，在多选框组中请通过组的 `modelValue` 控制） | Boolean | - | false |
+
+## Checkbox Group 参数
+
+| 参数      | 说明          | 类型      | 可选值                           | 默认值  |
+|---------- |-------------- |---------- |--------------------------------  |-------- |
+| modelValue | 已勾选的多选框的 `label` 数组，可通过 `v-model` 绑定 | Array | - | [] |
 
 ## Checkbox 事件
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| on-change | 绑定的值变化时触发 | 选中的按钮的 label 值 |
+| update:modelValue | 独立使用时，选中状态变化时触发（用于 `v-model`） | `true` / `false` |
+| on-change | 独立使用时，选中状态变化时触发（在多选框组中不触发，请监听组的事件） | `true` / `false` |
 
 ## Checkbox Group 事件
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| on-change | 绑定的值变化时触发 | 选中的按钮的 label 值 |
+| update:modelValue | 勾选的值变化时触发（用于 `v-model`） | 新的已勾选 `label` 数组 |
+| on-change | 勾选的值变化时触发 | 新的已勾选 `label` 数组 |
 
 <script>
 export default {

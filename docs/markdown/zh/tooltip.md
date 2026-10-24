@@ -20,13 +20,13 @@
 
 ## 自定义文字提示的内容
 
-可通过 `slot="content"` 的方式设置文字提示的内容
+可通过插槽 `#content` 的方式设置文字提示的内容
 
 :::demo
 ```html
 <at-tooltip>
   <span>文字提示</span>
-  <template slot="content">
+  <template #content>
     <p>文字1</p>
     <p>文字2</p>
   </template>
@@ -73,6 +73,22 @@
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | content | 提示文字 | String | - | - |
 | placement | 气泡框位置 | String | `top`, `top-left`, `top-right`, `left`, `left-top`, `left-bottom`, `right`, `right-top`, `right-bottom`, `bottom`, `bottom-left`, `bottom-right` | `top` |
+| trigger | 触发的事件类型 | String | `hover`, `focus`, `click` | `hover` |
+| modelValue | 是否显示提示框，可使用 `v-model` 双向绑定 | Boolean | - | false |
+
+## Tooltip 事件
+
+| 事件名称      | 说明          | 返回值  |
+|---------- |-------------- |---------- |
+| update:modelValue | 提示框显示或隐藏时触发（用于 `v-model`） | 是否显示 |
+| toggle | 以 `click` 方式触发时，点击切换显示状态后触发 | 是否显示 |
+
+## Tooltip slot
+
+| 名称      | 说明 |
+|----------|-------- |
+| content | 提示框的内容 |
+| - | 触发提示框的元素 |
 
 <style lang="scss" scoped>
 .at-tooltip {

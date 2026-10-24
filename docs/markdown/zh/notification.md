@@ -9,20 +9,28 @@
 - 有交互的通知
 - 系统的推送
 
-我们在 `Vue.prototype` 中添加了全局对象 `$Notify`，我们可以直接通过 `this.$Notify` 操作实例
+我们在 `app.config.globalProperties` 中添加了全局对象 `$Notify`，我们可以直接通过 `this.$Notify` 操作实例；在 `<script setup>` 中可以使用 `import { Notification } from '@amazingcat/cattr-ui'`。需在 `app.use(CattrUI)` 之后调用
 
 - `this.$Notify(config)`
 - `this.$Notify.success(config)`
 - `this.$Notify.error(config)`
 - `this.$Notify.warning(config)`
 - `this.$Notify.info(config)`
+- `this.$Notify.closeAll()`：关闭所有通知
+
+`config` 可以是字符串（即 `message`），也可以是配置对象。每次调用都返回一个关闭当前通知的函数：
+
+```js
+const close = this.$Notify({ title: '这里是标题', duration: 0 })
+close()
+```
 
 实例接收如下参数：
 
-- type - 通知提醒的状态
+- type - 通知提醒的状态，默认为空（不显示图标）
 - title - 消息标题
 - message - 消息内容
-- duration - 自动关闭的延时
+- duration - 自动关闭的延时，单位为毫秒
 - showClose - 是否显示关闭按钮
 - icon - 自定义消息提醒的图标
 - onClose - 关闭的回调函数
@@ -97,7 +105,7 @@
 
 ## 不同类型的通知提醒
 
-设置参数 `type` 定义不同类型的通知提醒，默认支持四种类型：`success`，`Error`，`Warning`，`Info`
+设置参数 `type` 定义不同类型的通知提醒，默认支持四种类型：`success`，`error`，`warning`，`info`
 
 :::demo
 ```html
@@ -174,13 +182,13 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| type | 通知提醒的类别 | String | `success`, `error`, `warning`, `info` | `info` |
-| title | 必填，通知的标题 | String | - | - |
-| message | 通知的内容 | String | - | - |
-| duration | 自动关闭的延时，单位为毫秒 | Number | - | 4000 |
+| type | 通知提醒的类别，为空时不显示类别图标 | String | `success`, `error`, `warning`, `info` | - |
+| title | 通知的标题（以文本形式显示，不解析 HTML） | String | - | - |
+| message | 通知的内容（以文本形式显示，不解析 HTML） | String | - | - |
+| duration | 自动关闭的延时，单位为毫秒，设为 `0` 则不自动关闭 | Number | - | 4000 |
 | showClose | 是否显示关闭按钮 | Boolean | - | true |
-| icon | 自定义消息提醒的 ICON | String | - | - |
-| onClose | 关闭通知提醒框时的回调函数 | Function | - | - |
+| icon | 自定义消息提醒的 ICON，优先于类别的图标 | String | - | - |
+| onClose | 关闭通知提醒框时的回调函数，参数为通知组件的实例 | Function | - | - |
 
 <script>
 export default {

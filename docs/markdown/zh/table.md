@@ -438,15 +438,18 @@
 
 ## 自定义列模板
 
-给 `columns` 的数据项设置一个函数 `render`，可以自定义该列的渲染模板，可以渲染自定义的组件，它是基于 Vue 的 `Render` 函数。
+给 `columns` 的数据项设置一个函数 `render`，可以自定义该列的渲染模板，可以渲染自定义的组件，它是基于 Vue 3 的 [渲染函数](https://cn.vuejs.org/guide/extras/render-function.html)，`h` 需要从 `vue` 中导入。
 
-`render` 函数接收两个参数 `h`, `object`，`object` 包含 `item`, `column`, `index`，分别指当前单元格的数据，当前列的标题数据，当前的行号
+`render` 函数接收一个参数 `params`，即 `render({ item, column, index })`：`item` 为当前行的数据，`column` 为当前列的配置，`index` 为当前显示的行的索引（当前页、当前排序下的位置，从 0 开始；数据在 `data` 中的原始索引为 `item.index`）。返回值为 Vue 3 格式的 VNode：组件的属性直接写在第二个参数中，事件监听写作 `onClick`，组件的子内容以函数（插槽）的形式传入
 
 :::demo
 ```html
 <at-table :columns="columns3" :data="data2" sort></at-table>
 
 <script>
+  import { h } from 'vue'
+  import { AtButton } from '@amazingcat/cattr-ui'
+
   export default {
     data () {
       return {
@@ -466,33 +469,19 @@
           },
           {
             title: '操作',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, '查看姓名'),
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, '查看地址')
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => '查看姓名'),
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => '查看地址')
               ])
             }
           }
@@ -537,6 +526,9 @@
 <at-table style="margin-top: 24px;" :columns="columns4" :data="data2" size="small" sort></at-table>
 
 <script>
+  import { h } from 'vue'
+  import { AtButton } from '@amazingcat/cattr-ui'
+
   export default {
     data () {
       return {
@@ -556,33 +548,19 @@
           },
           {
             title: '操作',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, '查看姓名'),
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, '查看地址')
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => '查看姓名'),
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => '查看地址')
               ])
             }
           }
@@ -603,33 +581,19 @@
           },
           {
             title: '操作',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, '查看姓名'),
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, '查看地址')
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => '查看姓名'),
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => '查看地址')
               ])
             }
           }
@@ -781,8 +745,30 @@
 | on-select-all | 只有全选时才会触发 | 所有行组成的对象数组 |
 | on-page-change | 页码改变时触发的回调 | 页码 |
 | on-page-size-change | 切换每页显示的条数时触发的回调 | 每页的条目数 |
+| on-sort-change | 排序改变时触发 | `{ column, order, key }` |
+| rowClick | 点击行时触发 | 原生 `MouseEvent` |
+
+## Table slot
+
+| 名称      | 说明 |
+|----------|-------- |
+| emptyText | 没有数据时显示的内容 |
+
+## Column 参数
+
+| 参数      | 说明          | 类型      | 可选值                           | 默认值  |
+|---------- |-------------- |---------- |--------------------------------  |-------- |
+| title | 列的标题 | String | - | - |
+| key | 列对应的数据字段名 | String | - | - |
+| width | 列的宽度 | Number / String | - | - |
+| className | 表头单元格的类名 | String | - | - |
+| sortType | 排序方式 | String | `normal`, `desc`, `asc` | - |
+| render | 自定义渲染函数 `render({ item, column, index })`，`h` 从 `vue` 导入，返回 VNode | Function | - | - |
 
 <script>
+  import { h } from 'vue'
+  import { AtButton } from '@amazingcat/cattr-ui'
+
   export default {
     data () {
       return {
@@ -831,33 +817,19 @@
           },
           {
             title: '操作',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, '查看姓名'),
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, '查看地址')
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => '查看姓名'),
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => '查看地址')
               ])
             }
           }
@@ -878,33 +850,19 @@
           },
           {
             title: '操作',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, '查看姓名'),
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, '查看地址')
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => '查看姓名'),
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => '查看地址')
               ])
             }
           }

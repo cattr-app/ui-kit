@@ -47,7 +47,7 @@
   <at-rate
     :allow-half="true"
     :show-text="true"
-    :value="value1"
+    :model-value="value1"
     @on-change="changeHandle">
   </at-rate>
 </div>
@@ -64,7 +64,7 @@
   <at-rate
     :allow-half="true"
     :show-text="true"
-    :value="value1"
+    :model-value="value1"
     :disabled="true">
   </at-rate>
 </div>
@@ -77,16 +77,17 @@
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | count | star 总数 | Number | - | 5 |
-| value | 当前值 | String | - | 0 |
+| modelValue | 当前值，可通过 `v-model` 绑定 | Number | - | 0 |
 | allow-half | 是否允许选择半颗星 | Boolean | - | `false` |
 | disabled | 只读，无法进行交互 | Boolean | - | `false` |
-| icon | 指定图标 | String | - | `icon-star` |
+| icon | 指定图标 | String | - | `icon-star-on` |
 | show-text | 实现显示辅助文案 | Boolean | - | `false` |
 
 ## Rate 事件
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
+| update:modelValue | star 数目改变时触发（用于 `v-model`） | 改变后的值 |
 | on-change | star 数目改变时触发 | 改变后的值 |
 | on-hover-change | 鼠标在 star 上移动导致数值变化时触发 | 改变后的值 |
 

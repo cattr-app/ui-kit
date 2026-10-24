@@ -5,11 +5,11 @@
 
 全局创建了一个用于显示页面加载、异步请求的加载进度条。
 
-因为可复用性的关系，`LoadingBar` 只会全局创建一个实例，而且在 `Vue.prototype` 中添加了全局对象 `$Loading`，可以直接通过 `this.$Loading` 操作实例
+因为可复用性的关系，`LoadingBar` 只会全局创建一个实例（首次调用时创建），而且在 `app.config.globalProperties` 中添加了全局对象 `$Loading`，可以直接通过 `this.$Loading` 操作实例；在 `<script setup>` 中可以使用 `import { LoadingBar } from '@amazingcat/cattr-ui'`
 
 ## 基础用法
 
-通过调用 `$Loading` 提供的三种方法来控制全局的加载进度条 `start()`、`finish()`、`error()`
+通过调用 `$Loading` 提供的方法来控制全局的加载进度条 `start()`、`finish()`、`error()`、`update(percent)`
 
 :::demo
 ```html
@@ -46,7 +46,9 @@
 | start | 开始从 0 显示加载进度条，并自动加载 | - |
 | finish | 完成进度条 | - |
 | error | 显示错误类型的进度条 | - |
-| update | 指定进度的百分比，更新进度条 | percent，指定进度的百分比 |
+| update | 指定进度的百分比，更新进度条（停止自动加载） | `percent`：Number，进度的百分比 |
+| config | 全局配置，见下文 | `{ width }` |
+| destroy | 立即移除进度条并停止计时器（如切换路由或测试时） | - |
 
 ## LoadingBar 配置
 
@@ -68,7 +70,7 @@ this.$Loading.config({
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| width | 进度条的线宽 | Number | - | 2 |
+| width | 进度条的线宽，对已显示的进度条同样生效 | Number | - | 2 |
 
 <script>
 export default {
