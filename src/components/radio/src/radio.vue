@@ -41,7 +41,7 @@ export default {
     },
     disabled: Boolean,
   },
-  emits: ['update:modelValue', 'change'],
+  emits: ['update:modelValue'],
   setup(props, { emit }) {
     const { checked, select } = useRadio(props, emit)
     return { checked, select }

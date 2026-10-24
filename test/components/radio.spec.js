@@ -14,7 +14,7 @@ function mountGroup(template, value = 'a') {
 
 describe('AtRadioGroup + AtRadio', () => {
   const template = `
-    <at-radio-group v-model="value" @change="changes.push($event)">
+    <at-radio-group v-model="value" @radio-group-change="changes.push($event)">
       <at-radio label="a">A</at-radio>
       <at-radio label="b">B</at-radio>
       <at-radio label="c">C</at-radio>
@@ -29,7 +29,7 @@ describe('AtRadioGroup + AtRadio', () => {
     expect(radios[0].find('.at-radio__inner').classes()).toContain('at-radio--checked')
   })
 
-  it('emits update:modelValue and change with the clicked radio label', async () => {
+  it('emits update:modelValue and radio-group-change with the clicked radio label', async () => {
     const wrapper = mountGroup(template)
     const group = wrapper.findComponent(AtRadioGroup)
     const second = wrapper.findAllComponents(AtRadio)[1]
@@ -37,7 +37,7 @@ describe('AtRadioGroup + AtRadio', () => {
     await second.find('input').setValue()
 
     expect(group.emitted('update:modelValue')).toEqual([['b']])
-    expect(group.emitted('change')).toEqual([['b']])
+    expect(group.emitted('radio-group-change')).toEqual([['b']])
     expect(second.emitted('update:modelValue')).toBeUndefined()
     expect(wrapper.vm.value).toBe('b')
     expect(wrapper.vm.changes).toEqual(['b'])
@@ -56,7 +56,7 @@ describe('AtRadioGroup + AtRadio', () => {
     await nextTick()
 
     expect(group.emitted('update:modelValue')).toBeUndefined()
-    expect(group.emitted('change')).toBeUndefined()
+    expect(group.emitted('radio-group-change')).toBeUndefined()
     expect(wrapper.vm.value).toBe('a')
   })
 })
@@ -106,7 +106,7 @@ describe('AtRadio without a group', () => {
 
     await wrapper.find('input').setValue()
     expect(wrapper.emitted('update:modelValue')).toEqual([['x']])
-    expect(wrapper.emitted('change')).toEqual([['x']])
+    expect(wrapper.emitted('change')).toBeUndefined()
 
     await wrapper.setProps({ modelValue: 'x' })
     expect(wrapper.find('input').element.checked).toBe(true)

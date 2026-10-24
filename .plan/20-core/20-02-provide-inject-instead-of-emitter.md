@@ -44,6 +44,7 @@ Radio/RadioGroup: `modelValue`; событие `change` остаётся. Зап
 ## Найдено по ходу
 
 ## Заметки агента
+- (ревью при мерже) Событие группы возвращено к имени 1.x `radio-group-change` (правило чеклиста 30: имена событий не менять; формулировка «change сохранено» в задаче была ошибкой). Новое событие `change` у одиночного Radio/RadioButton убрано — только `update:modelValue`.
 - `createContext(name)` → `{ key: Symbol(name), provide(value) → value, inject(...fallback) }` (`src/utils/context.js`); `inject()` без аргумента — родитель обязателен (Vue warn), `inject(null)` — опционален.
 - `useChildren()` → `{ children /* shallowReactive [{ uid, el, exposed }] в DOM-порядке */, register(child), unregister(uid), sort() }`; `useChild(parent | null, exposed = proxy)` → `{ parent, index: ComputedRef<number> }` (`src/composables/useChildren.js`). `useParent.js` не делал — хватает `inject()` без fallback.
 - Ключ группы и общая логика Radio/RadioButton — `src/components/radio/src/context.js` (`RadioGroupContext`, `useRadio(props, emit)`); группа провайдит `reactive({ modelValue, size, fill, textColor, update })`.

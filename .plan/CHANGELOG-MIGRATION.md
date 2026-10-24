@@ -49,8 +49,8 @@
 ### Radio, RadioGroup, RadioButton
 
 - v-model: prop `modelValue` + `update:modelValue` вместо `value` + `input` (у `AtRadioGroup` и одиночного `AtRadio`). `v-model` в шаблонах работает как раньше.
-- Событие группы: было `radio-group-change` (срабатывало на любое изменение `value`, в т.ч. программное) → стало `change` (только при выборе пользователем, аргумент — `label` выбранного радио). Что править: `@radio-group-change` → `@change`, либо `watch` на свою переменную v-model, если нужна реакция на программные изменения.
-- `AtRadio` внутри группы больше не эмитит собственный `input`/`update:modelValue` — слушать события на `AtRadioGroup`. Одиночный `AtRadio` эмитит `update:modelValue` и `change`.
+- Событие группы `radio-group-change` сохранено. Было: срабатывало на любое изменение `value`, в т.ч. программное → стало: только при выборе пользователем, аргумент — `label` выбранного радио. Что править: если нужна реакция на программные изменения — `watch` на свою переменную v-model.
+- `AtRadio` внутри группы больше не эмитит собственный `input`/`update:modelValue` — слушать события на `AtRadioGroup`. Одиночный `AtRadio`/`AtRadioButton` эмитит только `update:modelValue`.
 - `AtRadioButton` теперь работает и без группы по собственному `modelValue` (`v-model` на кнопке). `size`/`fill`/`text-color` по-прежнему задаются только на `AtRadioGroup`; `size` группы теперь реактивен (в 1.x читался один раз при создании).
 - Выбор `disabled` радио/кнопки не эмитит событий; повторный выбор уже выбранного значения тоже.
 

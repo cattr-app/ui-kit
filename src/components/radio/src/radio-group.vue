@@ -16,7 +16,7 @@ export default {
     fill: String,
     textColor: String,
   },
-  emits: ['update:modelValue', 'change'],
+  emits: ['update:modelValue', 'radio-group-change'],
   setup(props, { emit }) {
     RadioGroupContext.provide(
       reactive({
@@ -27,7 +27,7 @@ export default {
         update(value) {
           if (value === props.modelValue) return
           emit('update:modelValue', value)
-          emit('change', value)
+          emit('radio-group-change', value)
         },
       }),
     )

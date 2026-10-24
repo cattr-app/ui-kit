@@ -21,7 +21,6 @@ export function useRadio(props, emit) {
       group.update(props.label)
     } else {
       emit('update:modelValue', props.label)
-      emit('change', props.label)
     }
   }
 
