@@ -45,7 +45,16 @@
 
 ## Паттерн императивных сервисов
 
-(Заполняет 20-03: сигнатура `mountService` из `src/utils/mount-service.js`, пример — `src/components/message/src/message.js`.)
+Эталон: `src/components/message/src/message.js` + `message.vue`, тесты `test/components/message.spec.js`.
+
+- Сигнатура: `mountService(Component, props = {}, { appContext } = {})` → `{ instance, vm, el, update(patch), unmount() } | null` (`null` без `window`, SSR). `appContext` по умолчанию `getCurrentApp()?._context` — сервис работает с `<at-*>`/`t()` только после `app.use(CattrUI)`.
+- Корневой элемент компонента (должен быть один элемент) переносится в `document.body`; `el` — он же.
+- Параметры сервиса → **props** компонента (никаких `data: options`), слушатели → `onXxx` в props (`onClose`, `onDestroy`), в компоненте `emits: [...]`.
+- Обновлять props только через `update(patch)`: мержит patch в текущие props и перерендеривает vnode в тот же контейнер, Vue патчит тот же instance (state/`el` сохраняются). Мутация `reactive`-объекта, переданного в props, **не работает** (`createVNode` копирует его).
+- Внутреннее состояние (`visible`, таймеры) — `data` компонента; методы вызывать через `vm` (`service.vm.close()`).
+- Очистка: компонент эмитит `destroy` в `@after-leave` своего `<transition>`, сервис вызывает `unmount()` (`render(null, container)` + `el.remove()`, повторный вызов безопасен). `$destroy`/`$el.parentNode.removeChild` не использовать, таймеры чистить в `beforeUnmount`.
+- Стек экземпляров (`instances[]` с `{ id, vm, el, update, unmount }`) держит сервис; итерировать копию, если `close` делает `splice`. `Service.install = app => { app.config.globalProperties.$X = Service }`.
+- Тесты: в happy-dom CSS нет, `<transition>` завершает leave через animation frame — `vi.useFakeTimers()` + `await vi.runAllTimersAsync()` + `nextTick()`, затем проверять, что элемент удалён из `document.body`.
 
 ## Волны
 

@@ -1,104 +1,84 @@
 import MessageVue from './message.vue'
-
-// The Vue 2 constructor was dropped in 20-01 so that importing the library does not fail.
-// The service itself is migrated to createVNode/render in 20-03 / 30-w3-*.
-// eslint-disable-next-line no-unused-vars
-const createInstance = (component, options) => {
-  throw new Error('Message is not migrated to Vue 3 yet (plan 20-03)')
-}
+import { mountService } from '../../../utils/mount-service.js'
 
 const messageType = ['info', 'success', 'warning', 'error', 'loading']
+const GAP = 8
 const instances = []
 let seed = 1
 let zindexSeed = 1010
 
+const normalize = options => (typeof options === 'string' ? { message: options } : { ...options })
+
+/**
+ * Show a message. `options`: a string or `{ message, type, icon, duration, onClose }`.
+ * Returns a function that closes this message.
+ */
 const Message = options => {
   if (typeof window === 'undefined') return
-  options = options || {}
-
-  if (typeof options === 'string') {
-    options = {
-      message: options,
-    }
-  }
-
-  const customCloseFunc = options.onClose
+  const { message, type, icon, duration, onClose: customCloseFunc } = normalize(options)
   const id = `message_${seed++}`
 
-  options.onClose = () => {
-    Message.close(id, customCloseFunc)
+  let top = GAP
+  for (const item of instances) {
+    top += item.el.offsetHeight + GAP
   }
 
-  const instance = createInstance(MessageVue, {
-    data: options,
+  const service = mountService(MessageVue, {
+    message,
+    type,
+    icon,
+    duration,
+    top,
+    zIndex: zindexSeed++,
+    onClose: () => Message.close(id, customCloseFunc),
+    onDestroy: () => service.unmount(),
   })
 
-  instance.id = id
-  instance.vm = instance.$mount()
-  document.body.appendChild(instance.vm.$el)
-  instance.vm.visible = true
-  instance.dom = instance.vm.$el
-  instance.dom.style.zIndex = zindexSeed++
-
-  const offset = 0
-  const len = instances.length
-  let topDist = offset
-
-  for (let i = 0; i < len; i++) {
-    topDist += instances[i].$el.offsetHeight + 8
-  }
-
-  topDist += 8
-  instance.top = topDist
-
-  instances.push(instance)
+  instances.push({
+    id,
+    top,
+    vm: service.vm,
+    el: service.el,
+    update: service.update,
+    unmount: service.unmount,
+  })
 
   // 返回关闭方法，用于手动消除
   return function () {
-    instance.vm.close(id)
+    service.vm.close()
   }
 }
 
+/** Remove a message from the stack and shift the ones below it up. */
 Message.close = (id, customCloseFunc) => {
-  const len = instances.length
-  let index, removedHeight
+  const index = instances.findIndex(item => item.id === id)
+  if (index === -1) return
 
-  for (let i = 0; i < len; i++) {
-    if (id === instances[i].id) {
-      if (typeof customCloseFunc === 'function') {
-        customCloseFunc(instances[i])
-      }
-      index = i
-      removedHeight = instances[i].dom.offsetHeight
-      instances.splice(i, 1)
-      break
-    }
+  const [removed] = instances.splice(index, 1)
+  if (typeof customCloseFunc === 'function') {
+    customCloseFunc(removed.vm)
   }
+  // The closing message is still visible (leave transition) — close() starts it.
+  removed.vm.close()
 
-  if (len > 1) {
-    for (let i = index; i < len - 1; i++) {
-      instances[i].dom.style.top = `${parseInt(instances[i].dom.style.top) - removedHeight - 8}px`
-    }
+  const removedHeight = removed.el.offsetHeight
+  for (let i = index; i < instances.length; i++) {
+    instances[i].top -= removedHeight + GAP
+    instances[i].update({ top: instances[i].top })
   }
 }
 
 Message.closeAll = () => {
-  instances.forEach(elem => {
-    elem.close()
-  })
+  // close() splices `instances`, iterate over a copy.
+  instances.slice().forEach(item => item.vm.close())
 }
 
 messageType.forEach(type => {
-  Message[type] = options => {
-    if (typeof options === 'string') {
-      options = {
-        message: options,
-      }
-    }
-    options.type = type
-    options.icon = options.icon
-    return Message(options)
-  }
+  Message[type] = options => Message({ ...normalize(options), type })
 })
+
+Message.install = app => {
+  app.config.globalProperties.$Message = Message
+}
 
 export default Message

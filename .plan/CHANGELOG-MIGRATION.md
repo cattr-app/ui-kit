@@ -58,7 +58,12 @@
 
 - `[TODO 20-03, 30-w3-*]` До завершения миграции сервисов `$Message`, `$Modal`, `$Notify`, `$Loading` существуют, но при вызове бросают `… is not migrated to Vue 3 yet`. Промежуточные сборки ветки `feat/vue-3` для потребителя непригодны до закрытия этапа 30.
 
-(заполняется задачами 20-03, 30-w3-modal, 30-w3-notification, 30-w3-loading-bar)
+- `Message` (`$Message`): API вызова без изменений — `Message('text')`, `Message({ message, type, icon, duration, onClose })`, `Message.info/success/warning/error/loading(...)`, `Message.close(id)`, `Message.closeAll()`, вызов возвращает функцию закрытия.
+  Импорт для `<script setup>`: `import { Message } from '@amazingcat/cattr-ui'`; также можно поставить отдельно: `app.use(Message)` (кладёт `$Message` в `globalProperties`).
+  Было: работало сразу после импорта. Стало: сервис рендерится в контексте приложения, установившего плагин, — вызывать **после** `app.use(CattrUI)`, иначе `<at-*>`-компоненты и локаль внутри сервиса не отрендерятся (для `Message` сейчас некритично — иконки CSS-классами, текстов локали нет, — но для `$Modal`/`$Notify` обязательно; полагаться не стоит).
+  Мелочи: объект `options` больше не мутируется (раньше в него дописывались `type`/`onClose`); `Message.close(id)` теперь и прячет сообщение, а не только убирает его из стека; `Message.closeAll()` закрывает все сообщения (раньше пропускал каждое второе); в `onClose(vm)` приходит публичный экземпляр компонента сообщения, как и раньше.
+
+(заполняется задачами 30-w3-modal, 30-w3-notification, 30-w3-loading-bar)
 
 ## Документация и разработка
 

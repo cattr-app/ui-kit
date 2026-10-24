@@ -1,7 +1,7 @@
 ---
 id: 20-03
 title: Инфраструктура императивных сервисов (createVNode/render) и эталон Message
-status: todo
+status: done
 depends_on: [20-01]
 parallel: true
 model: opus
@@ -42,3 +42,9 @@ scripts/node.sh pnpm build
 - (из 20-01) Контракт: `src/utils/context.js` → `CATTR_UI_KEY` (Symbol, `app.provide(CATTR_UI_KEY, { app })`), `setCurrentApp(app)`, `getCurrentApp()` (→ последний app с `app.use(CattrUI)` или `null`). В `message.js`, `notic.js`, `loading-bar.js`, `dialog.js` `Vue.extend` заменён заглушкой `createInstance(component, options)`, которая бросает `<Service> is not migrated to Vue 3 yet (plan 20-03)`; `$isServer` → `typeof window === 'undefined'`, в `dialog.js` `Vue.nextTick` → `nextTick` из `vue`. Сервисы пока без `install` — `src/index.js` сам пишет их в `globalProperties`.
 
 ## Заметки агента
+- `mountService(Component, props = {}, { appContext } = {})` → `{ instance, vm, el, update(patch), unmount() } | null` (SSR → `null`). Props обновляются только `update(patch)` (merge + повторный `render(createVNode(...))` в тот же контейнер, instance сохраняется); `reactive` в props не отслеживается — `createVNode` копирует proxy. Паттерн описан в `30-components/README.md`.
+- `options.icon = options.icon` создавал собственный ключ `icon: undefined` в `data: options`, из-за чего дефолт `icon: ''` не применялся; видимого эффекта не было (`iconClass` = `icon || по типу`). Строка удалена; `undefined` prop → дефолт `''` → иконка по типу.
+- Transition в тестах: в happy-dom нет CSS → `<transition>` не находит длительность и завершает leave на следующем animation frame, `after-leave` срабатывает; `vi.useFakeTimers()` + `vi.runAllTimersAsync()` + `nextTick()`. Prop `duration` у transition не понадобился.
+- Отклонения от 1:1 (баги старого кода): `closeAll` пропускал каждый второй (forEach по массиву со splice) — теперь по копии; `Message.close(id)` теперь и прячет сообщение; `options` не мутируется; `Message.info()` без аргумента не падает. `zIndex` стал prop (раньше `dom.style.zIndex`), сдвиг стека — `update({ top })` вместо правки `style.top`. Добавлен `beforeUnmount` → clearTimer.
+- `pnpm lint`: до 89 errors / 6 warnings, после 88 / 6 (ушёл `no-self-assign`).
+- Для 30-w3-*: корень компонента должен быть одним элементом (`el = vnode.el`); `notic.js` / `loading-bar.js` / `dialog.js` пока на заглушке `createInstance`; методы экземпляра вызывать через `service.vm`; если сервис дописывал поля экземпляру после mount (`instance.top = …`, `vm.visible = true`), переводить в props+`update` или в `mounted()`. Сервисы вне `install` из `src/index.js` можно также снабдить `Service.install` по примеру Message.

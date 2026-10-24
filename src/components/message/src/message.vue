@@ -3,9 +3,10 @@
     class="at-message__wrapper"
     :style="{
       top: top ? `${top}px` : 'auto',
+      zIndex,
     }"
   >
-    <transition name="move-up" @after-leave="doDestory">
+    <transition name="move-up" @after-leave="$emit('destroy')">
       <div
         v-show="visible"
         class="at-message"
@@ -21,63 +22,62 @@
 </template>
 
 <script>
+const iconClasses = {
+  success: 'icon-check-circle',
+  error: 'icon-x-circle',
+  warning: 'icon-alert-circle',
+  info: 'icon-info',
+  loading: 'icon-loader',
+}
+
 export default {
+  props: {
+    message: { type: [String, Number], default: '' },
+    type: { type: String, default: 'info' },
+    icon: { type: String, default: '' },
+    duration: { type: Number, default: 3000 },
+    top: { type: Number, default: null },
+    zIndex: { type: Number, default: null },
+  },
+  emits: ['close', 'destroy'],
   data() {
     return {
-      message: '',
-      duration: 3000,
-      type: 'info',
-      icon: '',
       visible: false,
-      timer: null,
       closed: false,
-      onClose: null,
-      top: null,
+      timer: null,
     }
   },
   computed: {
     iconClass() {
-      const classArr = {
-        success: 'icon-check-circle',
-        error: 'icon-x-circle',
-        warning: 'icon-alert-circle',
-        info: 'icon-info',
-        loading: 'icon-loader',
-      }
-
-      return this.icon || classArr[this.type]
-    },
-  },
-  watch: {
-    closed(val) {
-      if (val) {
-        this.visible = false
-      }
+      return this.icon || iconClasses[this.type]
     },
   },
   mounted() {
+    // Shown after mount so the `move-up` enter transition plays.
+    this.visible = true
     this.startTimer()
   },
+  beforeUnmount() {
+    this.clearTimer()
+  },
   methods: {
-    doDestory() {
-      this.$destroy(true)
-      this.$el.parentNode.removeChild(this.$el)
-    },
     close() {
+      if (this.closed) return
       this.closed = true
-      if (typeof this.onClose === 'function') {
-        this.onClose(this)
-      }
+      this.visible = false
+      this.clearTimer()
+      this.$emit('close')
     },
     startTimer() {
       if (this.duration) {
-        this.timer = setTimeout(() => {
-          !this.closed && this.close()
-        }, this.duration)
+        this.timer = setTimeout(() => this.close(), this.duration)
       }
     },
     clearTimer() {
-      this.timer && clearTimeout(this.timer)
+      if (this.timer) {
+        clearTimeout(this.timer)
+        this.timer = null
+      }
     },
   },
 }
