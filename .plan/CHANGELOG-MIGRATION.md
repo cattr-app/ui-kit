@@ -217,6 +217,12 @@
   Поведенческие исправления: 1) очередь — было: каждый вызов сразу открывал новый диалог поверх предыдущего, а промис/коллбек первого мог получить ответ второго; стало: диалоги показываются по одному, следующий — после анимации закрытия текущего. 2) Escape, крестик и клик по маске считаются `'cancel'` (было: промис и коллбек не вызывались вовсе и очередь «зависала»). 3) `callback` из `options` (или вторым аргументом `Dialog(options, cb)`) вызывается как `cb(action)`, для `prompt` — `cb(value, action)`, и **вместе** с промисом (было: при `options.callback` промис не разрешался, коллбек получал `(action, instance)`); при наличии `callback` отклонение промиса не даёт `unhandledrejection`. 4) `$Modal.close()` закрывает текущий и очищает очередь; промисы закрытых так диалогов, как и в 1.x, не разрешаются.
   Опции передаются в `AtModal` как props (`title`, `content`, `type`, `okText`, `cancelText`, `maskClosable`, `showClose`, `showCancelButton`, `showConfirmButton`, `showInput`, `inputValue`, `inputPlaceholder`, `width`, `styles`…); неизвестные ключи игнорируются. Объект `options` не мутируется.
 
+## Стили
+
+- Классы переходов Vue 3: начальное/конечное состояние называются `.x-enter-from` / `.x-leave-from` вместо Vue 2 `.x-enter` / `.x-leave` (`-enter-active`, `-leave-active`, `-enter-to`, `-leave-to` без изменений).
+  Анимации библиотеки (`fade`, `slide-up`, `move-up`, `notification-fade` в `animation.scss`) построены на `@keyframes` в `-enter-active`/`-leave-active` и Vue 2-имён не использовали — в `src/stylesheet` правок не потребовалось: modal/alert/loading-bar (`fade`), select/dropdown/submenu/tooltip/popover (`slide-up`), message (`move-up`), notification (`notification-fade`) анимируются как раньше (проверено по CSS и именам переходов; визуальная проверка — 40-02).
+  Что править: если в проекте есть свои стили на `.at-*-enter`, `.at-*-leave` или на `.fade-enter`/`.slide-up-enter` (или своих `<transition name>`), переименовать в `-enter-from`/`-leave-from`; иначе стартовое состояние перехода не применится и элемент появится без анимации.
+
 ## Документация и разработка
 
 - Сборка: `pnpm build` (Vite library mode, ESM, `vue` external). Скрипты `build:component`, `build:locale`, `build:doc`, `prepublish` удалены; `build:package` оставлен алиасом `pnpm build` для CI. Стили: `pnpm build:style`. Требуется Node ≥ 24.
