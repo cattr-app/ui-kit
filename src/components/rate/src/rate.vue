@@ -28,7 +28,7 @@
 export default {
   name: 'AtRate',
   props: {
-    value: {
+    modelValue: {
       type: Number,
       default: 0,
       validator: val => val >= 0,
@@ -55,9 +55,10 @@ export default {
       default: 'icon-star-on',
     },
   },
+  emits: ['update:modelValue', 'on-change', 'on-hover-change'],
   data() {
     return {
-      currentValue: this.value,
+      currentValue: this.modelValue,
       hoverIndex: -1,
       lastHoverIndex: -1,
       isHoverRate: false,
@@ -65,7 +66,7 @@ export default {
     }
   },
   watch: {
-    value(val) {
+    modelValue(val) {
       this.currentValue = val
       this.$emit('on-change', val)
     },
@@ -107,7 +108,7 @@ export default {
       if (this.disabled) return
       this.currentValue = this.isHalf ? index - 0.5 : index
       this.$emit('on-change', this.currentValue)
-      this.$emit('input', this.currentValue)
+      this.$emit('update:modelValue', this.currentValue)
     },
     clacClass(index) {
       const STAR_ON_CLASS_NAME = 'at-rate__item--on'
