@@ -41,6 +41,7 @@ export default {
       default: 'error',
     },
   },
+  emits: [],
   computed: {
     content() {
       if (this.dot) return
