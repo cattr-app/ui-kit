@@ -1,10 +1,10 @@
 <template>
-  <div ref="parent" v-clickoutside="handleClose" class="at-popover">
+  <div v-clickoutside="handleClose" class="at-popover">
     <span ref="trigger" class="at-popover__trigger">
       <slot></slot>
     </span>
 
-    <transition :name="transition" @after-leave="doDestory">
+    <transition :name="transition">
       <div
         v-if="show"
         ref="popover"
@@ -13,10 +13,18 @@
       >
         <div class="at-popover__arrow"></div>
         <div v-if="title" class="at-popover__title">
-          <slot name="title"><div v-html="title"></div></slot>
+          <slot name="title">
+            <!-- `title` is rendered as HTML since 1.x (intentional API); consumer sanitizes or uses the slot -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div v-html="title"></div>
+          </slot>
         </div>
         <div class="at-popover__content">
-          <slot name="content"><div v-html="content"></div></slot>
+          <slot name="content">
+            <!-- `content` is rendered as HTML since 1.x (intentional API); consumer sanitizes or uses the slot -->
+            <!-- eslint-disable-next-line vue/no-v-html -->
+            <div v-html="content"></div>
+          </slot>
         </div>
       </div>
     </transition>
@@ -24,12 +32,12 @@
 </template>
 
 <script>
-import Clickoutside from '../../../directives/clickoutside'
+import clickoutside from '../../../directives/clickoutside'
 import PopoverMixin from '../../../mixins/popover'
 
 export default {
   name: 'AtPopover',
-  directives: { Clickoutside },
+  directives: { clickoutside },
   mixins: [PopoverMixin],
   props: {
     trigger: {
@@ -41,11 +49,8 @@ export default {
       default: 'fade',
     },
   },
-  watch: {
-    value(value) {
-      this.show = value
-    },
-  },
+  // `update:modelValue` and `toggle` come from the popover mixin; no own events.
+  emits: [],
   methods: {
     handleClose() {
       this.show = false

@@ -54,6 +54,8 @@
 
 - `v-model` открытия: было prop `value`, компонент эмитил только `toggle` (`v-model` работал в одну сторону); стало prop `modelValue` + событие `update:modelValue` при каждом открытии/закрытии (клик, hover, focus, клик снаружи), `toggle` остаётся.
   Что править: `v-model="open"` работает как есть; `:value="open"` → `:model-value="open"`, вместо `@toggle` для синхронизации можно использовать `v-model`.
+- Popover: props `title`/`content` по-прежнему вставляются как HTML (`v-html`, решение оставить API без изменений); экранирование недоверенных строк — на стороне потребителя, либо слоты `#title`/`#content`. Слот `title` рендерится только при непустом prop `title` (как в 1.x).
+  Что править: `<template slot="content">` → `<template #content>` (синтаксис слотов Vue 3); остальное без изменений.
 
 ### Progress
 

@@ -1,7 +1,7 @@
 ---
 id: 30-w1-popover
 title: Popover → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -34,7 +34,14 @@ scripts/node.sh pnpm build
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
+Добавлено в «Tooltip, Popover»: `title`/`content` остаются HTML (`v-html`), слоты `#title`/`#content`, слот `title` требует prop `title`.
+
 ## Найдено по ходу
 - (из 10-02) `popover.vue` — 2 ошибки `vue/no-v-html` (title/content). Решить: оставить с `eslint-disable-next-line` и обоснованием или сменить API; выбор отметить в changelog.
 
 ## Заметки агента
+- Удалены мёртвый `watch.value`, `@after-leave="doDestory"` и неиспользуемый `ref="parent"`; корень один (`div.at-popover`), `ref="trigger"`/`ref="popover"` внутри.
+- `v-clickoutside` регистрируется локально `directives: { clickoutside }` (default-импорт из `directives/clickoutside`); `emits: []` — события `update:modelValue`/`toggle` из mixin.
+- `vue/no-v-html` (title, content): `v-html` оставлен как намеренный API, точечные `eslint-disable-next-line` с комментарием; зафиксировано в changelog.
+- Слот `#title` не рендерится без prop `title` (`v-if="title"`, поведение 1.x) — не менял; кандидат на `title || $slots.title` на этапе 40/по запросу.
+- Smoke-тест `test/components/popover.spec.js` (4 it): click open/close + `update:modelValue`/`toggle`, клик снаружи, HTML title/content, слот `content`.
