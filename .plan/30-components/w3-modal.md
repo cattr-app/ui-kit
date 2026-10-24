@@ -50,6 +50,7 @@ scripts/node.sh pnpm build
 ## Найдено по ходу
 
 ## Заметки агента
+- (ревью при мерже) `Dialog.close()` оставлен как в 1.x: промис закрытого так диалога не разрешается. Reject на `close()` дал бы unhandled rejection у потребителей, которые его не ловят; resolve('cancel') — ложный сигнал действия пользователя.
 
 - Сервис: `mountService(Modal, props)` на каждый диалог, `visible` через `update({ modelValue })`, действие — listener-props `onOn-confirm`/`onOn-cancel`, размонтирование по новому событию `after-leave` (не `destroy`, как в эталоне Message: Modal публичный компонент, а имя `destroy` вводило бы в заблуждение — событие на каждое закрытие).
 - В 1.x очередь фактически не работала (новый instance на каждый вызов, `!instance.visible` всегда true), Escape/маска не разрешали промис, `options.callback` отключал промис, OK эмитил ещё и `on-cancel`, слушатель keydown не снимался (`beforeDestory`). Всё исправлено, записано в changelog.
