@@ -72,6 +72,16 @@
   `@input` на `<at-input>` больше не событие компонента: он вешается на нативный `<input>` и получает `Event`, а не строку — использовать `@update:model-value` или `@change`.
 - Удалены внутренние вызовы `dispatch('AtFormItem', 'on-form-item-blur/change')` (Form удалён), наружу эти события не эмитились и не эмитятся.
 
+### InputNumber
+
+- v-model: prop `modelValue` + событие `update:modelValue` вместо `value` + `input`. `v-model` работает как раньше; `:value`/`@input` → `:model-value`/`@update:model-value`. События `change` (число), `focus`, `blur` (нативный `Event`) — имена прежние.
+- Было: `change` эмитился дважды на каждый клик +/-; стало: `update:modelValue` и `change` — ровно по одному разу на каждое изменение значения, в том числе при достижении `min`/`max` (фикс 1.x сохранён). При внешнем изменении `modelValue` события не эмитятся.
+- Было: изменение `value` родителем после монтирования не отображалось, а набранное с клавиатуры число игнорировалось. Стало: компонент следит за `modelValue`; введённое число применяется по `change` (blur) и Enter, обрезается до `min`/`max`, нечисловой/пустой ввод откатывается к текущему значению.
+- Было: атрибуты и слушатели потребителя вешались на корневой `div.at-input-number`, нативные события ловились через `.native` (`@keyup.native`). Стало: `inheritAttrs: false` — `class` и `style` остаются на обёртке, всё остальное (`@keyup`, `@keydown`, `@paste`, `id`, `placeholder`, `aria-*`, `data-*`…) уходит на внутренний `<input class="at-input-number__original">`.
+  Что править: `@keyup.native="…"` → `@keyup="…"`; `id`/`data-*`/`aria-*` теперь на `<input>` — проверить селекторы в CSS/тестах.
+  `@input` на `<at-input-number>` больше не событие компонента: он вешается на нативный `<input>` и получает `Event` на каждый набранный символ, а не число — использовать `@update:model-value` или `@change`.
+- Событий `on-form-item-change` (через `dispatch` в `AtFormItem`) больше нет — Form удалён.
+
 ### Button, ButtonGroup
 
 - Клик: было `<at-button @click.native="fn">` (или `@click` на собственный `$emit('click')`) → стало `<at-button @click="fn">`. `AtButton` больше не эмитит свой `click`: слушатель потребителя падает на корневой `<button>` через `$attrs` и вызывается ровно один раз с нативным `MouseEvent`. Что править: убрать `.native` у всех `@click`/`@mouseenter`/… на `at-button`.
