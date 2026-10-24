@@ -1,13 +1,12 @@
 <template>
   <li
     v-show="!hidden"
-    ref="option"
     class="at-select__option"
-    :class="[
-      disabled ? 'at-select__option--disabled' : '',
-      selected ? 'at-select__option--selected' : '',
-      isFocus ? 'at-select__option--focus' : '',
-    ]"
+    :class="{
+      'at-select__option--disabled': disabled,
+      'at-select__option--selected': selected,
+      'at-select__option--focus': isFocus,
+    }"
     @click.stop="doSelect"
     @mouseout.stop="blur"
   >
@@ -16,12 +15,12 @@
 </template>
 
 <script>
-import Emitter from '../../../mixins/emitter'
+import { computed, getCurrentInstance, onMounted, onUpdated, reactive, ref, toRef } from 'vue'
+import { useChild } from '../../../composables/useChildren'
+import { SelectContext } from './context'
 
 export default {
   name: 'AtOption',
-  mixins: [Emitter],
-  inject: ['select'],
   props: {
     value: {
       type: [String, Number],
@@ -35,53 +34,58 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      selected: false,
-      index: 0,
-      isFocus: false,
-      hidden: false,
-      searchLabel: '',
+  setup(props) {
+    const select = SelectContext.inject(null)
+    const instance = getCurrentInstance()
+    // text of the rendered slot, used as label when the `label` prop is not set (1.x used innerHTML)
+    const slotText = ref('')
+
+    const label = computed(() =>
+      props.label !== undefined ? props.label : slotText.value || props.value,
+    )
+
+    const hidden = computed(() => {
+      if (!select || !select.filterable || !select.query) return false
+      return !String(label.value).toLowerCase().includes(String(select.query).toLowerCase())
+    })
+
+    const option = reactive({
+      uid: instance.uid,
+      value: toRef(props, 'value'),
+      label,
+      disabled: toRef(props, 'disabled'),
+      hidden,
+    })
+
+    useChild(select, option)
+
+    const syncText = () => {
+      const text = (instance.proxy.$el && instance.proxy.$el.textContent) || ''
+      if (text.trim() !== slotText.value) slotText.value = text.trim()
     }
+    onMounted(syncText)
+    onUpdated(syncText)
+
+    return { select, option, hidden }
   },
   computed: {
     showLabel() {
       return this.label ? this.label : this.value
     },
-  },
-  mounted() {
-    this.select.optionInstances.push(this)
-    this.select.options.push({
-      _instance: this,
-      value: this.value,
-      label: typeof this.label === 'undefined' ? this.$el.innerHTML : this.label,
-    })
-    this.searchLabel = this.$el.innerHTML
-    this.$on('on-select-close', () => {
-      this.isFocus = false
-    })
-    this.$on('on-query-change', val => {
-      this.queryChange(val)
-    })
-  },
-  beforeDestroy() {
-    this.select.options.forEach((option, idx) => {
-      if (option._instance === this) {
-        this.select.onOptionDestroy(idx)
-      }
-    })
+    selected() {
+      return !!this.select && this.select.isSelected(this.value)
+    },
+    isFocus() {
+      return !!this.select && this.select.focusUid === this.option.uid
+    },
   },
   methods: {
     doSelect() {
-      if (this.disabled) return false
-      this.dispatch('AtSelect', 'on-select-selected', this.value)
+      if (this.disabled || !this.select) return
+      this.select.select(this.value)
     },
     blur() {
-      this.isFocus = false
-    },
-    queryChange(val) {
-      const parsedQuery = val.replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1')
-      this.hidden = !new RegExp(parsedQuery, 'i').test(this.searchLabel)
+      if (this.select) this.select.blur(this.option.uid)
     },
   },
 }

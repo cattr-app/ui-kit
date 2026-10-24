@@ -15,9 +15,9 @@
   >
     <!-- S Selection -->
     <div ref="trigger" class="at-select__selection" @click="toggleMenu">
-      <span v-for="(item, index) in selectedMultiple" :key="index" class="at-tag">
+      <span v-for="item in selectedMultiple" :key="item.value" class="at-tag">
         <span class="at-tag__text">{{ item.label }}</span>
-        <i class="icon icon-x at-tag__close" @click.stop="removeTag(index)"></i>
+        <i class="icon icon-x at-tag__close" @click.stop="removeTag(item.value)"></i>
       </span>
       <span v-show="showPlaceholder && !filterable" class="at-select__placeholder">{{
         localePlaceholder
@@ -32,6 +32,7 @@
         type="text"
         class="at-select__input"
         :placeholder="showPlaceholder ? localePlaceholder : ''"
+        @input="handleInput"
         @blur="handleBlur"
         @keydown.delete="handleInputDelete"
       />
@@ -45,7 +46,7 @@
     <!-- E Selection -->
 
     <!-- S Dropdown -->
-    <transition name="slide-up" @after-leave="doDestory">
+    <transition name="slide-up">
       <div
         v-show="visible"
         ref="popover"
@@ -55,7 +56,7 @@
         <ul v-show="notFound" class="at-select__not-found">
           <li>{{ localeNotFoundText }}</li>
         </ul>
-        <ul v-show="!notFound" ref="options" class="at-select__list">
+        <ul v-show="!notFound" class="at-select__list">
           <slot></slot>
         </ul>
       </div>
@@ -65,26 +66,30 @@
 </template>
 
 <script>
-import Clickoutside from '../../../directives/clickoutside'
-import Emitter from '../../../mixins/emitter'
-import PopoverMixin from '../../../mixins/popover'
+import { getCurrentInstance, reactive, ref, toRef } from 'vue'
+import clickoutside from '../../../directives/clickoutside'
 import Locale from '../../../mixins/locale'
-import { findComponentsDownward } from '../../../utils/util'
+import { useChildren } from '../../../composables/useChildren'
+import { SelectContext } from './context'
+
+const BLUR_DELAY = 300
+
+function isEmpty(value) {
+  return (
+    value === '' || value === undefined || value === null || (Array.isArray(value) && !value.length)
+  )
+}
 
 export default {
   name: 'AtSelect',
-  directives: { Clickoutside },
-  mixins: [Emitter, PopoverMixin, Locale],
-  provide() {
-    return {
-      select: this,
-    }
-  },
+  directives: { clickoutside },
+  mixins: [Locale],
   props: {
-    value: {
+    modelValue: {
       type: [String, Number, Array],
       default: '',
     },
+    // kept for API compatibility with 1.x; only `click` is supported
     trigger: {
       type: String,
       default: 'click',
@@ -125,33 +130,74 @@ export default {
       default: 'bottom',
     },
   },
+  emits: ['update:modelValue', 'on-change'],
+  setup(props) {
+    const vm = getCurrentInstance().proxy
+    const { children, register, unregister, sort } = useChildren()
+    // internal copy of the selection, so the component also works without v-model
+    const model = ref(props.modelValue)
+    // text in the filter input
+    const query = ref('')
+    // active filter: follows user input only, reset on open/select
+    const filterQuery = ref('')
+    const focusUid = ref(null)
+
+    SelectContext.provide(
+      reactive({
+        modelValue: model,
+        multiple: toRef(props, 'multiple'),
+        filterable: toRef(props, 'filterable'),
+        valueWithLabel: toRef(props, 'valueWithLabel'),
+        query: filterQuery,
+        focusUid,
+        children,
+        register,
+        unregister,
+        select: value => vm.selectOption(value),
+        isSelected: value =>
+          props.multiple
+            ? Array.isArray(model.value) && model.value.includes(value)
+            : model.value === value,
+        blur: uid => {
+          if (focusUid.value === uid) focusUid.value = null
+        },
+      }),
+    )
+
+    return { children, sortChildren: sort, model, query, filterQuery, focusUid }
+  },
   data() {
     return {
       visible: false,
-      options: [],
-      optionInstances: [],
-      selectedSingle: '',
-      selectedMultiple: [],
-      focusIndex: 0,
-      query: '',
-      notFound: false,
-      model: this.value,
     }
   },
   computed: {
+    values() {
+      return Array.isArray(this.model) ? this.model : []
+    },
     showPlaceholder() {
-      let status = false
-
-      if (this.model === '') {
-        status = true
-      } else if (Array.isArray(this.model) && !this.model.length) {
-        status = true
-      }
-
-      return status
+      return isEmpty(this.model)
     },
     showCloseIcon() {
       return !this.multiple && this.clearable && !this.showPlaceholder
+    },
+    selectedSingle() {
+      if (this.multiple || isEmpty(this.model)) return ''
+      return this.labelOf(this.model)
+    },
+    selectedMultiple() {
+      if (!this.multiple) return []
+      return this.values
+        .map(value => this.findOption(value))
+        .filter(Boolean)
+        .map(option => ({ value: option.value, label: option.label }))
+    },
+    navigable() {
+      return this.children.map(c => c.exposed).filter(o => !o.hidden && !o.disabled)
+    },
+    notFound() {
+      if (!this.children.length) return !!this.filterQuery
+      return this.children.every(c => c.exposed.hidden)
     },
     localePlaceholder() {
       return typeof this.placeholder === 'undefined'
@@ -165,384 +211,203 @@ export default {
     },
   },
   watch: {
-    value(val) {
-      this.model = val
-      if (val === '') {
-        this.query = ''
-      }
+    modelValue(value) {
+      this.model = value
+      if (isEmpty(value)) this.query = ''
     },
-    model() {
-      this.$emit('input', this.model)
-      this.modelToQuery()
-
-      if (this.multiple) {
-        this.updateMultipleSelected()
-      } else {
-        this.updateSingleSelected()
-      }
+    selectedSingle: {
+      immediate: true,
+      handler(label) {
+        // single filterable: the input shows the selected label (options may register later)
+        if (this.filterable && !this.multiple && !this.visible) this.query = String(label)
+      },
     },
-    visible(val) {
-      if (val) {
-        if (this.multiple && this.filterable) {
-          this.$refs.input.focus()
-        } else if (this.filterable) {
-          this.$refs.input.select()
-        }
-      } else {
+    visible(value) {
+      this.focusUid = null
+      if (value) {
+        this.updatePosition()
         if (this.filterable) {
-          this.$refs.input.blur()
-
-          setTimeout(() => {
-            this.broadcastQuery('')
-          }, 300)
+          this.$nextTick(() => {
+            const input = this.$refs.input
+            if (!input) return
+            if (this.multiple) input.focus()
+            else input.select()
+          })
         }
-        this.broadcast('Dropdown', 'on-destroy-popper')
+      } else if (this.filterable && this.$refs.input) {
+        this.$refs.input.blur()
       }
     },
-    query(val) {
-      this.broadcast('AtOption', 'on-query-change', val)
-
-      let isHidden = true
-
-      this.$nextTick(() => {
-        const options = findComponentsDownward(this, 'AtOption')
-        options.forEach(option => {
-          if (!option.hidden) {
-            isHidden = false
-          }
-        })
-        this.notFound = isHidden
-      })
-
-      this.broadcast('Dropdown', 'on-update-popper')
+    filterQuery() {
+      this.updatePosition()
     },
   },
+  created() {
+    // plain instance field, not reactive
+    this.blurTimer = null
+  },
   mounted() {
-    this.modelToQuery()
-    this.updateOptions()
-
     document.addEventListener('keydown', this.handleKeydown)
+  },
+  updated() {
+    // keyed v-for may reorder options without remounting them
+    this.sortChildren()
+  },
+  beforeUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown)
+    clearTimeout(this.blurTimer)
+  },
+  methods: {
+    findOption(value) {
+      const child = this.children.find(c => c.exposed.value === value)
+      return child ? child.exposed : null
+    },
+    labelOf(value) {
+      const option = this.findOption(value)
+      return option ? option.label : ''
+    },
+    setModel(next) {
+      this.model = next
+      this.$emit('update:modelValue', next)
 
-    this.$on('on-select-selected', value => {
-      if (this.model === value) {
-        this.hideMenu()
+      if (!this.valueWithLabel) {
+        this.$emit('on-change', next)
       } else if (this.multiple) {
-        const index = this.model.indexOf(value)
-
-        if (index > -1) {
-          this.removeTag(index)
-        } else {
-          this.model.push(value)
-          this.broadcast('Dropdown', 'on-update-popper')
-        }
+        this.$emit(
+          'on-change',
+          next.map(value => ({ value, label: this.labelOf(value) })),
+        )
+      } else {
+        this.$emit('on-change', { value: next, label: this.labelOf(next) })
+      }
+    },
+    selectOption(value) {
+      if (this.multiple) {
+        const next = this.values.includes(value)
+          ? this.values.filter(v => v !== value)
+          : [...this.values, value]
+        this.setModel(next)
 
         if (this.filterable) {
           this.query = ''
-          this.$refs.input.focus()
+          this.filterQuery = ''
+          if (this.$refs.input) this.$refs.input.focus()
         }
+        this.updatePosition()
       } else {
-        this.model = value
-
-        if (this.filterable) {
-          const options = findComponentsDownward(this, 'AtOption')
-          options.forEach(option => {
-            if (option.value === value) {
-              this.query = typeof option.label === 'undefined' ? option.searchLabel : option.label
-            }
-          })
-        }
+        if (this.model !== value) this.setModel(value)
+        if (this.filterable) this.query = String(this.labelOf(value))
+        this.hideMenu()
       }
-    })
-  },
-  methods: {
+    },
     toggleMenu() {
       if (this.disabled) return
+      // opening from the trigger shows all options; typing filters again
+      if (!this.visible) this.filterQuery = ''
       this.visible = !this.visible
     },
     hideMenu() {
       this.visible = false
-      this.focusIndex = 0
-      this.broadcast('AtOption', 'on-select-close')
+      this.focusUid = null
     },
     handleClose() {
-      this.hideMenu()
+      if (this.visible) this.hideMenu()
     },
     handleKeydown(evt) {
-      if (this.visible) {
-        const keyCode = evt.keyCode
+      if (!this.visible) return
 
-        if (keyCode === 27) {
-          // escape
+      switch (evt.key) {
+        case 'Escape':
           evt.preventDefault()
           this.hideMenu()
-        } else if (keyCode === 40) {
-          // down arrow
+          break
+        case 'ArrowDown':
           evt.preventDefault()
-          this.navigateOptions('next')
-        } else if (keyCode === 38) {
-          // up arrow
+          this.navigateOptions(1)
+          break
+        case 'ArrowUp':
           evt.preventDefault()
-          this.navigateOptions('prev')
-        } else if (keyCode === 13) {
-          // enter
+          this.navigateOptions(-1)
+          break
+        case 'Enter': {
           evt.preventDefault()
-
-          let hasFocus = false
-
-          const options = findComponentsDownward(this, 'AtOption')
-          options.forEach(option => {
-            if (option.isFocus) {
-              hasFocus = true
-              option.doSelect()
-            }
-          })
-
-          if (!hasFocus) {
-            this.selectFirstOption()
-          }
+          const option =
+            this.navigable.find(o => o.uid === this.focusUid) || this.navigable[0] || null
+          if (option) this.selectOption(option.value)
+          break
         }
       }
     },
-    selectFirstOption() {
-      let firstOption
+    navigateOptions(step) {
+      const list = this.navigable
+      if (!list.length) return
 
-      const options = findComponentsDownward(this, 'AtOption')
-      options.forEach(option => {
-        if (!firstOption && !option.hidden) {
-          firstOption = option
-          option.doSelect()
-        }
-      })
-    },
-    updateOptions() {
-      const options = []
-
-      const optionsEle = findComponentsDownward(this, 'AtOption')
-      optionsEle.forEach(option => {
-        options.push({
-          value: option.value,
-          label: typeof option.label === 'undefined' ? option.$el.innerHTML : option.label,
-        })
-
-        this.optionInstances.push(option)
-      })
-
-      this.options = options
-
-      this.updateSingleSelected(true)
-      this.updateMultipleSelected(true)
-    },
-    onOptionDestroy(index) {
-      this.options.splice(index, 1)
-      this.optionInstances.splice(index, 1)
-    },
-    updateSingleSelected(init = false) {
-      const type = typeof this.model
-
-      if (type === 'string' || type === 'number') {
-        for (let i = 0; i < this.options.length; i++) {
-          if (this.model === this.options[i].value) {
-            this.selectedSingle = this.options[i].label
-            break
-          }
-        }
+      const current = list.findIndex(o => o.uid === this.focusUid)
+      let next
+      if (current === -1) {
+        next = step > 0 ? 0 : list.length - 1
+      } else {
+        next = (current + step + list.length) % list.length
       }
 
-      this.toggleSingleSelected(this.model, init)
-    },
-    updateMultipleSelected(init = false) {
-      if (this.multiple && Array.isArray(this.model)) {
-        const selected = []
-
-        for (let i = 0; i < this.model.length; i++) {
-          const model = this.model[i]
-
-          for (let j = 0; j < this.options.length; j++) {
-            const option = this.options[j]
-
-            if (model === option.value) {
-              selected.push({
-                value: option.value,
-                label: option.label,
-              })
-            }
-          }
-        }
-
-        this.selectedMultiple = selected
-      }
-
-      this.toggleMultipleSelected(this.model, init)
-    },
-    clearSingleSelect() {
-      if (this.showCloseIcon) {
-        const options = findComponentsDownward(this, 'AtOption')
-        options.forEach(option => {
-          option.selected = false
-        })
-
-        this.model = ''
-
-        if (this.filterable) {
-          this.query = ''
-        }
-      }
-    },
-    removeTag(index) {
-      if (this.disabled) return false
-      this.model.splice(index, 1)
-
-      if (this.filterable && this.visible) {
-        this.$refs.input.focus()
-      }
-
-      this.broadcast('Dropdown', 'on-update-popper')
-    },
-    toggleSingleSelected(value, init = false) {
-      if (this.multiple) return
-
-      let label = ''
-
-      const options = findComponentsDownward(this, 'AtOption')
-      options.forEach(option => {
-        if (option.value === value) {
-          option.selected = true
-          label = typeof option.label === 'undefined' ? option.$el.innerHTML : option.label
-        } else {
-          option.selected = false
-        }
-      })
-
-      this.hideMenu()
-
-      if (!init) {
-        if (this.valueWithLabel) {
-          this.$emit('on-change', {
-            value,
-            label,
-          })
-        } else {
-          this.$emit('on-change', value)
-        }
-      }
-    },
-    toggleMultipleSelected(values, init = false) {
-      if (!this.multiple) return
-
-      const valueLabelArr = []
-
-      for (let i = 0; i < values.length; i++) {
-        valueLabelArr.push({
-          value: values[i],
-        })
-      }
-
-      const options = findComponentsDownward(this, 'AtOption')
-
-      options.forEach(option => {
-        const index = values.indexOf(option.value)
-
-        if (index > -1) {
-          option.selected = true
-          valueLabelArr[index].label =
-            typeof option.label === 'undefined' ? option.$el.innerHTML : option.label
-        } else {
-          option.selected = false
-        }
-      })
-
-      if (!init) {
-        if (this.valueWithLabel) {
-          this.$emit('on-change', valueLabelArr)
-        } else {
-          this.$emit('on-change', values)
-        }
-      }
-    },
-    navigateOptions(direction) {
-      if (direction === 'next') {
-        const next = this.focusIndex + 1
-        this.focusIndex = this.focusIndex === this.options.length ? 1 : next
-      } else if (direction === 'prev') {
-        const prev = this.focusIndex - 1
-        this.focusIndex = this.focusIndex <= 1 ? this.options.length : prev
-      }
-
-      let isValid = false
-      let hasValidOption = false // avoid infinite loops
-
-      const options = findComponentsDownward(this, 'AtOption')
-
-      options.forEach((option, idx) => {
-        if (idx + 1 === this.focusIndex) {
-          isValid = !option.disabled && !option.hidden
-
-          if (isValid) {
-            option.isFocus = true
-          }
-        } else {
-          option.isFocus = false
-        }
-
-        if (!option.hidden && !option.disabled) {
-          hasValidOption = true
-        }
-      })
-
-      if (!isValid && hasValidOption) {
-        this.navigateOptions(direction)
-      }
-
+      this.focusUid = list[next].uid
       this.resetScrollTop()
     },
     resetScrollTop() {
-      const index = this.focusIndex - 1
-      const bottomOverflowDistance =
-        this.optionInstances[index].$el.getBoundingClientRect().bottom -
-        this.$refs.popover.getBoundingClientRect().bottom
+      const popover = this.$refs.popover
+      const child = this.children.find(c => c.exposed.uid === this.focusUid)
+      if (!popover || !child || !child.el || !child.el.getBoundingClientRect) return
 
-      if (bottomOverflowDistance) {
-        this.$refs.popover.scrollTop += bottomOverflowDistance
+      const bottomOverflowDistance =
+        child.el.getBoundingClientRect().bottom - popover.getBoundingClientRect().bottom
+
+      if (bottomOverflowDistance > 0) {
+        popover.scrollTop += bottomOverflowDistance
       }
     },
-    handleFocus() {
-      this.$refs.input.select()
+    updatePosition() {
+      this.$nextTick(() => {
+        const { trigger, popover } = this.$refs
+        if (!this.visible || !trigger || !popover) return
+
+        const top = String(this.placement).startsWith('top')
+          ? trigger.offsetTop - popover.offsetHeight
+          : trigger.offsetTop + trigger.offsetHeight
+
+        popover.style.top = `${top}px`
+        popover.style.left = `${trigger.offsetLeft}px`
+      })
+    },
+    clearSingleSelect() {
+      if (!this.showCloseIcon) return
+      this.setModel('')
+      if (this.filterable) this.query = ''
+    },
+    removeTag(value) {
+      if (this.disabled) return
+      this.setModel(this.values.filter(v => v !== value))
+
+      if (this.filterable && this.visible && this.$refs.input) {
+        this.$refs.input.focus()
+      }
+      this.updatePosition()
+    },
+    handleInput(evt) {
+      this.filterQuery = evt.target.value
+      if (!this.visible && !this.disabled) this.visible = true
     },
     handleBlur() {
-      setTimeout(() => {
-        if (!this.multiple && this.model !== '') {
-          const options = findComponentsDownward(this, 'AtOption')
-          options.forEach(option => {
-            if (option.value === this.model) {
-              this.query = typeof option.label === 'undefined' ? option.searchLabel : option.label
-            }
-          })
-        } else {
-          this.query = ''
-        }
-      }, 300)
+      // delayed: a click on an option blurs the input before the option handles it
+      clearTimeout(this.blurTimer)
+      this.blurTimer = setTimeout(() => {
+        this.query = !this.multiple && !isEmpty(this.model) ? String(this.selectedSingle) : ''
+      }, BLUR_DELAY)
     },
     handleInputDelete() {
-      if (this.multiple && this.model.length && this.query === '') {
-        this.removeTag(this.model.length - 1)
+      if (this.multiple && this.values.length && this.query === '') {
+        this.removeTag(this.values[this.values.length - 1])
       }
     },
-    modelToQuery() {
-      if (!this.multiple && this.filterable && typeof this.model !== 'undefined') {
-        const options = findComponentsDownward(this, 'AtOption')
-        options.forEach(option => {
-          if (this.model === option.value) {
-            this.query = option.label || option.searchLabel || option.value
-          }
-        })
-      }
-    },
-    broadcastQuery(val) {
-      this.broadcast('AtOption', 'on-query-change', val)
-    },
-  },
-  beforeDestory() {
-    document.removeEventListener('keydown', this.handleKeydown)
   },
 }
 </script>

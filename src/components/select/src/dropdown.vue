@@ -1,44 +1,30 @@
 <template>
-  <div class="at-select__dropdown" :style="styles">
+  <div class="at-select__dropdown" :class="`at-select__dropdown--${placement}`" :style="styles">
     <slot></slot>
   </div>
 </template>
 
 <script>
-import PopoverMixin from '../../../mixins/popover'
-
+/**
+ * Internal, presentational dropdown panel of `AtSelect` (not exported).
+ * No popover mixin and no parent lookup: width/placement come from props.
+ */
 export default {
-  name: 'Dropdown',
-  mixins: [PopoverMixin],
+  name: 'AtSelectDropdown',
   props: {
     placement: {
       type: String,
       default: 'bottom',
     },
-  },
-  data() {
-    return {
-      popper: null,
-      width: '',
-    }
+    width: {
+      type: [Number, String],
+      default: '',
+    },
   },
   computed: {
     styles() {
-      const style = {}
-      if (this.width) {
-        style.width = `${this.width}px`
-      }
-      return style
-    },
-  },
-  created() {
-    this.$on('on-update-popper', this.update)
-  },
-  methods: {
-    update() {
-      if (this.$parent.$options.name === 'AtSelect') {
-        this.width = this.$parent.$el.style.width | 0
-      }
+      if (this.width === '' || this.width === null) return {}
+      return { width: typeof this.width === 'number' ? `${this.width}px` : this.width }
     },
   },
 }

@@ -181,6 +181,16 @@
 - `AtSubmenu` больше не подключает mixin popover: недокументированные и ни на что не влиявшие props `trigger`, `title`, `content`, `header`, `placement`, `value` удалены. Атрибут `title` на `<at-submenu>` теперь попадает на корневой `<li>` как HTML-атрибут (нативная подсказка). Убран мусорный атрибут `placement="placementValue"` на `div.at-dropdown__popover`.
 - `AtMenuItem` резолвит `router-link` (vue-router 4) только при непустом `to`: меню без `to` работает без vue-router и без предупреждения `Failed to resolve component: router-link`. Подсветка по `router-link-active` по-прежнему перепроверяется при смене `active-name`. `AtSubmenu`/`AtMenuItem` вне `AtMenu` больше не падают (в 1.x — `parentMenu` = `null`).
 
+### Select, Option, OptionGroup
+
+- v-model: prop `value` → `modelValue` (String / Number / Array), событие `input` → `update:modelValue`. `v-model` работает как раньше; `:value`/`@input` → `:model-value`/`@update:model-value`. Событие `on-change` и его аргумент прежние (значение / массив значений; с `value-with-label` — `{ value, label }` / массив таких объектов).
+- Было: `on-change` эмитился и при внешнем изменении `value` родителем (через внутренний watcher). Стало: `update:modelValue` и `on-change` — только на действия пользователя (клик/Enter по опции, удаление тега, крестик очистки). Что править: если `@on-change` использовался как реакция на программную смену значения — следить за своей переменной `watch`-ем.
+- Было: в `multiple` массив из `v-model` мутировался на месте (`push`/`splice`). Стало: эмитится новый массив, исходный не меняется. Что править: ничего, если значение берётся из `v-model`/события.
+- Select больше не наследует mixin popover: props `title`, `content`, `header` и событие `toggle` (в 1.x протекали из mixin и для Select смысла не имели) удалены. `placement` и `trigger` объявлены у Select; `placement` поддерживает `bottom` (по умолчанию) и `top` (варианты `top-*`/`bottom-*` → то же), `trigger` — только `click`, как и раньше фактически.
+- Подпись опции без prop `label` берётся из текста слота (`textContent`), а не `innerHTML`: в выбранном значении/тегах больше не видна HTML-разметка слота. Фильтрация (`filterable`) идёт по этой подписи без учёта регистра. Для кастомного шаблона опции по-прежнему рекомендуется задавать `label`.
+- Клавиатура: навигация стрелками пропускает disabled и скрытые фильтром опции, по кругу; Enter без подсвеченной опции выбирает первую доступную; Esc закрывает. Опции, добавленные/удалённые позже (`v-for` по реактивному массиву), регистрируются автоматически в DOM-порядке; выбранная подпись обновляется, когда нужная опция появляется.
+- `AtOption` вне `AtSelect` рендерится, но ничего не выбирает (в 1.x падал на `inject: ['select']`). `AtOptionGroup` без изменений. Слотов у Select/Option не прибавилось и не убавилось: `default`.
+
 ## Сервисы
 
 - `[TODO 20-03, 30-w3-*]` До завершения миграции сервисов `$Message`, `$Modal`, `$Notify`, `$Loading` существуют, но при вызове бросают `… is not migrated to Vue 3 yet`. Промежуточные сборки ветки `feat/vue-3` для потребителя непригодны до закрытия этапа 30.
