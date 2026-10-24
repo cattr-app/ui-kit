@@ -5,16 +5,16 @@ export default {
     item: Object,
     column: Object,
     index: Number,
-    render: Function
+    render: Function,
   },
   render: (h, ctx) => {
     const params = {
       item: ctx.props.item,
-      index: ctx.props.index
+      index: ctx.props.index,
     }
     if (ctx.props.column) {
       params.column = ctx.props.column
     }
     return ctx.props.render(h, params)
-  }
+  },
 }

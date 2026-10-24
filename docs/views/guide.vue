@@ -19,13 +19,13 @@
 
 <style lang="scss" scoped>
 .wrapper {
-  background-color: #F8FAFF;
+  background-color: #f8faff;
 }
 .page-header {
   position: relative !important;
 }
 .footer {
-  box-shadow: 0 4px 30px 0 rgba(223, 225, 230, .8);
+  box-shadow: 0 4px 30px 0 rgba(223, 225, 230, 0.8);
 }
 </style>
 
@@ -39,17 +39,17 @@ export default {
   components: {
     Sidebar,
     MHeader,
-    MFooter
+    MFooter,
   },
-  data () {
+  data() {
     return {
-      navs: navsConfig.zh.guide
+      navs: navsConfig.zh.guide,
     }
   },
   methods: {
-    afterLeave () {
+    afterLeave() {
       window.scrollTo(0, 0)
-    }
-  }
+    },
+  },
 }
 </script>

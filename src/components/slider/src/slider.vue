@@ -17,30 +17,33 @@
     <div
       class="at-slider__track"
       :class="{
-        'at-slider--disabled': disabled
+        'at-slider--disabled': disabled,
       }"
       @click="onSliderClick"
-      ref="slider">
-      <div class="at-slider__bar" :style="{ 'width': currentPosition }"></div>
+      ref="slider"
+    >
+      <div class="at-slider__bar" :style="{ width: currentPosition }"></div>
 
       <!-- S tooltip and dot -->
       <div
         class="at-slider__dot-wrapper"
         :class="{
           'at-slider__dot-wrapper--hover': isHover,
-          'at-slider__dot-wrapper--drag': isDrag
+          'at-slider__dot-wrapper--drag': isDrag,
         }"
-        :style="{ 'left': currentPosition }"
+        :style="{ left: currentPosition }"
         @mouseenter="handleMouseEnter"
         @mouseleave="handleMouseLeave"
-        @mousedown="handleMouseDown">
+        @mousedown="handleMouseDown"
+      >
         <at-tooltip placement="top" trigger="click" content="Top value" ref="tooltip">
           <div
             class="at-slider__dot"
             :class="{
               'at-slider__dot--hover': isHover,
-              'at-slider__dot--drag': isDrag
-            }"></div>
+              'at-slider__dot--drag': isDrag,
+            }"
+          ></div>
           <span slot="content">{{ value }}</span>
         </at-tooltip>
       </div>
@@ -59,31 +62,31 @@ export default {
   name: 'AtSlider',
   components: {
     AtInputNumber,
-    AtTooltip
+    AtTooltip,
   },
   props: {
     value: {
       type: Number,
-      default: 0
+      default: 0,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     min: {
       type: Number,
-      default: 0
+      default: 0,
     },
     max: {
       type: Number,
-      default: 100
+      default: 100,
     },
     step: {
       type: Number,
-      default: 1
-    }
+      default: 1,
+    },
   },
-  data () {
+  data() {
     return {
       inputValue: null,
       isHover: false,
@@ -93,14 +96,14 @@ export default {
       oldValue: this.value,
       startPos: 0,
       newPos: null,
-      currentPosition: `${(this.value - this.min) * 100 / (this.max - this.min)}%`
+      currentPosition: `${((this.value - this.min) * 100) / (this.max - this.min)}%`,
     }
   },
   watch: {
-    inputValue (val) {
+    inputValue(val) {
       this.$emit('input', Number(val))
     },
-    value (val) {
+    value(val) {
       if (typeof val !== 'number' || isNaN(val) || val < this.min) {
         this.$emit('input', this.min)
         return
@@ -112,51 +115,51 @@ export default {
       }
 
       this.inputValue = val
-      this.setPosition((val - this.min) * 100 / (this.max - this.min))
-    }
+      this.setPosition(((val - this.min) * 100) / (this.max - this.min))
+    },
   },
   computed: {
-    sliderWidth () {
+    sliderWidth() {
       return parseInt(getStyle(this.$refs.slider, 'width'))
-    }
+    },
   },
   methods: {
-    handleMouseEnter () {
+    handleMouseEnter() {
       clearTimeout(this._timer)
       this.isHover = true
       this.$refs.tooltip.showPopover()
     },
-    handleMouseLeave () {
+    handleMouseLeave() {
       if (this.isDrag) return
       this.isHover = false
       this._timer = setTimeout(() => {
         this.$refs.tooltip.show = false
       }, 200)
     },
-    handleMouseDown (evt) {
+    handleMouseDown(evt) {
       if (this.disabled) return
       this.onDragStart(evt)
 
       window.addEventListener('mousemove', this.onDragging)
       window.addEventListener('mouseup', this.onDragEnd)
     },
-    onDragStart (evt) {
+    onDragStart(evt) {
       this.isDrag = true
       this.startX = evt.clientX
       this.startPos = parseInt(this.currentPosition)
     },
-    onDragging (evt) {
+    onDragging(evt) {
       if (this.isDrag) {
         let diff = 0
 
         this.$refs.tooltip.showPopover()
         this.currentX = evt.clientX
-        diff = (this.currentX - this.startX) * 100 / this.sliderWidth
+        diff = ((this.currentX - this.startX) * 100) / this.sliderWidth
         this.newPos = this.startPos + diff
         this.setPosition(this.newPos)
       }
     },
-    onDragEnd () {
+    onDragEnd() {
       if (this.isDrag) {
         this.$refs.tooltip.show = false
         this.isDrag = false
@@ -166,7 +169,7 @@ export default {
         window.removeEventListener('mouseup', this.onDragEnd)
       }
     },
-    setPosition (pos) {
+    setPosition(pos) {
       if (pos < 0) {
         pos = 0
       } else if (pos > 100) {
@@ -175,31 +178,31 @@ export default {
 
       const lengthPerStep = 100 / ((this.max - this.min) / this.step)
       const steps = Math.round(pos / lengthPerStep)
-      let value = (steps * lengthPerStep * (this.max - this.min) * 0.01) + this.min
+      let value = steps * lengthPerStep * (this.max - this.min) * 0.01 + this.min
 
       value = parseFloat(value.toFixed(0))
 
       this.$emit('input', value)
-      this.currentPosition = `${(this.value - this.min) * 100 / (this.max - this.min)}%`
+      this.currentPosition = `${((this.value - this.min) * 100) / (this.max - this.min)}%`
 
       if (!this.isDrag && this.value !== this.oldValue) {
         this.$emit('change', this.value)
         this.oldValue = this.value
       }
     },
-    onSliderClick (evt) {
+    onSliderClick(evt) {
       if (this.disabled || this.isDrag) return
       const sliderOffsetLeft = this.$refs.slider.getBoundingClientRect().left
-      this.setPosition((evt.clientX - sliderOffsetLeft) / this.sliderWidth * 100)
+      this.setPosition(((evt.clientX - sliderOffsetLeft) / this.sliderWidth) * 100)
     },
-    onInputChange () {
+    onInputChange() {
       if (this.value === '') return
       if (!isNaN(this.value)) {
-        this.setPosition((this.value - this.min) * 100 / (this.max - this.min))
+        this.setPosition(((this.value - this.min) * 100) / (this.max - this.min))
       }
-    }
+    },
   },
-  created () {
+  created() {
     if (typeof this.value !== 'number' || isNaN(this.value) || this.value < this.min) {
       this.$emit('input', this.min)
     } else if (this.value > this.max) {
@@ -207,6 +210,6 @@ export default {
     }
 
     this.inputValue = this.inputValue || this.value
-  }
+  },
 }
 </script>

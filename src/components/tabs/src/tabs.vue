@@ -1,32 +1,38 @@
 <template>
-  <div class="at-tabs"
+  <div
+    class="at-tabs"
     :class="{
       'at-tabs--small': size === 'small',
       'at-tabs--card': type === 'card',
-      'at-tabs--scroll': scrollable
-    }">
+      'at-tabs--scroll': scrollable,
+    }"
+  >
     <div class="at-tabs__header">
       <div class="at-tabs__extra" v-if="$slots.extra">
         <slot name="extra"></slot>
       </div>
       <div class="at-tabs__nav">
         <!-- S prev btn -->
-        <span class="at-tabs__prev"
+        <span
+          class="at-tabs__prev"
           v-if="scrollable"
           :class="{
-            'at-tabs__prev--disabled': !prevable
+            'at-tabs__prev--disabled': !prevable,
           }"
-          @click="scrollPrev">
+          @click="scrollPrev"
+        >
           <i class="icon icon-chevron-left"></i>
         </span>
         <!-- E prev btn -->
         <!-- S next btn -->
-        <span class="at-tabs__next"
+        <span
+          class="at-tabs__next"
           v-if="scrollable"
           :class="{
-            'at-tabs__next--disabled': !nextable
+            'at-tabs__next--disabled': !nextable,
           }"
-          @click="scrollNext">
+          @click="scrollNext"
+        >
           <i class="icon icon-chevron-right"></i>
         </span>
         <!-- E next btn -->
@@ -34,26 +40,34 @@
         <div class="at-tabs__nav-wrap">
           <div class="at-tabs__nav-scroll" ref="navScroll">
             <div class="at-tabs-nav" ref="nav" :style="navStyle">
-              <div class="at-tabs-nav__item"
+              <div
+                class="at-tabs-nav__item"
                 :class="{
                   'at-tabs-nav__item--active': index === activeIndex,
                   'at-tabs-nav__item--disabled': item.disabled,
-                  'at-tabs-nav__item--closable': item.closable
+                  'at-tabs-nav__item--closable': item.closable,
                 }"
-                v-for="(item, index) in navList" :key="index"
-                @click="setNavByIndex(index)">
+                v-for="(item, index) in navList"
+                :key="index"
+                @click="setNavByIndex(index)"
+              >
                 <!-- S icon -->
-                <i v-if="item.icon"
+                <i
+                  v-if="item.icon"
                   class="icon at-tabs-nav__icon"
                   :class="{
-                    [item.icon]: item.icon
-                  }">
-                </i>{{ item.label }}
+                    [item.icon]: item.icon,
+                  }"
+                >
+                </i
+                >{{ item.label }}
                 <!-- E icon -->
                 <!-- S close btn -->
-                <span class="at-tabs-nav__close"
+                <span
+                  class="at-tabs-nav__close"
                   v-if="item.closable"
-                  @click.stop="removeHandle(index)">
+                  @click.stop="removeHandle(index)"
+                >
                   <i class="icon icon-x"></i>
                 </span>
                 <!-- E close btn -->
@@ -75,55 +89,55 @@ export default {
   name: 'AtTabs',
   props: {
     value: {
-      type: String
+      type: String,
     },
     type: {
       type: String,
       default: 'line',
-      validator: val => ['line', 'card'].indexOf(val) > -1
+      validator: val => ['line', 'card'].indexOf(val) > -1,
     },
     size: {
       type: String,
       default: 'default',
-      validator: val => ['default', 'small'].indexOf(val) > -1
+      validator: val => ['default', 'small'].indexOf(val) > -1,
     },
     closable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     animated: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
+  data() {
     return {
       navList: [],
       activeKey: this.value,
       navOffset: 0,
       navStyle: {
-        transform: ''
+        transform: '',
       },
       nextable: false,
-      prevable: false
+      prevable: false,
     }
   },
   watch: {
-    activeKey () {
+    activeKey() {
       this.$emit('on-change', {
         index: this.activeIndex,
-        name: this.activeKey
+        name: this.activeKey,
       })
       this.$nextTick(() => {
         this.scrollToActiveTab()
       })
-    }
+    },
   },
   computed: {
-    scrollable () {
+    scrollable() {
       return this.prevable || this.nextable
     },
-    activeIndex () {
+    activeIndex() {
       const navList = this.navList
       for (let i = 0, len = navList.length; i < len; i++) {
         const item = navList[i]
@@ -133,17 +147,17 @@ export default {
       }
       return 0
     },
-    tabsBodyTranslateStyle () {
+    tabsBodyTranslateStyle() {
       const activeIndex = this.activeIndex
       const translateValue = this.animated ? `${-activeIndex * 100}%` : 0
 
       return {
-        transform: `translate3d(${translateValue}, 0, 0)`
+        transform: `translate3d(${translateValue}, 0, 0)`,
       }
-    }
+    },
   },
   methods: {
-    scrollPrev () {
+    scrollPrev() {
       if (!this.prevable) return
 
       const containerWidth = this.$refs.navScroll.offsetWidth
@@ -155,7 +169,7 @@ export default {
 
       this.setOffset(newOffset)
     },
-    scrollNext () {
+    scrollNext() {
       if (!this.nextable) return
 
       const containerWidth = this.$refs.navScroll.offsetWidth
@@ -164,11 +178,14 @@ export default {
 
       if (navWidth - currentOffset <= containerWidth) return
 
-      const newOffset = (navWidth - currentOffset > containerWidth * 2) ? currentOffset + containerWidth : navWidth - containerWidth
+      const newOffset =
+        navWidth - currentOffset > containerWidth * 2
+          ? currentOffset + containerWidth
+          : navWidth - containerWidth
 
       this.setOffset(newOffset)
     },
-    scrollToActiveTab () {
+    scrollToActiveTab() {
       if (!this.scrollable) return
 
       const activeTab = this.$el.querySelector('.at-tabs-nav__item--active')
@@ -189,19 +206,17 @@ export default {
 
       this.setOffset(newOffset)
     },
-    getCurrentScrollOffset () {
+    getCurrentScrollOffset() {
       return this.navOffset
     },
-    setOffset (value) {
+    setOffset(value) {
       this.navOffset = Math.abs(value)
       this.navStyle.transform = `translate3d(-${this.navOffset}px, 0, 0)`
     },
-    getTabs () {
-      return this.$children.filter(item =>
-        item.$options.name === 'AtTabPane'
-      )
+    getTabs() {
+      return this.$children.filter(item => item.$options.name === 'AtTabPane')
     },
-    removeHandle (index) {
+    removeHandle(index) {
       const tabs = this.getTabs()
       const tab = tabs[index]
       let activeKey = ''
@@ -212,7 +227,7 @@ export default {
 
       this.$emit('on-tab-remove', {
         index,
-        name: tab.currentName
+        name: tab.currentName,
       })
 
       this.$nextTick(() => {
@@ -223,13 +238,9 @@ export default {
         const newTabs = this.getTabs()
 
         if (newTabs.length) {
-          const nextAbleTabs = tabs.filter((item, itemIndex) =>
-            !item.disabled && itemIndex > index
-          )
+          const nextAbleTabs = tabs.filter((item, itemIndex) => !item.disabled && itemIndex > index)
 
-          const prevAbleTabs = tabs.filter((item, itemIndex) =>
-            !item.disabled && itemIndex < index
-          )
+          const prevAbleTabs = tabs.filter((item, itemIndex) => !item.disabled && itemIndex < index)
 
           if (nextAbleTabs.length) {
             activeKey = nextAbleTabs[0].currentName
@@ -243,7 +254,7 @@ export default {
         this.activeKey = activeKey
       }
     },
-    updateNav () {
+    updateNav() {
       this.navList = []
 
       this.getTabs().forEach((item, index) => {
@@ -252,7 +263,7 @@ export default {
           name: item.currentName || index,
           disabled: item.disabled,
           icon: item.icon,
-          closable: item.isClosable
+          closable: item.isClosable,
         })
 
         if (!item.currentName) {
@@ -268,7 +279,7 @@ export default {
         }
       })
     },
-    setNavByIndex (index) {
+    setNavByIndex(index) {
       const currentName = this.navList[index]
 
       if (!currentName.disabled) {
@@ -279,18 +290,18 @@ export default {
         }
       }
     },
-    switchTabsWithNoAnimated () {
+    switchTabsWithNoAnimated() {
       const tabs = this.getTabs()
 
       tabs.forEach(item => {
-        item.show = (item.currentName === this.activeKey)
+        item.show = item.currentName === this.activeKey
       })
     },
-    updateHandle () {
-      if(!this.$refs.nav || !this.$refs.navScroll) {
-        return;
+    updateHandle() {
+      if (!this.$refs.nav || !this.$refs.navScroll) {
+        return
       }
-      
+
       const navWidth = this.$refs.nav.offsetWidth
       const containerWidth = this.$refs.navScroll.offsetWidth
       const currentOffset = this.getCurrentScrollOffset()
@@ -304,14 +315,14 @@ export default {
       } else {
         this.nextable = false
         this.prevable = false
-        
+
         if (currentOffset > 0) {
           this.setOffset(0)
         }
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     window.addEventListener('resize', this.updateHandle, false)
 
     this.updateNav()
@@ -319,8 +330,8 @@ export default {
       this.scrollToActiveTab()
     }, 0)
   },
-  updated () {
+  updated() {
     this.updateHandle()
-  }
+  },
 }
 </script>

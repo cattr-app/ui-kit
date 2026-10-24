@@ -21,7 +21,7 @@ const Notification = options => {
   }
 
   instance = new NotificationConstructor({
-    data: options
+    data: options,
   })
 
   instance.id = id
@@ -29,7 +29,7 @@ const Notification = options => {
   document.body.appendChild(instance.vm.$el)
   instance.vm.isShow = true
   instance.dom = instance.vm.$el
-  instance.dom.style.zIndex = (zindexSeed++)
+  instance.dom.style.zIndex = zindexSeed++
 
   const offset = 0
   let topDist = offset
@@ -74,7 +74,7 @@ noticeType.forEach(type => {
   Notification[type] = options => {
     if (typeof options === 'string') {
       options = {
-        message: options
+        message: options,
       }
     }
 

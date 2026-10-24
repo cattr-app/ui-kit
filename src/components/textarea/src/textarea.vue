@@ -2,8 +2,9 @@
   <div
     class="at-textarea"
     :class="{
-      'at-textarea--disabled': disabled
-    }">
+      'at-textarea--disabled': disabled,
+    }"
+  >
     <textarea
       class="at-textarea__original"
       v-model="store"
@@ -39,65 +40,65 @@ export default {
     disabled: Boolean,
     rows: {
       type: Number,
-      default: 2
+      default: 2,
     },
     minlength: Number,
     maxlength: Number,
     autofocus: Boolean,
     autosize: {
       type: Boolean,
-      default: false
+      default: false,
     },
     minRows: [Number, String],
     maxRows: [Number, String],
     resize: {
       type: String,
-      default: 'vertical' // none, both, horizontal, vertical
-    }
+      default: 'vertical', // none, both, horizontal, vertical
+    },
   },
-  data () {
+  data() {
     return {
       store: this.value,
-      calculateStyle: {}
+      calculateStyle: {},
     }
   },
   computed: {
-    textareaStyle () {
+    textareaStyle() {
       return Object.assign({}, this.calculateStyle, {
-        resize: this.resize
+        resize: this.resize,
       })
-    }
+    },
   },
   watch: {
-    value (value) {
+    value(value) {
       this.store = value
     },
-    store (value) {
+    store(value) {
       this.$nextTick(() => {
         this.resizeTextarea()
       })
       this.$emit('input', value)
       this.$emit('change', value)
-    }
+    },
   },
   methods: {
-    handleFocus (evt) {
+    handleFocus(evt) {
       this.$emit('focus', evt)
     },
-    handleBlur (evt) {
+    handleBlur(evt) {
       this.$emit('blur', evt)
     },
-    handleInput (evt) {
+    handleInput(evt) {
       this.store = evt.target.value
     },
-    resizeTextarea () {
+    resizeTextarea() {
       if (!this.autosize && !this.minRows && !this.maxRows) return
 
       this.calculateStyle = calcTextareaHeight(this.$refs.textarea, this.minRows, this.maxRows)
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.resizeTextarea()
-  }
+  },
 }
 </script>

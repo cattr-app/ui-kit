@@ -25,28 +25,30 @@ if (['en', 'zh'].indexOf(navigatorLang) <= -1) {
   navigatorLang = ''
 }
 
-const userLang = urlLang || window.localStorage.getItem('cattr-ui-language') || navigatorLang || 'zh'
+const userLang =
+  urlLang || window.localStorage.getItem('cattr-ui-language') || navigatorLang || 'zh'
 
 const i18n = new VueI18n({
   locale: userLang,
   fallbackLocale: 'en',
   messages: {
-    'en': {
-      ...enLocale
+    en: {
+      ...enLocale,
     },
-    'zh': {
-      ...zhLocale
-    }
-  }
+    zh: {
+      ...zhLocale,
+    },
+  },
 })
 
 AtUI.i18n((key, value) => i18n.t(key, value))
 
 Vue.config.debug = process.env.NODE_ENV !== 'production'
 
-new Vue({ // eslint-disable-line
+new Vue({
+  // eslint-disable-line
   el: '#app',
   router,
   i18n,
-  ...App
+  ...App,
 })

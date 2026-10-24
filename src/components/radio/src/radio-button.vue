@@ -1,20 +1,17 @@
 <template>
   <label
     class="at-radio-button"
-    :class="[
-      size ? `at-radio-button--${size}` : '',
-      { 'at-radio--checked': store === label }
-    ]">
+    :class="[size ? `at-radio-button--${size}` : '', { 'at-radio--checked': store === label }]"
+  >
     <input
       type="radio"
       class="at-radio-button__original"
       v-model="store"
       :value="label"
       :name="name"
-      :disabled="disabled">
-    <span
-      class="at-radio-button__inner"
-      :style="store === label ? activeStyle : null">
+      :disabled="disabled"
+    />
+    <span class="at-radio-button__inner" :style="store === label ? activeStyle : null">
       <slot></slot>
     </span>
   </label>
@@ -27,28 +24,28 @@ export default {
     name: String,
     label: {
       type: [String, Number],
-      required: true
+      required: true,
     },
     disabled: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      size: this.$parent.size
+      size: this.$parent.size,
     }
   },
   computed: {
     store: {
-      get () {
+      get() {
         return this.$parent.value
       },
-      set (newValue) {
+      set(newValue) {
         this.$parent.$emit('input', newValue)
-      }
+      },
     },
-    activeStyle () {
+    activeStyle() {
       const styles = {}
 
       if (this.$parent.fill) {
@@ -60,7 +57,7 @@ export default {
       }
 
       return styles
-    }
-  }
+    },
+  },
 }
 </script>

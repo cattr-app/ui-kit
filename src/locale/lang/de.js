@@ -2,11 +2,11 @@ export default {
   at: {
     select: {
       placeholder: 'Auswählen',
-      notFoundText: 'keine Übereinstimmung'
+      notFoundText: 'keine Übereinstimmung',
     },
     modal: {
       okText: 'Bestätigen',
-      cancelText: 'Abbrechen'
+      cancelText: 'Abbrechen',
     },
     pagination: {
       prevText: 'Vorherige Seite',
@@ -18,10 +18,10 @@ export default {
       goto: 'Gehe zu',
       pageText: '',
       prev5Text: 'Vorherige 5 Seiten',
-      next5Text: 'Nächste 5 Seiten'
+      next5Text: 'Nächste 5 Seiten',
     },
     table: {
-      emptyText: 'Keine Daten'
-    }
-  }
+      emptyText: 'Keine Daten',
+    },
+  },
 }

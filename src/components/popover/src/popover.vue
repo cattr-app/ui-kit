@@ -7,11 +7,10 @@
     <transition :name="transition" @after-leave="doDestory">
       <div
         class="at-popover__popper"
-        :class="[
-          placement ? 'at-popover--' + placement : 'at-popover--top'
-        ]"
+        :class="[placement ? 'at-popover--' + placement : 'at-popover--top']"
         v-if="show"
-        ref="popover">
+        ref="popover"
+      >
         <div class="at-popover__arrow"></div>
         <div class="at-popover__title" v-if="title">
           <slot name="title"><div v-html="title"></div></slot>
@@ -35,22 +34,22 @@ export default {
   props: {
     trigger: {
       type: String,
-      default: 'click'
+      default: 'click',
     },
     transition: {
       type: String,
-      default: 'fade'
-    }
+      default: 'fade',
+    },
   },
   watch: {
-    value (value) {
+    value(value) {
       this.show = value
-    }
+    },
   },
   methods: {
-    handleClose () {
+    handleClose() {
       this.show = false
-    }
-  }
+    },
+  },
 }
 </script>

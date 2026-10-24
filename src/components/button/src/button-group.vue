@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="at-btn-group"
-    :class="[
-      size ? `at-btn-group--${size}` : ''
-    ]"
-  >
+  <div class="at-btn-group" :class="[size ? `at-btn-group--${size}` : '']">
     <slot></slot>
   </div>
 </template>
@@ -16,8 +11,8 @@ export default {
     size: String,
     gap: {
       type: Number,
-      default: -1
-    }
-  }
+      default: -1,
+    },
+  },
 }
 </script>

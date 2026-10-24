@@ -4,35 +4,35 @@ let loadingBarInstance
 let width = 2
 let timer
 
-function getLoadingBarInstance () {
+function getLoadingBarInstance() {
   loadingBarInstance = loadingBarInstance || new LoadingBar({ width })
   return loadingBarInstance
 }
 
-function update (options) {
+function update(options) {
   const instance = getLoadingBarInstance()
 
   instance.update(options)
 }
 
-function hide () {
+function hide() {
   setTimeout(() => {
     update({
       percent: 0,
-      show: false
+      show: false,
     })
     destroy()
   }, 800)
 }
 
-function destroy () {
+function destroy() {
   const instance = getLoadingBarInstance()
   clearTimer()
   loadingBarInstance = null
   instance.destroy()
 }
 
-function clearTimer () {
+function clearTimer() {
   if (timer) {
     clearInterval(timer)
     timer = null
@@ -40,7 +40,7 @@ function clearTimer () {
 }
 
 export default {
-  start () {
+  start() {
     if (timer) return
 
     let percent = 0
@@ -48,50 +48,50 @@ export default {
     update({
       percent,
       status: 'success',
-      show: true
+      show: true,
     })
 
     timer = setInterval(() => {
-      percent += Math.floor((Math.random() * 3) + 5)
+      percent += Math.floor(Math.random() * 3 + 5)
       if (percent > 95) {
         clearTimer()
       }
       update({
         percent,
         status: 'success',
-        show: true
+        show: true,
       })
     }, 200)
   },
-  update (percent) {
+  update(percent) {
     clearTimer()
     update({
       percent,
       status: 'success',
-      show: true
+      show: true,
     })
   },
-  finish () {
+  finish() {
     clearTimer()
     update({
       percent: 100,
       status: 'success',
-      show: true
+      show: true,
     })
     hide()
   },
-  error () {
+  error() {
     clearTimer()
     update({
       percent: 100,
       status: 'error',
-      show: true
+      show: true,
     })
     hide()
   },
-  config (options) {
+  config(options) {
     if (options.width) {
       width = options.width
     }
-  }
+  },
 }

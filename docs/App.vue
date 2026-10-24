@@ -7,9 +7,9 @@
 <script>
 export default {
   methods: {
-    afterLeave () {
+    afterLeave() {
       window.scrollTo(0, 0)
-    }
-  }
+    },
+  },
 }
 </script>

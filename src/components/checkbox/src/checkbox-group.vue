@@ -14,24 +14,24 @@ export default {
   props: {
     value: {
       type: Array,
-      default () {
+      default() {
         return []
-      }
-    }
+      },
+    },
   },
-  data () {
+  data() {
     return {
       currentValue: this.value,
-      childrens: []
+      childrens: [],
     }
   },
   watch: {
-    value (value) {
+    value(value) {
       this.updateModel()
-    }
+    },
   },
   methods: {
-    updateModel () {
+    updateModel() {
       const value = this.value
       this.childrens = findComponentsDownward(this, 'AtCheckbox')
 
@@ -43,14 +43,14 @@ export default {
         })
       }
     },
-    change (data) {
+    change(data) {
       this.currentValue = data
       this.$emit('input', data)
       this.$emit('on-change', data)
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.updateModel()
-  }
+  },
 }
 </script>

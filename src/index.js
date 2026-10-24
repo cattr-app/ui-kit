@@ -94,10 +94,10 @@ const components = {
   TimelineItem,
   Notification,
   Dialog,
-  Message
+  Message,
 }
 
-function install (Vue, opts = {}) {
+function install(Vue, opts = {}) {
   locale.use(opts.locale)
   locale.i18n(opts.i18n)
 
@@ -163,12 +163,12 @@ export {
   TimelineItem,
   Notification,
   Dialog,
-  Message
+  Message,
 }
 
 export default {
   install,
   locale: locale.use,
   i18n: locale.i18n,
-  ...components
+  ...components,
 }

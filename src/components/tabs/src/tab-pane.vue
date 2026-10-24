@@ -9,41 +9,41 @@ export default {
   name: 'AtTabPane',
   props: {
     name: {
-      type: String
+      type: String,
     },
     label: {
-      type: String
+      type: String,
     },
     icon: {
-      type: String
+      type: String,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     closable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
+  data() {
     return {
       currentName: this.name,
-      show: true
+      show: true,
     }
   },
   computed: {
-    isClosable () {
+    isClosable() {
       return this.closable ? this.$parent.closable : false
-    }
+    },
   },
   watch: {
-    name () {
+    name() {
       this.currentName = this.name
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.$parent.updateNav()
-  }
+  },
 }
 </script>

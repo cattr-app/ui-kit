@@ -10,7 +10,7 @@ let modalQueue = []
 const defaults = {
   title: '',
   content: '',
-  type: ''
+  type: '',
 }
 
 const defultCallback = action => {
@@ -45,7 +45,7 @@ const defultCallback = action => {
 
 const initInstance = () => {
   instance = new DialogConstructer({
-    el: document.createElement('div')
+    el: document.createElement('div'),
   })
 
   instance.callback = defultCallback
@@ -107,7 +107,7 @@ const Dialog = (options, callback) => {
         options: Object.assign({}, defaults, options),
         callback,
         resolve,
-        reject
+        reject,
       })
 
       showNextModal()
@@ -116,7 +116,7 @@ const Dialog = (options, callback) => {
 
   modalQueue.push({
     options: Object.assign({}, defaults, options),
-    callback
+    callback,
   })
 
   showNextModal()
@@ -138,13 +138,18 @@ Dialog.alert = (content, title, options) => {
     title = options.title || ''
   }
 
-  return Dialog(Object.assign({
-    title,
-    content,
-    type: 'alert',
-    maskClosable: false,
-    showCancelButton: false
-  }, options))
+  return Dialog(
+    Object.assign(
+      {
+        title,
+        content,
+        type: 'alert',
+        maskClosable: false,
+        showCancelButton: false,
+      },
+      options,
+    ),
+  )
 }
 
 /**
@@ -157,11 +162,16 @@ Dialog.confirm = (content, title, options) => {
     title = options.title || ''
   }
 
-  return Dialog(Object.assign({
-    title,
-    content,
-    type: 'confirm'
-  }, options))
+  return Dialog(
+    Object.assign(
+      {
+        title,
+        content,
+        type: 'confirm',
+      },
+      options,
+    ),
+  )
 }
 
 /**
@@ -174,23 +184,28 @@ Dialog.prompt = (content, title, options) => {
     title = options.title || ''
   }
 
-  return Dialog(Object.assign({
-    title,
-    content,
-    type: 'prompt',
-    showInput: true
-  }, options))
+  return Dialog(
+    Object.assign(
+      {
+        title,
+        content,
+        type: 'prompt',
+        showInput: true,
+      },
+      options,
+    ),
+  )
 }
 
 /**
  * Status Dialog
  */
-function createStatusDialog (type) {
+function createStatusDialog(type) {
   const statusTitles = {
-    'info': '信息',
-    'success': '成功',
-    'warning': '警告',
-    'error': '错误'
+    info: '信息',
+    success: '成功',
+    warning: '警告',
+    error: '错误',
   }
   return (content, title, options) => {
     if (typeof content === 'object') {
@@ -199,14 +214,19 @@ function createStatusDialog (type) {
       title = options.title || statusTitles[type]
     }
 
-    return Dialog(Object.assign({
-      title,
-      content,
-      type,
-      maskClosable: false,
-      showCancelButton: false,
-      showClose: false
-    }, options))
+    return Dialog(
+      Object.assign(
+        {
+          title,
+          content,
+          type,
+          maskClosable: false,
+          showCancelButton: false,
+          showClose: false,
+        },
+        options,
+      ),
+    )
   }
 }
 

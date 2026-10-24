@@ -12,34 +12,34 @@ export default {
   props: {
     placement: {
       type: String,
-      default: 'bottom'
-    }
+      default: 'bottom',
+    },
   },
   mixins: [PopoverMixin],
-  data () {
+  data() {
     return {
       popper: null,
-      width: ''
+      width: '',
     }
   },
   computed: {
-    styles () {
+    styles() {
       const style = {}
       if (this.width) {
         style.width = `${this.width}px`
       }
       return style
-    }
+    },
   },
   methods: {
-    update () {
+    update() {
       if (this.$parent.$options.name === 'AtSelect') {
         this.width = this.$parent.$el.style.width | 0
       }
-    }
+    },
   },
-  created () {
+  created() {
     this.$on('on-update-popper', this.update)
-  }
+  },
 }
 </script>

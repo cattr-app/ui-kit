@@ -5,10 +5,11 @@
       size ? `at-switch--${size}` : '',
       {
         'at-switch--disabled': disabled,
-        'at-switch--checked': checkStatus
-      }
+        'at-switch--checked': checkStatus,
+      },
     ]"
-    @click="toggleSwitch">
+    @click="toggleSwitch"
+  >
     <span class="at-switch__text">
       <slot v-if="checkStatus" name="checkedText"></slot>
       <slot v-if="!checkStatus" name="unCheckedText"></slot>
@@ -22,26 +23,26 @@ export default {
   props: {
     value: {
       type: Boolean,
-      default: false
+      default: false,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    size: String
+    size: String,
   },
-  data () {
+  data() {
     return {
-      checkStatus: this.value
+      checkStatus: this.value,
     }
   },
   methods: {
-    toggleSwitch () {
+    toggleSwitch() {
       if (this.disabled) return
 
       this.checkStatus = !this.checkStatus
       this.$emit('change', this.checkStatus)
-    }
-  }
+    },
+  },
 }
 </script>

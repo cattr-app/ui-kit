@@ -7,8 +7,8 @@ const src = fileURLToPath(new URL('./src', import.meta.url))
 
 const localeEntries = Object.fromEntries(
   readdirSync(`${src}/locale/lang`)
-    .filter((file) => file.endsWith('.js'))
-    .map((file) => [`locale/${file.slice(0, -3)}`, `${src}/locale/lang/${file}`])
+    .filter(file => file.endsWith('.js'))
+    .map(file => [`locale/${file.slice(0, -3)}`, `${src}/locale/lang/${file}`]),
 )
 
 export default defineConfig({
@@ -16,25 +16,25 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        api: 'modern-compiler'
-      }
-    }
+        api: 'modern-compiler',
+      },
+    },
   },
   build: {
     emptyOutDir: true,
     lib: {
       entry: {
         index: `${src}/index.js`,
-        ...localeEntries
+        ...localeEntries,
       },
       formats: ['es'],
-      fileName: (format, name) => `${name}.js`
+      fileName: (format, name) => `${name}.js`,
     },
     rollupOptions: {
       external: ['vue'],
       output: {
-        preserveModules: false
-      }
-    }
-  }
+        preserveModules: false,
+      },
+    },
+  },
 })

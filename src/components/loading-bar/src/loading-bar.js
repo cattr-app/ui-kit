@@ -5,18 +5,18 @@ const LoadingBarConstructor = Vue.extend(LoadingBarVue)
 let instance
 
 class LoadingBar {
-  constructor (options) {
+  constructor(options) {
     options = options || {}
 
     instance = new LoadingBarConstructor({
-      data: options
+      data: options,
     })
 
     instance.vm = instance.$mount()
     document.body.appendChild(instance.vm.$el)
   }
 
-  update (newOptions) {
+  update(newOptions) {
     if (newOptions.percent) {
       instance.percent = newOptions.percent
     }
@@ -28,7 +28,7 @@ class LoadingBar {
     }
   }
 
-  destroy () {
+  destroy() {
     document.body.removeChild(instance.vm.$el)
   }
 }

@@ -4,8 +4,9 @@
     :class="{
       'at-checkbox--focus': focus,
       'at-checkbox--checked': currentValue,
-      'at-checkbox--disabled': disabled
-    }">
+      'at-checkbox--disabled': disabled,
+    }"
+  >
     <span class="at-checkbox__input">
       <span class="at-checkbox__inner"></span>
       <input
@@ -18,7 +19,8 @@
         :disabled="disabled"
         @change="change"
         @focus="focus = true"
-        @blur="focus = false">
+        @blur="focus = false"
+      />
       <input
         v-else
         type="checkbox"
@@ -28,7 +30,8 @@
         :checked="currentValue"
         @change="change"
         @focus="focus = true"
-        @blur="focus = false">
+        @blur="focus = false"
+      />
     </span>
     <span class="at-checkbox__label">
       <slot></slot>
@@ -46,37 +49,37 @@ export default {
   props: {
     value: {
       type: [String, Number, Boolean, Array],
-      default: false
+      default: false,
     },
     label: [String, Number, Boolean],
     name: String,
     checked: {
       type: Boolean,
-      default: false
+      default: false,
     },
     disabled: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
       model: [],
       focus: false,
       isGroup: false,
-      currentValue: this.value
+      currentValue: this.value,
     }
   },
   watch: {
-    value (value) {
+    value(value) {
       this.updateModel()
-    }
+    },
   },
   methods: {
-    updateModel () {
+    updateModel() {
       this.currentValue = this.value
     },
-    change (evt) {
+    change(evt) {
       if (this.disabled) return false
 
       const checked = evt.target.checked
@@ -90,9 +93,9 @@ export default {
       } else {
         this.$emit('on-change', value)
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.parent = findComponentUpward(this, 'AtCheckboxGroup')
     if (this.parent) {
       this.isGroup = true
@@ -104,6 +107,6 @@ export default {
     if (this.checked) {
       this.currentValue = this.checked
     }
-  }
+  },
 }
 </script>

@@ -2,11 +2,11 @@ export default {
   at: {
     select: {
       placeholder: '请选择',
-      notFoundText: '无匹配数据'
+      notFoundText: '无匹配数据',
     },
     modal: {
       okText: '确定',
-      cancelText: '取消'
+      cancelText: '取消',
     },
     pagination: {
       prevText: '上一页',
@@ -18,10 +18,10 @@ export default {
       goto: '前往',
       pageText: '页',
       prev5Text: '向前5页',
-      next5Text: '向后5页'
+      next5Text: '向后5页',
     },
     table: {
-      emptyText: '暂无数据'
-    }
-  }
+      emptyText: '暂无数据',
+    },
+  },
 }

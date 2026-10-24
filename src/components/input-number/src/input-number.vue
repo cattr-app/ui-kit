@@ -4,9 +4,10 @@
     :class="[
       size ? `at-input-number--${size}` : '',
       {
-        'at-input-number--disabled': disabled
-      }
-    ]">
+        'at-input-number--disabled': disabled,
+      },
+    ]"
+  >
     <!-- S input -->
     <div class="at-input-number__input">
       <input
@@ -22,7 +23,8 @@
         @focus="handleFocus"
         @blur="handleBlur"
         @keydown.up.stop.prevent="increaseNum"
-        @keydown.down.stop.prevent="decreaseNum">
+        @keydown.down.stop.prevent="decreaseNum"
+      />
     </div>
     <!-- E input -->
 
@@ -31,17 +33,19 @@
       <span
         class="at-input-number__up"
         :class="{
-          'at-input-number__up--disabled': upDisabled
+          'at-input-number__up--disabled': upDisabled,
         }"
-        @click="increaseNum">
+        @click="increaseNum"
+      >
         <i class="icon icon-chevron-up"></i>
       </span>
       <span
         class="at-input-number__down"
         :class="{
-          'at-input-number__down--disabled': downDisabled
+          'at-input-number__down--disabled': downDisabled,
         }"
-        @click="decreaseNum">
+        @click="decreaseNum"
+      >
         <i class="icon icon-chevron-down"></i>
       </span>
     </div>
@@ -58,63 +62,63 @@ export default {
   props: {
     value: {
       type: Number,
-      default: 0
+      default: 0,
     },
     size: {
       type: String,
-      default: 'normal'
+      default: 'normal',
     },
     step: {
       type: [Number, String],
-      default: 1
+      default: 1,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     name: String,
     readonly: Boolean,
     autofocus: Boolean,
     max: Number,
-    min: Number
+    min: Number,
   },
-  data () {
+  data() {
     return {
-      currentValue: this.value
+      currentValue: this.value,
     }
   },
   watch: {
-    currentValue (value) {
+    currentValue(value) {
       this.$emit('change', value)
       this.$emit('input', value)
-    }
+    },
   },
   computed: {
-    upDisabled () {
+    upDisabled() {
       return this.currentValue + this.step > this.max
     },
-    downDisabled () {
+    downDisabled() {
       return this.currentValue - this.step < this.min
-    }
+    },
   },
   methods: {
-    handleFocus (evt) {
+    handleFocus(evt) {
       this.$emit('focus', evt)
     },
-    handleBlur (evt) {
+    handleBlur(evt) {
       this.$emit('blur', evt)
     },
-    increaseNum () {
+    increaseNum() {
       const value = this.currentValue || 0
       if (value >= this.max || this.disabled) return
       this.calculateStep('up')
     },
-    decreaseNum () {
+    decreaseNum() {
       const value = this.currentValue || 0
       if (value <= this.min || this.disabled) return
       this.calculateStep('down')
     },
-    calculateStep (type) {
+    calculateStep(type) {
       if (this.disabled) return
 
       let value = Number(this.currentValue)
@@ -132,7 +136,7 @@ export default {
       this.$emit('change', value)
       this.dispatch('AtFormItem', 'on-form-item-change', value)
     },
-    calculateNumber (num, stepNum, symbol) {
+    calculateNumber(num, stepNum, symbol) {
       let decimal1, decimal2
 
       try {
@@ -150,11 +154,11 @@ export default {
       const quantity = Math.pow(10, Math.max(decimal1, decimal2))
 
       if (symbol === '+') {
-        return ((num * quantity) + (stepNum * quantity)) / quantity
+        return (num * quantity + stepNum * quantity) / quantity
       } else if (symbol === '-') {
-        return ((num * quantity) - (stepNum * quantity)) / quantity
+        return (num * quantity - stepNum * quantity) / quantity
       }
-    }
-  }
+    },
+  },
 }
 </script>

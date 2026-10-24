@@ -11,36 +11,50 @@
 </template>
 
 <script>
-  import Clickoutside from '../../../directives/clickoutside'
-  import PopoverMixin from '../../../mixins/popover'
+import Clickoutside from '../../../directives/clickoutside'
+import PopoverMixin from '../../../mixins/popover'
 
-  export default {
-    name: 'AtDropdown',
-    directives: { Clickoutside },
-    mixins: [PopoverMixin],
-    props: {
-      trigger: {
-        type: String,
-        default: 'hover',
-        validator: val => ['click', 'hover', 'focus'].indexOf(val) > -1
-      },
-      placement: {
-        type: String,
-        default: 'bottom',
-        validator: val => ['top', 'top-left', 'top-right', 'left', 'left-top', 'left-bottom', 'right', 'right-top', 'right-bottom', 'bottom', 'bottom-left', 'bottom-right'].indexOf(val) > -1
-      }
+export default {
+  name: 'AtDropdown',
+  directives: { Clickoutside },
+  mixins: [PopoverMixin],
+  props: {
+    trigger: {
+      type: String,
+      default: 'hover',
+      validator: val => ['click', 'hover', 'focus'].indexOf(val) > -1,
     },
-    mounted () {
-      this.$on('menu-item-click', this.handleMenuItemClick)
+    placement: {
+      type: String,
+      default: 'bottom',
+      validator: val =>
+        [
+          'top',
+          'top-left',
+          'top-right',
+          'left',
+          'left-top',
+          'left-bottom',
+          'right',
+          'right-top',
+          'right-bottom',
+          'bottom',
+          'bottom-left',
+          'bottom-right',
+        ].indexOf(val) > -1,
     },
-    methods: {
-      handleClose () {
-        this.show = false
-      },
-      handleMenuItemClick (name) {
-        this.show = false
-        this.$emit('on-dropdown-command', name)
-      }
-    }
-  }
+  },
+  mounted() {
+    this.$on('menu-item-click', this.handleMenuItemClick)
+  },
+  methods: {
+    handleClose() {
+      this.show = false
+    },
+    handleMenuItemClick(name) {
+      this.show = false
+      this.$emit('on-dropdown-command', name)
+    },
+  },
+}
 </script>

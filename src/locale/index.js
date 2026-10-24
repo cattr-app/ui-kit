@@ -16,7 +16,7 @@ let i18nHandler = function (...args) {
       merged = true
       Vue.locale(
         Vue.config.lang,
-        deepmerge(lang, Vue.locale(Vue.config.lang) || {}, { clone: true })
+        deepmerge(lang, Vue.locale(Vue.config.lang) || {}, { clone: true }),
       )
     }
     return vuei18n.apply(this, args)

@@ -8,7 +8,7 @@ if (!Clipboard) {
   throw new Error('[vue-clipboard] Cannot locate clipboard.js')
 }
 
-function isDom (obj) {
+function isDom(obj) {
   return typeof window.HTMLElement === 'object'
     ? obj instanceof window.HTMLElement
     : obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'
@@ -19,9 +19,9 @@ export default function (Vue) {
   const DEFAULTKEY = 'DEFAULT'
 
   Vue.directive('clipboard', {
-    bind (el, binding, vnode) {
+    bind(el, binding, vnode) {
       const option = {}
-      const key = (vnode.key || vnode.key === 0) ? vnode.key : DEFAULTKEY
+      const key = vnode.key || vnode.key === 0 ? vnode.key : DEFAULTKEY
       let text = binding.value
       let $parent = null
 
@@ -38,7 +38,9 @@ export default function (Vue) {
       }
 
       if (vnode.data.attrs && vnode.data.attrs.model) {
-        $parent = isDom(vnode.data.attrs.model) ? vnode.data.attrs.model : document.querySelector(vnode.data.attrs.model)
+        $parent = isDom(vnode.data.attrs.model)
+          ? vnode.data.attrs.model
+          : document.querySelector(vnode.data.attrs.model)
       }
 
       if (vnode.elm.offsetParent) {
@@ -57,24 +59,22 @@ export default function (Vue) {
       const events = listeners || on
 
       if (events && typeof events === 'object' && Object.keys(events).length) {
-        Object.keys(events).map(
-          cb => clipboard[key].on(cb, events[cb].fn || events[cb].fns)
-        )
+        Object.keys(events).map(cb => clipboard[key].on(cb, events[cb].fn || events[cb].fns))
       }
 
       return clipboard[key]
     },
-    unbind (vnode) {
-      const key = (vnode.key || vnode.key === 0) ? vnode.key : DEFAULTKEY
+    unbind(vnode) {
+      const key = vnode.key || vnode.key === 0 ? vnode.key : DEFAULTKEY
 
       if (clipboard[key] && clipboard[key].destroy) {
         clipboard[key].destroy()
         clipboard[key] = null
       }
     },
-    update (el, binding, vnode) {
+    update(el, binding, vnode) {
       binding.def.unbind(vnode)
       binding.def.bind(el, binding, vnode)
-    }
+    },
   })
 }

@@ -8,13 +8,13 @@
 </template>
 
 <script>
-  export default {
-    name: 'AtOptionGroup',
-    props: {
-      label: {
-        type: String,
-        required: true
-      }
-    }
-  }
+export default {
+  name: 'AtOptionGroup',
+  props: {
+    label: {
+      type: String,
+      required: true,
+    },
+  },
+}
 </script>

@@ -1,8 +1,10 @@
 <template>
-  <div class="at-timeline"
+  <div
+    class="at-timeline"
     :class="{
-      'at-timeline--pending': pending
-    }">
+      'at-timeline--pending': pending,
+    }"
+  >
     <slot></slot>
   </div>
 </template>
@@ -13,15 +15,15 @@ export default {
   props: {
     pending: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   watch: {
-    pending () {
+    pending() {
       this.$children.forEach(child => {
         child.checkForLast()
       })
-    }
-  }
+    },
+  },
 }
 </script>

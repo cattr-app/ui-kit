@@ -1,9 +1,11 @@
 <template>
-  <div class="at-card"
+  <div
+    class="at-card"
     :class="{
       'at-card--bordered': bordered,
-      'at-card--no-hover': noHover
-    }">
+      'at-card--no-hover': noHover,
+    }"
+  >
     <div class="at-card__head" v-if="!(!$slots.title && !$slots.extra)">
       <div class="at-card__title" v-if="$slots.title">
         <slot name="title"></slot>
@@ -48,20 +50,19 @@ export default {
   props: {
     bordered: {
       type: Boolean,
-      default: true
+      default: true,
     },
     noHover: {
       type: Boolean,
-      default: false
+      default: false,
     },
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     bodyStyle: {
-      type: Object
-    }
-  }
+      type: Object,
+    },
+  },
 }
 </script>
-

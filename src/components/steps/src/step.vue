@@ -1,20 +1,18 @@
 <template>
-  <div
-    class="at-step"
-    :class="stepStatusClass"
-    :style="stepStyle">
+  <div class="at-step" :class="stepStatusClass" :style="stepStyle">
     <div v-if="!isLastStep" class="at-step__line"></div>
     <div class="at-step__head">
-      <div class="at-step__label"
+      <div
+        class="at-step__label"
         :class="{
-          'at-step__icon': icon
-        }">
+          'at-step__icon': icon,
+        }"
+      >
         <div v-if="icon">
           <i :class="['icon', `${icon}`]"></i>
         </div>
         <template v-else>
-          <div v-if="['process', 'wait'].indexOf(finalStatus) > -1"
-            class="at-step__order">
+          <div v-if="['process', 'wait'].indexOf(finalStatus) > -1" class="at-step__order">
             {{ index + 1 }}
           </div>
           <div v-if="finalStatus === 'finish'">
@@ -42,34 +40,34 @@ export default {
     description: String,
     status: {
       type: String,
-      validator: val => ['wait', 'process', 'finish', 'error'].indexOf(val) > -1
-    }
+      validator: val => ['wait', 'process', 'finish', 'error'].indexOf(val) > -1,
+    },
   },
-  data () {
+  data() {
     return {
       index: -1,
       internalStatus: '',
-      nextError: false
+      nextError: false,
     }
   },
   computed: {
-    stepStyle () {
+    stepStyle() {
       const style = {}
       if (this.$parent.direction !== 'vertical') {
-        style.width = `${1 / this.stepsTotal * 100}%`
+        style.width = `${(1 / this.stepsTotal) * 100}%`
       }
       return style
     },
-    stepsTotal () {
+    stepsTotal() {
       return this.$parent.steps.length
     },
-    finalStatus () {
+    finalStatus() {
       return this.status || this.internalStatus
     },
-    isLastStep () {
+    isLastStep() {
       return this.index === this.stepsTotal - 1
     },
-    stepStatusClass () {
+    stepStatusClass() {
       const className = {}
 
       switch (this.finalStatus) {
@@ -92,18 +90,18 @@ export default {
       }
 
       return className
-    }
+    },
   },
-  beforeCreate () {
+  beforeCreate() {
     this.$parent.steps.push(this)
   },
-  beforeDestroy () {
+  beforeDestroy() {
     const steps = this.$parent.steps
     const index = steps.indexOf(this)
 
     if (index >= 0) {
       steps.splice(index, 1)
     }
-  }
+  },
 }
 </script>

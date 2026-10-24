@@ -5,13 +5,13 @@
 </template>
 
 <script>
-  export default {
-    name: 'AtBreadcrumb',
-    props: {
-      separator: {
-        type: String,
-        default: '/'
-      }
-    }
-  }
+export default {
+  name: 'AtBreadcrumb',
+  props: {
+    separator: {
+      type: String,
+      default: '/',
+    },
+  },
+}
 </script>

@@ -3,10 +3,11 @@
     <div
       class="at-loading-bar"
       :class="{
-        [`at-loading-bar--${status}`]: status
+        [`at-loading-bar--${status}`]: status,
       }"
       :style="barStyle"
-      v-show="show">
+      v-show="show"
+    >
       <div class="at-loading-bar__inner" :style="{ width: percent + '%' }"></div>
     </div>
   </transition>
@@ -15,20 +16,20 @@
 <script>
 export default {
   name: 'AtLoadingBar',
-  data () {
+  data() {
     return {
       show: false,
       status: 'success',
       percent: 0,
-      width: 2
+      width: 2,
     }
   },
   computed: {
-    barStyle () {
+    barStyle() {
       return {
-        height: `${(this.width | 0) || 2}px`
+        height: `${this.width | 0 || 2}px`,
       }
-    }
-  }
+    },
+  },
 }
 </script>

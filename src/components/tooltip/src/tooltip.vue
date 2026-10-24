@@ -7,11 +7,10 @@
     <transition :name="transition" @after-leave="doDestory">
       <div
         class="at-tooltip__popper"
-        :class="[
-          placement ? 'at-tooltip--' + placement : 'at-tooltip--top'
-        ]"
+        :class="[placement ? 'at-tooltip--' + placement : 'at-tooltip--top']"
         v-if="show"
-        ref="popover">
+        ref="popover"
+      >
         <div class="at-tooltip__arrow"></div>
         <div class="at-tooltip__content">
           <slot name="content"><div v-text="content"></div></slot>
@@ -30,12 +29,12 @@ export default {
   props: {
     trigger: {
       type: String,
-      default: 'hover'
+      default: 'hover',
     },
     transition: {
       type: String,
-      default: 'fade'
-    }
-  }
+      default: 'fade',
+    },
+  },
 }
 </script>

@@ -13,17 +13,17 @@ export default {
     value: [String, Number],
     size: String,
     fill: String,
-    textColor: String
+    textColor: String,
   },
   mixins: [Emitter],
   watch: {
-    value (value) {
+    value(value) {
       this.$emit('radio-group-change', value)
       this.broadcast('AtRadio', 'init-data', value)
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.broadcast('AtRadio', 'init-data', this.value)
-  }
+  },
 }
 </script>

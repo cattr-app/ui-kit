@@ -13,62 +13,63 @@ export default {
     title: String,
     content: {
       type: String,
-      default: ''
+      default: '',
     },
     header: {
       type: Boolean,
-      default: true
+      default: true,
     },
     placement: {
       type: String,
-      default: 'top'
+      default: 'top',
     },
     value: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
       show: this.value,
       position: {
         top: 0,
-        left: 0
-      }
+        left: 0,
+      },
     }
   },
   methods: {
-    toggle (evt) {
+    toggle(evt) {
       this.show = !this.show
       this.$emit('toggle', this.show)
       if (!this.show) return
 
       this.setPopoverPosition()
     },
-    showPopover () {
+    showPopover() {
       this.show = true
       this.setPopoverPosition()
     },
-    hidePopover () {
+    hidePopover() {
       this.show = false
     },
-    handleMouseEnter () {
+    handleMouseEnter() {
       this.showPopover()
       clearTimeout(this._timer)
     },
-    handleMouseLeave () {
+    handleMouseLeave() {
       this._timer = setTimeout(() => {
         this.hidePopover()
       }, 200)
     },
-    setPopoverPosition () {
+    setPopoverPosition() {
       this.$nextTick(() => {
         const popover = this.$refs.popover
         const trigger = this.$refs.trigger
 
         switch (this.placement) {
-          case 'top' :
-            this.position.left = trigger.offsetLeft - (popover.offsetWidth / 2) + (trigger.offsetWidth / 2)
+          case 'top':
+            this.position.left =
+              trigger.offsetLeft - popover.offsetWidth / 2 + trigger.offsetWidth / 2
             this.position.top = trigger.offsetTop - popover.offsetHeight
             break
           case 'top-left':
@@ -81,7 +82,8 @@ export default {
             break
           case 'left':
             this.position.left = trigger.offsetLeft - popover.offsetWidth
-            this.position.top = trigger.offsetTop + (trigger.offsetHeight / 2) - (popover.offsetHeight / 2)
+            this.position.top =
+              trigger.offsetTop + trigger.offsetHeight / 2 - popover.offsetHeight / 2
             break
           case 'left-top':
             this.position.left = trigger.offsetLeft - popover.offsetWidth
@@ -93,7 +95,8 @@ export default {
             break
           case 'right':
             this.position.left = trigger.offsetLeft + trigger.offsetWidth
-            this.position.top = trigger.offsetTop + (trigger.offsetHeight / 2) - (popover.offsetHeight / 2)
+            this.position.top =
+              trigger.offsetTop + trigger.offsetHeight / 2 - popover.offsetHeight / 2
             break
           case 'right-top':
             this.position.left = trigger.offsetLeft + trigger.offsetWidth
@@ -104,7 +107,8 @@ export default {
             this.position.top = trigger.offsetTop + trigger.offsetHeight - popover.offsetHeight
             break
           case 'bottom':
-            this.position.left = trigger.offsetLeft - (popover.offsetWidth / 2) + (trigger.offsetWidth / 2)
+            this.position.left =
+              trigger.offsetLeft - popover.offsetWidth / 2 + trigger.offsetWidth / 2
             this.position.top = trigger.offsetTop + trigger.offsetHeight
             break
           case 'bottom-left':
@@ -117,7 +121,8 @@ export default {
             break
           default:
             // if user set wrong placement, then use default 'top'
-            this.position.left = trigger.offsetLeft - (popover.offsetWidth / 2) + (trigger.offsetWidth / 2)
+            this.position.left =
+              trigger.offsetLeft - popover.offsetWidth / 2 + trigger.offsetWidth / 2
             this.position.top = trigger.offsetTop - popover.offsetHeight
             break
         }
@@ -126,13 +131,13 @@ export default {
         popover.style.left = `${this.position.left}px`
       })
     },
-    doDestory () {
+    doDestory() {
       if (this._trigger) {
         $(this._trigger).off()
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     const trigger = this.$refs.trigger
     // const parent = this.$refs.parent
     // const events = {
@@ -156,5 +161,5 @@ export default {
       $(trigger).on('focus', this.showPopover)
       $(trigger).on('blur', this.hidePopover)
     }
-  }
+  },
 }

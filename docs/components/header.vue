@@ -1,15 +1,10 @@
 <template>
-  <header
-    class="page-header"
-    :class="[
-      collapse ? 'collapse' : ''
-    ]"
-    id="J-page-header">
+  <header class="page-header" :class="[collapse ? 'collapse' : '']" id="J-page-header">
     <div class="nav-container">
       <div class="nav-left">
         <div class="logo">
           <router-link :to="{ name: lang === 'en' ? 'Home-en' : 'Home' }">
-            <img class="logo-img" src="../assets/logo-at@2x.png" preload="">
+            <img class="logo-img" src="../assets/logo-at@2x.png" preload="" />
             <span>Cattr UIKIT</span>
           </router-link>
         </div>
@@ -40,31 +35,31 @@ export default {
   props: {
     collapse: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
+  data() {
     return {
-      isOpen: false
+      isOpen: false,
     }
   },
   computed: {
-    lang () {
+    lang() {
       return this.$route.path.split('/')[1] || 'zh'
-    }
+    },
   },
-  mounted () {
+  mounted() {
     if (!this.collapse) {
       window.addEventListener('scroll', this.headerCollapse)
     } else {
       window.removeEventListener('scroll', this.headerCollapse)
     }
   },
-  destroyed () {
+  destroyed() {
     window.removeEventListener('scroll', this.headerCollapse)
   },
   methods: {
-    toggleMenu () {
+    toggleMenu() {
       const header = document.getElementById('J-page-header')
 
       if (this.isOpen) {
@@ -75,7 +70,7 @@ export default {
         header.classList.add('open')
       }
     },
-    headerCollapse () {
+    headerCollapse() {
       const header = document.getElementById('J-page-header')
       const offsetTop = window.scrollY || 0
 
@@ -85,7 +80,7 @@ export default {
         header.classList.remove('collapse')
       }
     },
-    switchLang (targetLang) {
+    switchLang(targetLang) {
       if (this.lang === targetLang) return
 
       this.$i18n.locale = targetLang
@@ -96,8 +91,8 @@ export default {
       } else {
         this.$router.push(this.$route.path.replace(this.lang, targetLang))
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -113,7 +108,7 @@ $header-height: 80px;
   width: 100%;
   height: $header-height;
   background-color: transparent;
-  transition: all .3s;
+  transition: all 0.3s;
   z-index: 100;
 
   &.collapse {
@@ -128,7 +123,7 @@ $header-height: 80px;
 .nav-container {
   margin: 0 auto;
   width: 90%;
-  color: #1D1D1F;
+  color: #1d1d1f;
 
   .nav-left {
     float: left;
@@ -175,7 +170,7 @@ $header-height: 80px;
 
       a {
         display: inline-block;
-        color: #1D1D1F;
+        color: #1d1d1f;
 
         &::after {
           content: '';
@@ -185,7 +180,7 @@ $header-height: 80px;
           left: 0;
           height: 2px;
           width: 100%;
-          background-color: #6190E8;
+          background-color: #6190e8;
         }
         &.router-link-active {
           color: $brand-blue-500;
@@ -200,7 +195,7 @@ $header-height: 80px;
         display: inline-block;
         margin: 0 24px;
         cursor: pointer;
-        transition: color .3s;
+        transition: color 0.3s;
 
         &:hover {
           color: $brand-blue-500;
@@ -210,7 +205,7 @@ $header-height: 80px;
           }
         }
         &.disabled {
-          color: #C9C9C9;
+          color: #c9c9c9;
           cursor: not-allowed;
         }
       }
@@ -219,10 +214,12 @@ $header-height: 80px;
       display: inline-block;
       margin: 0 24px;
       padding: 2px 12px;
-      border: 1px solid #1D1D1F;
+      border: 1px solid #1d1d1f;
       border-radius: 2px;
       cursor: pointer;
-      transition: color .3s, border .3s;
+      transition:
+        color 0.3s,
+        border 0.3s;
 
       &:hover {
         color: $brand-blue-500;
@@ -266,7 +263,7 @@ $header-height: 80px;
       text-align: center;
       background-color: #fff;
       box-shadow: 0 10px 60px 0 rgba(29, 29, 31, 0.07);
-      transition: all .3s;
+      transition: all 0.3s;
       overflow: hidden;
 
       .navbar {

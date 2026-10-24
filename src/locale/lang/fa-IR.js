@@ -2,11 +2,11 @@ export default {
   at: {
     select: {
       placeholder: 'انتخاب کنید',
-      notFoundText: 'موردی یافت نشد'
+      notFoundText: 'موردی یافت نشد',
     },
     modal: {
       okText: 'تایید',
-      cancelText: 'لغو'
+      cancelText: 'لغو',
     },
     pagination: {
       prevText: 'صفحه‌ی قبل',
@@ -18,10 +18,10 @@ export default {
       goto: 'برو به',
       pageText: '',
       prev5Text: 'پنج صفحه‌ی قبلی',
-      next5Text: 'پنج صفحه‌ی بعدی'
+      next5Text: 'پنج صفحه‌ی بعدی',
     },
     table: {
-      emptyText: 'بدون داده'
-    }
-  }
+      emptyText: 'بدون داده',
+    },
+  },
 }

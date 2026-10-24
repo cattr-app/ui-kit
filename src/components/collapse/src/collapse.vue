@@ -1,8 +1,10 @@
 <template>
-  <div class="at-collapse"
+  <div
+    class="at-collapse"
     :class="{
-      'at-collapse--simple': simple
-    }">
+      'at-collapse--simple': simple,
+    }"
+  >
     <slot></slot>
   </div>
 </template>
@@ -13,31 +15,31 @@ export default {
   props: {
     accordion: {
       type: Boolean,
-      default: false
+      default: false,
     },
     value: {
-      type: [Array, String, Number]
+      type: [Array, String, Number],
     },
     simple: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  data() {
     return {
-      currentValue: this.inputValueCheck(this.value)
+      currentValue: this.inputValueCheck(this.value),
     }
   },
   watch: {
-    value (val) {
+    value(val) {
       this.currentValue = this.inputValueCheck(val)
     },
-    currentValue () {
+    currentValue() {
       this.setActive()
-    }
+    },
   },
   methods: {
-    setActive () {
+    setActive() {
       const activeKey = this.getActiveKey()
       const accordion = this.accordion
 
@@ -53,7 +55,7 @@ export default {
         item.index = index
       })
     },
-    getActiveKey () {
+    getActiveKey() {
       let activeKey = this.currentValue || []
 
       if (!Array.isArray(activeKey)) {
@@ -71,7 +73,7 @@ export default {
 
       return activeKey
     },
-    toggle (itemData) {
+    toggle(itemData) {
       const name = itemData.name.toString()
       let newActiveKey = []
 
@@ -92,12 +94,12 @@ export default {
       this.currentValue = newActiveKey
       this.$emit('on-change', this.currentValue)
     },
-    inputValueCheck (val) {
+    inputValueCheck(val) {
       return typeof val === 'number' ? `${val}` : val
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.setActive()
-  }
+  },
 }
 </script>

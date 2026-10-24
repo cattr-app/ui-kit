@@ -14,17 +14,19 @@ const trim = function (string) {
  * @param  {[string]} str [驼峰命名的字符串]
  * @return {[string]}     [连字符的字符串]
  */
-export function camelCaseToHyphen (str) {
+export function camelCaseToHyphen(str) {
   return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
-export function camelCase (name) {
-  return name.replace(SPECIAL_CHARS_REGEXP, function (_, separator, letter, offset) {
-    return offset ? letter.toUpperCase() : letter
-  }).replace(MOZ_HACK_REGEXP, 'Moz$1')
+export function camelCase(name) {
+  return name
+    .replace(SPECIAL_CHARS_REGEXP, function (_, separator, letter, offset) {
+      return offset ? letter.toUpperCase() : letter
+    })
+    .replace(MOZ_HACK_REGEXP, 'Moz$1')
 }
 
-export function getStyle (element, styleName) {
+export function getStyle(element, styleName) {
   if (!element || !styleName) return null
 
   styleName = camelCase(styleName)
@@ -40,7 +42,7 @@ export function getStyle (element, styleName) {
   }
 }
 
-function typeOf (obj) {
+function typeOf(obj) {
   const map = {
     '[object Boolean]': 'boolean',
     '[object Number]': 'number',
@@ -56,7 +58,7 @@ function typeOf (obj) {
   return map[Object.prototype.toString.call(obj)]
 }
 
-export function deepCopy (data) {
+export function deepCopy(data) {
   const type = typeOf(data)
   let obj
 
@@ -81,16 +83,16 @@ export function deepCopy (data) {
   return obj
 }
 
-export function hasClass (el, cls) {
+export function hasClass(el, cls) {
   if (!el || !cls) return false
   if (cls.indexOf(' ') !== -1) throw new Error('className should not contain space.')
   if (el.classList) {
     return el.classList.contains(cls)
   }
-  return (` ${el.className} `).indexOf(` ${cls} `) > -1
+  return ` ${el.className} `.indexOf(` ${cls} `) > -1
 }
 
-export function addClass (el, cls) {
+export function addClass(el, cls) {
   if (!el) return
 
   const classes = (cls || '').split(' ')
@@ -111,7 +113,7 @@ export function addClass (el, cls) {
   }
 }
 
-export function removeClass (el, cls) {
+export function removeClass(el, cls) {
   if (!el || !cls) return
   const classes = cls.split(' ')
   let curClass = ` ${el.className} `
@@ -131,7 +133,7 @@ export function removeClass (el, cls) {
   }
 }
 
-export function findComponentUpward (context, componentName, componentNames) {
+export function findComponentUpward(context, componentName, componentNames) {
   if (typeof componentName === 'string') {
     componentNames = [componentName]
   } else {
@@ -148,7 +150,7 @@ export function findComponentUpward (context, componentName, componentNames) {
   return parent
 }
 
-export function findComponentsUpward (context, componentName, components = []) {
+export function findComponentsUpward(context, componentName, components = []) {
   let parent = context.$parent
   let name = parent.$options.name
 
@@ -166,7 +168,7 @@ export function findComponentsUpward (context, componentName, components = []) {
   return components
 }
 
-export function findComponentDownward (context, componentName) {
+export function findComponentDownward(context, componentName) {
   const childrens = context.$children
   let children
 
@@ -194,7 +196,7 @@ export function findComponentDownward (context, componentName) {
   return children
 }
 
-export function findComponentsDownward (context, componentName, components = []) {
+export function findComponentsDownward(context, componentName, components = []) {
   const childrens = context.$children
 
   if (childrens.length) {

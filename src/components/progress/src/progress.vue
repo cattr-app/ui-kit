@@ -3,8 +3,9 @@
     class="at-progress"
     :class="[
       type ? `at-progress--${type}` : 'at-progress--bar',
-      currentStatus ? `at-progress--${currentStatus}` : ''
-    ]">
+      currentStatus ? `at-progress--${currentStatus}` : '',
+    ]"
+  >
     <!-- S 环形进度条 -->
     <div class="at-progress-circle" v-if="type === 'circle'"></div>
     <!-- E 环形进度条 -->
@@ -30,56 +31,56 @@ export default {
     type: {
       type: String,
       default: 'bar',
-      validator: val => ['bar', 'circle'].indexOf(val) > -1
+      validator: val => ['bar', 'circle'].indexOf(val) > -1,
     },
     status: {
       type: String,
       default: '',
-      validator: val => ['', 'success', 'error'].indexOf(val) > -1
+      validator: val => ['', 'success', 'error'].indexOf(val) > -1,
     },
     percent: {
       type: Number,
       default: 0,
       required: true,
-      validator: val => val >= 0 && val <= 100
+      validator: val => val >= 0 && val <= 100,
     },
     strokeWidth: {
       type: Number,
-      default: 8
-    }
+      default: 8,
+    },
   },
-  data () {
+  data() {
     return {
-      currentStatus: this.status
+      currentStatus: this.status,
     }
   },
   computed: {
-    barStyle () {
+    barStyle() {
       return {
-        height: `${this.strokeWidth}px`
+        height: `${this.strokeWidth}px`,
       }
     },
-    statusIconClass () {
+    statusIconClass() {
       return this.currentStatus === 'success' ? 'icon-check-circle' : 'icon-x-circle'
-    }
+    },
   },
   watch: {
-    percent (val) {
+    percent(val) {
       this.handleChange(val | 0)
-    }
+    },
   },
   methods: {
-    handleChange (val) {
+    handleChange(val) {
       if (val === 100) {
         this.currentStatus = 'success'
         this.$emit('on-status-success', this.percent)
       } else {
         this.currentStatus = this.status
       }
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.handleChange(this.percent)
-  }
+  },
 }
 </script>

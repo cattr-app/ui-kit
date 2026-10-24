@@ -14,7 +14,7 @@ const Message = options => {
 
   if (typeof options === 'string') {
     options = {
-      message: options
+      message: options,
     }
   }
 
@@ -26,7 +26,7 @@ const Message = options => {
   }
 
   const instance = new MessageConstructor({
-    data: options
+    data: options,
   })
 
   instance.id = id
@@ -88,7 +88,7 @@ messageType.forEach(type => {
   Message[type] = options => {
     if (typeof options === 'string') {
       options = {
-        message: options
+        message: options,
       }
     }
     options.type = type

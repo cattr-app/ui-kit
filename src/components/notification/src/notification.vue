@@ -5,13 +5,14 @@
       :class="{
         [`at-notification--${type}`]: type,
         'at-notification--with-message': message,
-        'at-notification--hover': !showClose
+        'at-notification--hover': !showClose,
       }"
       :style="{ top: top ? top + 'px' : 'auto' }"
       v-show="isShow"
       @click="!showClose && handleClose()"
       @mouseleave="startTimer"
-      @mouseenter="clearTimer">
+      @mouseenter="clearTimer"
+    >
       <i class="icon at-notification__icon" :class="iconClass" v-if="showIcon"></i>
       <div class="at-notification__content">
         <p class="at-notification__title" v-if="title" v-text="title"></p>
@@ -24,7 +25,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       type: '',
       title: '',
@@ -36,42 +37,42 @@ export default {
       onClose: null,
       top: null,
       timer: null,
-      closed: false
+      closed: false,
     }
   },
   watch: {
-    closed (val) {
+    closed(val) {
       if (val) {
         this.isShow = false
       }
-    }
+    },
   },
   computed: {
-    iconClass () {
+    iconClass() {
       const classArr = {
-        'success': 'icon-check-circle',
-        'error': 'icon-x-circle',
-        'warning': 'icon-alert-circle',
-        'info': 'icon-info'
+        success: 'icon-check-circle',
+        error: 'icon-x-circle',
+        warning: 'icon-alert-circle',
+        info: 'icon-info',
       }
       return classArr[this.type] || this.icon
     },
-    showIcon () {
+    showIcon() {
       return this.type
-    }
+    },
   },
   methods: {
-    doDestory () {
+    doDestory() {
       this.$destroy(true)
       this.$el.parentNode.removeChild(this.$el)
     },
-    handleClose () {
+    handleClose() {
       this.closed = true
       if (typeof this.onClose === 'function') {
         this.onClose()
       }
     },
-    startTimer () {
+    startTimer() {
       if (this.duration > 0) {
         this.timer = setTimeout(() => {
           if (!this.closed) {
@@ -80,12 +81,12 @@ export default {
         }, this.duration)
       }
     },
-    clearTimer () {
+    clearTimer() {
       clearTimeout(this.timer)
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.startTimer()
-  }
+  },
 }
 </script>

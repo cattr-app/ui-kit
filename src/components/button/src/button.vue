@@ -6,7 +6,7 @@
       size ? `at-btn--${size}` : '',
       $parent && $parent.size ? `at-btn--${$parent.size}` : '',
       hollow ? `at-btn--${type}--hollow` : '',
-      circle && !$slots.default ? 'at-btn--circle' : ''
+      circle && !$slots.default ? 'at-btn--circle' : '',
     ]"
     :style="styleList"
     :disabled="disabled"
@@ -25,33 +25,33 @@ export default {
   props: {
     type: {
       type: String,
-      default: 'default'
+      default: 'default',
     },
     nativeType: {
       type: String,
-      default: 'button'
+      default: 'button',
     },
     size: String,
     icon: String,
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     hollow: {
       type: Boolean,
-      default: false
+      default: false,
     },
     circle: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
-    styleList () {
+    styleList() {
       let userStyle = {}
 
       if (this.style) {
@@ -59,14 +59,14 @@ export default {
       }
 
       return Object.assign(userStyle, {
-        'marginRight': `${this.$parent.gap}px`
+        marginRight: `${this.$parent.gap}px`,
       })
-    }
+    },
   },
   methods: {
-    handleClick (evt) {
+    handleClick(evt) {
       this.$emit('click', evt)
-    }
-  }
+    },
+  },
 }
 </script>
