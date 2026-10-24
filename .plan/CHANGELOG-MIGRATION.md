@@ -100,6 +100,18 @@
   `@input` на `<at-input-number>` больше не событие компонента: он вешается на нативный `<input>` и получает `Event` на каждый набранный символ, а не число — использовать `@update:model-value` или `@change`.
 - Событий `on-form-item-change` (через `dispatch` в `AtFormItem`) больше нет — Form удалён.
 
+### Textarea
+
+- v-model: prop `modelValue` + событие `update:modelValue` вместо `value` + `input`; `change` (строка), `focus`, `blur` — имена прежние.
+- Было: `input`/`change` эмитились и при изменении значения родителем (программная смена текста давала `change`). Стало: `update:modelValue` и `change` — только на ввод пользователя, по одному разу; внешнее изменение `modelValue` лишь обновляет поле (как у Input/Select/Switch).
+  Что править: если `@change` использовался как реакция на программную смену значения — следить за своей переменной `watch`-ем.
+
+### Rate
+
+- v-model: prop `modelValue` + `update:modelValue` вместо `value` + `input`. События `on-change`, `on-hover-change` — имена и аргументы прежние.
+- Было: при `v-model` клик эмитил `on-change` дважды (сам клик и затем watcher значения), а любое внешнее изменение `value` тоже давало `on-change`. Стало: `on-change` — ровно один раз на клик пользователя, внешнее изменение `modelValue` только перерисовывает звёзды.
+  Что править: убрать дедупликацию `on-change`, если была; реакцию на программную смену значения делать через `watch`.
+
 ### Button, ButtonGroup
 
 - Клик: было `<at-button @click.native="fn">` (или `@click` на собственный `$emit('click')`) → стало `<at-button @click="fn">`. `AtButton` больше не эмитит свой `click`: слушатель потребителя падает на корневой `<button>` через `$attrs` и вызывается ровно один раз с нативным `MouseEvent`. Что править: убрать `.native` у всех `@click`/`@mouseenter`/… на `at-button`.

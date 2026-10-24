@@ -72,12 +72,10 @@ export default {
     modelValue(value) {
       this.store = value
     },
-    store(value) {
+    store() {
       this.$nextTick(() => {
         this.resizeTextarea()
       })
-      this.$emit('update:modelValue', value)
-      this.$emit('change', value)
     },
   },
   mounted() {
@@ -90,8 +88,11 @@ export default {
     handleBlur(evt) {
       this.$emit('blur', evt)
     },
+    // user input only: an external modelValue change syncs `store` without events (as Input)
     handleInput(evt) {
       this.store = evt.target.value
+      this.$emit('update:modelValue', this.store)
+      this.$emit('change', this.store)
     },
     resizeTextarea() {
       if (!this.autosize && !this.minRows && !this.maxRows) return

@@ -66,9 +66,9 @@ export default {
     }
   },
   watch: {
+    // external change: sync the stars only, events are emitted for user clicks (confirmValue)
     modelValue(val) {
       this.currentValue = val
-      this.$emit('on-change', val)
     },
     currentValue(val) {
       this.checkIsHalf(val)

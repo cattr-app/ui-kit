@@ -19,6 +19,31 @@ describe('AtTextarea', () => {
     expect(wrapper.emitted('change')).toEqual([['world']])
   })
 
+  it('does not emit when the parent changes modelValue', async () => {
+    const wrapper = mount(AtTextarea, { props: { modelValue: 'a' } })
+
+    await wrapper.setProps({ modelValue: 'b' })
+
+    expect(wrapper.find('textarea').element.value).toBe('b')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
+  })
+
+  it('emits once per input with v-model', async () => {
+    const wrapper = mount({
+      components: { AtTextarea },
+      data: () => ({ text: '' }),
+      template: '<at-textarea v-model="text" />',
+    })
+    const textarea = wrapper.getComponent(AtTextarea)
+
+    await wrapper.find('textarea').setValue('hi')
+
+    expect(wrapper.vm.text).toBe('hi')
+    expect(textarea.emitted('update:modelValue')).toEqual([['hi']])
+    expect(textarea.emitted('change')).toEqual([['hi']])
+  })
+
   it('applies disabled and readonly to the native textarea', () => {
     const disabled = mount(AtTextarea, { props: { modelValue: '', disabled: true } })
     const readonly = mount(AtTextarea, { props: { modelValue: '', readonly: true } })
