@@ -244,6 +244,8 @@
 - Классы переходов Vue 3: начальное/конечное состояние называются `.x-enter-from` / `.x-leave-from` вместо Vue 2 `.x-enter` / `.x-leave` (`-enter-active`, `-leave-active`, `-enter-to`, `-leave-to` без изменений).
   Анимации библиотеки (`fade`, `slide-up`, `move-up`, `notification-fade` в `animation.scss`) построены на `@keyframes` в `-enter-active`/`-leave-active` и Vue 2-имён не использовали — в `src/stylesheet` правок не потребовалось: modal/alert/loading-bar (`fade`), select/dropdown/submenu/tooltip/popover (`slide-up`), message (`move-up`), notification (`notification-fade`) анимируются как раньше (проверено по CSS и именам переходов; визуальная проверка — 40-02).
   Что править: если в проекте есть свои стили на `.at-*-enter`, `.at-*-leave` или на `.fade-enter`/`.slide-up-enter` (или своих `<transition name>`), переименовать в `-enter-from`/`-leave-from`; иначе стартовое состояние перехода не применится и элемент появится без анимации.
+- Готовый CSS (`src/stylesheet/css/at.css`, `at.min.css`, собирается `pnpm build:style`): автопрефиксы теперь по `browserslist` пакета стилей — `last 2 versions, not dead` (было `last 2 versions, ie > 8`). Селекторы и значения не изменились; убраны устаревшие префиксы `-webkit-box-*`, `-ms-flex*`, `-webkit-transform`/`-webkit-transition`/`-webkit-animation` и т.п. Карты исходников теперь внешние и актуальные (`at.css.map`, `at.min.css.map`), а не base64 внутри CSS.
+  Что править: ничего, если не нужна поддержка IE / старых WebKit; иначе прогнать CSS через свой autoprefixer со своим `browserslist`.
 
 ## Документация и разработка
 
