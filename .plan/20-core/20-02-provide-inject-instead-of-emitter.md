@@ -1,7 +1,7 @@
 ---
 id: 20-02
 title: Замена emitter-mixin и findComponent* на provide/inject; эталон Radio/RadioGroup/RadioButton
-status: todo
+status: done
 depends_on: [20-01]
 parallel: true
 model: opus
@@ -44,3 +44,9 @@ Radio/RadioGroup: `modelValue`; событие `change` остаётся. Зап
 ## Найдено по ходу
 
 ## Заметки агента
+- `createContext(name)` → `{ key: Symbol(name), provide(value) → value, inject(...fallback) }` (`src/utils/context.js`); `inject()` без аргумента — родитель обязателен (Vue warn), `inject(null)` — опционален.
+- `useChildren()` → `{ children /* shallowReactive [{ uid, el, exposed }] в DOM-порядке */, register(child), unregister(uid), sort() }`; `useChild(parent | null, exposed = proxy)` → `{ parent, index: ComputedRef<number> }` (`src/composables/useChildren.js`). `useParent.js` не делал — хватает `inject()` без fallback.
+- Ключ группы и общая логика Radio/RadioButton — `src/components/radio/src/context.js` (`RadioGroupContext`, `useRadio(props, emit)`); группа провайдит `reactive({ modelValue, size, fill, textColor, update })`.
+- Отклонение: в 1.x событие группы называлось `radio-group-change` (так и в docs), а не `change`; по задаче теперь `change`, записано в changelog как «было → стало». Docs (`docs/markdown/*/radio.md`) обновит 40-*. `RadioButton` получил `modelValue` (работает без группы).
+- Lint `pnpm lint`: до 89 errors / 6 warnings → после 86 errors / 6 warnings (ушли 3 ошибки radio).
+- Для 30-*: `sort()` нужен только при переупорядочивании детей без перемонтирования; `el` берётся из `proxy.$el` (для компонента-фрагмента — якорный текстовый узел, порядок всё равно корректен).

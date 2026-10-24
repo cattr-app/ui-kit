@@ -22,7 +22,26 @@
 
 ## Паттерн provide/inject
 
-(Заполняет 20-02 после реализации: имена файлов `src/utils/context.js`, `src/composables/useChildren.js`, пример — `src/components/radio/src/*.vue`.)
+Эталон: `src/components/radio/src/{context.js,radio-group.vue,radio.vue,radio-button.vue}`, тесты `test/components/radio.spec.js`.
+
+1. Ключ: в `src/components/<name>/src/context.js` — `export const TabsContext = createContext('AtTabs')` (`createContext` из `src/utils/context.js` → `{ key, provide(value), inject(fallback) }`; `provide`/`inject` вызывать только в `setup()`).
+2. Родитель в `setup(props, { emit })` отдаёт **один** `reactive({...})`: props через `toRef(props, 'x')` (ref внутри reactive разворачивается — ребёнок читает `ctx.x`, без `.value`) + методы-команды (`update(v)`, `select(name)`), которые делают `emit` от имени родителя. Ребёнок никогда не эмитит в родителя сам.
+3. Ребёнок: `setup() { const group = TabsContext.inject(null); return { group } }` — `null`, если компонент может жить без родителя (как Radio); `inject()` без аргумента = родитель обязателен (Vue warn в dev). Остальной компонент — обычный Options API, `this.group?.x` в computed/шаблоне.
+4. Индекс/список детей (Tabs, Steps, Timeline, Collapse, Select, Menu): родитель `const { children, register, unregister } = useChildren()` из `src/composables/useChildren.js` и кладёт их в контекст; ребёнок `const { index } = useChild(Ctx.inject(null), exposed)` — регистрация в `onMounted`, снятие в `onBeforeUnmount`, `children` — `shallowReactive` в DOM-порядке (`compareDocumentPosition`), `children[i].exposed` — то, что передал ребёнок (по умолчанию его proxy). Пример — `test/composables/useChildren.spec.js`. Переупорядочивание без перемонтирования (keyed `v-for`) — вызвать `sort()` из `onUpdated` родителя.
+5. Минимум:
+   ```js
+   // parent: <at-tabs>
+   setup(props, { emit }) {
+     TabsContext.provide(reactive({ modelValue: toRef(props, 'modelValue'), update: v => emit('update:modelValue', v) }))
+   },
+   // child: <at-tab-pane>
+   setup() {
+     return { tabs: TabsContext.inject(null) }
+   },
+   computed: { active() { return this.tabs?.modelValue === this.name } },
+   methods: { onClick() { this.tabs?.update(this.name) } },
+   ```
+6. `mixins/emitter.js` и `findComponent*` из `utils/util.js` не импортировать; сами файлы не удалять (удалит 50-01).
 
 ## Паттерн императивных сервисов
 
