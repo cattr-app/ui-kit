@@ -29,7 +29,7 @@ touches: [src/components/dropdown/**, src/components/dropdown-menu/index.js, src
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/dropdown && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/dropdown && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/dropdown
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

@@ -25,7 +25,7 @@ touches: [src/components/breadcrumb/**, src/components/breadcrumb-item/index.js]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/breadcrumb && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/breadcrumb && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/breadcrumb
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

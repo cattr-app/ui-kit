@@ -25,7 +25,7 @@ touches: [src/components/popover/**]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/popover && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/popover && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/popover
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

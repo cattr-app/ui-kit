@@ -25,7 +25,7 @@ touches: [src/components/card/**]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/card && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/card && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/card
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

@@ -28,7 +28,7 @@ touches: [src/components/collapse/**, src/components/collapse-item/index.js]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/collapse && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/collapse && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/collapse
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

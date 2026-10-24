@@ -27,7 +27,7 @@ touches: [src/components/steps/**, src/components/step/index.js]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/steps && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/steps && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/steps
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

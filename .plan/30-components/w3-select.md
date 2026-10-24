@@ -46,7 +46,7 @@ touches: [src/components/select/**, src/components/option/index.js, src/componen
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/select && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/select && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/select
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

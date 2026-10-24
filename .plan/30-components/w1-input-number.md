@@ -28,7 +28,7 @@ touches: [src/components/input-number/**]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/input-number && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/input-number && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/input-number
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build

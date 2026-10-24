@@ -28,7 +28,7 @@ touches: [src/components/tabs/**, src/components/tab-pane/index.js]
 
 ## Проверка
 ```sh
-grep -rnE "emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\('input'" src/components/tabs && exit 1 || true
+grep -rnE 'emitter|findComponent|\$children|\$on\(|\.native|beforeDestroy|emit\(.input.' src/components/tabs && exit 1 || true
 scripts/node.sh pnpm exec eslint src/components/tabs
 scripts/node.sh pnpm test
 scripts/node.sh pnpm build
