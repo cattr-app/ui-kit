@@ -1,7 +1,7 @@
 ---
 id: 30-w1-alert
 title: Alert → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: haiku
@@ -38,3 +38,9 @@ scripts/node.sh pnpm build
 - (из 10-02) Prop `message` одновременно `required` и с `default` — ошибка `vue/no-required-prop-with-default`, решить (убрать одно из двух) и отразить в changelog.
 
 ## Заметки агента
+- Сделано: `emits: ['on-close']`; `default: ''` у `message` убран (оставлен `required`) — закрыт пункт «Найдено по ходу», запись в CHANGELOG-MIGRATION.md → «Alert».
+- Публичный API: только prop `message` без default (см. changelog). Имена событий/props/slots не менялись; v-model у Alert нет, `modelValue` не нужен.
+- Переходы: `<transition name="fade">` с одним `div v-show` — по чеклисту без изменений. Классы `fade-*` в `animation.scss` заданы через `-enter-active`/`-leave-active` (совместимо с Vue 3), `-enter-from` не используются.
+- Тест: `test/components/alert.spec.js`, 4 `it` (класс/тип/сообщение, description+иконка, close → on-close и display:none, closeText). Корень — `<transition>`, поэтому `wrapper.classes()` пуст: использовать `wrapper.find('.at-alert')`.
+- Подозрительное: `docs/assets/style/docs.scss` использует Vue 2 классы `.fade-enter`/`.fade-leave-active` — docs не трогались (этап 40), но переход в доках сломается на Vue 3.
+- Проверки: eslint 0 ошибок, prettier check ок, `pnpm test` 59/59, `pnpm build` ок.

@@ -31,7 +31,6 @@ export default {
     },
     message: {
       type: String,
-      default: '',
       required: true,
     },
     description: String,
@@ -49,6 +48,7 @@ export default {
     },
     closeText: String,
   },
+  emits: ['on-close'],
   data() {
     return {
       isShow: true,
