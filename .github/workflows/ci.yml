@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, feat/vue-3]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # Corepack must be enabled before setup-node so that `cache: pnpm` finds pnpm.
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint --max-warnings 0
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build library
+        run: pnpm build
+
+      - name: Build documentation
+        run: pnpm build:docs
