@@ -73,7 +73,7 @@ app.use(CattrUI, { i18n: (key, values) => i18n.global.t(key, values) })
 
 ## Миграция с 1.x
 
-Пошаговое описание изменений — в `CHANGELOG.md` (пока в `.plan/CHANGELOG-MIGRATION.md`; при релизе 2.0 файл переедет в корень). Главное:
+Пошаговое описание изменений с чеклистом миграции — в [`CHANGELOG.md`](CHANGELOG.md). Главное:
 
 - `v-model` работает через prop `modelValue` и событие `update:modelValue`: `:value` и `@input` заменить на `:model-value` и `@update:model-value`;
 - установка плагина через глобальный `Vue` заменена на `app.use(...)` после `createApp`;
