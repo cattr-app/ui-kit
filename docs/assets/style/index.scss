@@ -1,5 +1,5 @@
-@import '../../../src/stylesheet/src/variables/index.scss';
-@import '../../../src/stylesheet/src/mixins/index.scss';
+@use '../../../src/stylesheet/src/variables' as *;
+@use '../../../src/stylesheet/src/mixins' as *;
 
 $bg-color: #f8faff;
 $drop-shadow: 0 4px 30px 0 rgba(223, 225, 230, 0.5);

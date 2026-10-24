@@ -1,5 +1,5 @@
-@import '../../../src/stylesheet/src/variables/index.scss';
-@import '../../../src/stylesheet/src/mixins/index.scss';
+@use '../../../src/stylesheet/src/variables' as *;
+@use '../../../src/stylesheet/src/mixins' as *;
 
 /**
  * Vue transitions
