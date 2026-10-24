@@ -12,7 +12,7 @@
 </template>
 
 <style lang="scss">
-@import '~stylesheet/src/variables/index.scss';
+@import '../../src/stylesheet/src/variables/index.scss';
 @import '../assets/style/mixin';
 
 /**

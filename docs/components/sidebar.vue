@@ -6,7 +6,7 @@
         <ul class="at-nav__items">
           <template v-if="item.items">
             <li v-for="navItem in item.items" :key="navItem.name" class="at-nav__item">
-              <router-link class="at-nav__page" :to="navItem.name.toLowerCase()">{{
+              <router-link class="at-nav__page" :to="{ name: `${navItem.name}-${lang}` }">{{
                 navItem.title
               }}</router-link>
             </li>
@@ -20,12 +20,15 @@
                 <router-link
                   v-if="lang === 'zh'"
                   class="at-nav__component"
-                  :to="navItem.name.toLowerCase()"
+                  :to="{ name: `${navItem.name}-${lang}` }"
                   >{{ navItem.name }}<span>{{ navItem.title }}</span></router-link
                 >
-                <router-link v-else class="at-nav__component" :to="navItem.name.toLowerCase()">{{
-                  navItem.title
-                }}</router-link>
+                <router-link
+                  v-else
+                  class="at-nav__component"
+                  :to="{ name: `${navItem.name}-${lang}` }"
+                  >{{ navItem.title }}</router-link
+                >
               </li>
             </ul>
           </li>
@@ -62,7 +65,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~stylesheet/src/variables/index.scss';
+@import '../../src/stylesheet/src/variables/index.scss';
 
 .at-sidebar {
   display: inline-block;

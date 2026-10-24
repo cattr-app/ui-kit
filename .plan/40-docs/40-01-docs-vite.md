@@ -1,7 +1,7 @@
 ---
 id: 40-01
 title: Сайт документации на Vite: vue-router 5, vue-i18n 11, unplugin-vue-markdown, demobox
-status: todo
+status: done
 depends_on: [10-03]
 parallel: false
 model: opus
@@ -47,3 +47,12 @@ scripts/node.sh pnpm exec eslint docs vite.docs.config.js
 - (из 10-02) В `docs/` остаются 7 ошибок `no-undef` (`require` в `router/index.js`, `directives/clipboard.js`; `process` в `main.js`, `router/index.js`) — уйдут при переходе на Vite/ESM.
 
 ## Заметки агента
+- Версии: vue-router 5.4.0, vue-i18n 11.4.16, unplugin-vue-markdown 32.1.1 (внутри markdown-exit 1.3, совместим с markdown-it-плагинами), markdown-it-container 4.0.0, highlight.js 11.12.0. `clipboard`, yaml-плагин не ставились; `allowBuilds` не трогал.
+- `vite.docs.config.js`: `:::demo` рендерит `<demo-box><template #demo>{fence без <script>}</template><template #source-code>` + обычный fence (`hljs` + `language-*`, подсветка highlight.js, `v-pre` на `<code>` от плагина). Демо проверяется `compileTemplate` из `vue/compiler-sfc`; не компилируется → плашка `.demo-error` и warning в консоли (раньше битый HTML молча чинил cheerio). `wrapperDiv: false` + `<section>`-обёртка (стили `.at-markdown > section`), `frontmatter: false`.
+- unplugin-vue-markdown поднимает из HTML только `<script setup>`; классический `<script>export default</script>` выносит из `<template>` маленький плагин `cattr-docs-markdown-scripts` в том же конфиге (и в `handleHotUpdate`).
+- `docs/i18n.js` — отдельный модуль (`createI18n`, `preferredLang`, ключ `cattr-ui-language`), его используют `main.js`, роутер и header (`useI18n({ useScope: 'global' }).locale`). Sidebar ссылается на именованные маршруты вместо относительных путей. `<transition>` вокруг `<router-view>` переписан на `v-slot="{ Component }"`. `~stylesheet/…` в scss → относительные пути; css highlight.js импортируется из `main.js`. Удалены `docs/utils/*` целиком (включая неиспользуемый `util.js`), demobox берёт `CollapseTransition` из `src/utils`.
+- Sass-deprecations (`import`, `global-builtin`, `slash-div`, `color-functions`) из `src/stylesheet` заглушены только в `vite.docs.config.js`; библиотечный `vite.config.js` не менялся.
+- Переходы: в `src/stylesheet/src/components/animation.scss` Vue 2-имён (`.x-enter`/`.x-leave`) нет — только keyframes на `-enter-active`/`-leave-active`, поэтому файл не менялся; коммита `fix(style)` в библиотеке нет, исправлен только `docs.scss` (`.fade-enter` → `.fade-enter-from`, `.fade-leave-active{opacity:0}` → `.fade-leave-to`).
+- Для 40-02 (подробно в «Найдено по ходу» 40-02): не компилируются dropdown (3 демо) и collapse (1) en/zh; падают в рантайме table (`render(h, …)`) en/zh; `\v` в color.md (заглушено в `transforms.before`); `slot="…"` молча не работает в card, collapse, dropdown, input, menu, modal, popover, switch, tabs, timeline, tooltip.
+- Проверено: `pnpm build:docs` (0 ошибок), `pnpm dev` + curl (`<div id="app">`, модули `markdown/{en,zh}/{button,select,dropdown,table}.md?import` → 200), `npx serve dist-docs` + curl; временный vitest-спек (не закоммичен) смонтировал все 80 страниц в happy-dom с роутером/i18n/CattrUI: ошибки только у table (`h`) и menu (`No match for` + `Component is missing template or render function` — предположительно артефакт тестового роутера без именованных маршрутов `*-en`, проверить в браузере).
+- Не проверено: браузер (визуально анимации, копирование кода, HMR на правке .md, переключение языка) — остаётся на 40-02.

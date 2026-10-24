@@ -4,9 +4,11 @@
     <div class="at-container row">
       <sidebar :data="navs"></sidebar>
       <div class="at-markdown col-sm-24 col-md-18 col-lg-20">
-        <transition name="fade" mode="out-in" @after-leave="afterLeave">
-          <router-view></router-view>
-        </transition>
+        <router-view v-slot="{ Component }">
+          <transition name="fade" mode="out-in" @after-leave="afterLeave">
+            <component :is="Component"></component>
+          </transition>
+        </router-view>
       </div>
     </div>
     <m-footer></m-footer>
@@ -14,10 +16,10 @@
 </template>
 
 <script>
-import MHeader from '../components/header'
-import MFooter from '../components/footer'
-import Sidebar from '../components/sidebar'
-import navsConfig from '../router/nav.config.yml'
+import MHeader from '../components/header.vue'
+import MFooter from '../components/footer.vue'
+import Sidebar from '../components/sidebar.vue'
+import navsConfig from '../router/nav.config.js'
 
 export default {
   components: {

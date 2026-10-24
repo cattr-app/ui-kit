@@ -31,12 +31,19 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n'
+import { LANGUAGE_KEY } from '../i18n.js'
+
 export default {
   props: {
     collapse: {
       type: Boolean,
       default: true,
     },
+  },
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' })
+    return { locale }
   },
   data() {
     return {
@@ -55,7 +62,7 @@ export default {
       window.removeEventListener('scroll', this.headerCollapse)
     }
   },
-  destroyed() {
+  unmounted() {
     window.removeEventListener('scroll', this.headerCollapse)
   },
   methods: {
@@ -83,8 +90,12 @@ export default {
     switchLang(targetLang) {
       if (this.lang === targetLang) return
 
-      this.$i18n.locale = targetLang
-      localStorage.setItem('cattr-ui-language', targetLang)
+      this.locale = targetLang
+      try {
+        localStorage.setItem(LANGUAGE_KEY, targetLang)
+      } catch {
+        // storage may be unavailable (private mode); the URL still carries the language
+      }
 
       if (this.$route.name === 'Home') {
         this.$router.push({ name: 'Home-en' })
@@ -97,7 +108,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~stylesheet/src/variables/index.scss';
+@import '../../src/stylesheet/src/variables/index.scss';
 
 $header-height: 80px;
 

@@ -1,80 +1,57 @@
 /**
- * vue clipboard base on clipboard.js
- * https://github.com/zhuowenli/vue-clipboards/blob/master/src/vue-clipboards.js
+ * v-clipboard="text | () => text": copy on click.
+ * Emits a DOM `success` event ({ detail: { text } }, also `event.text`) or `error` on the element,
+ * so `@success="..."` keeps working on plain elements.
  */
-const Clipboard = require('clipboard')
-
-if (!Clipboard) {
-  throw new Error('[vue-clipboard] Cannot locate clipboard.js')
+function fallbackCopy(text) {
+  const textarea = document.createElement('textarea')
+  textarea.value = text
+  textarea.setAttribute('readonly', '')
+  textarea.style.position = 'fixed'
+  textarea.style.top = '-9999px'
+  document.body.appendChild(textarea)
+  textarea.select()
+  try {
+    if (!document.execCommand('copy')) throw new Error('execCommand("copy") failed')
+  } finally {
+    document.body.removeChild(textarea)
+  }
 }
 
-function isDom(obj) {
-  return typeof window.HTMLElement === 'object'
-    ? obj instanceof window.HTMLElement
-    : obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'
+export function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).catch(() => fallbackCopy(text))
+  }
+  return new Promise(resolve => resolve(fallbackCopy(text)))
 }
 
-export default function (Vue) {
-  const clipboard = {}
-  const DEFAULTKEY = 'DEFAULT'
+function dispatch(el, type, payload) {
+  const event = new CustomEvent(type, { detail: payload })
+  Object.assign(event, payload)
+  el.dispatchEvent(event)
+}
 
-  Vue.directive('clipboard', {
-    bind(el, binding, vnode) {
-      const option = {}
-      const key = vnode.key || vnode.key === 0 ? vnode.key : DEFAULTKEY
-      let text = binding.value
-      let $parent = null
+function onClick(event) {
+  const el = event.currentTarget
+  const value = el._clipboardValue
+  const text = String((typeof value === 'function' ? value() : value) ?? '')
 
-      if (text) {
-        if (typeof text === 'function') {
-          text = text()
-        }
+  copyText(text).then(
+    () => dispatch(el, 'success', { text }),
+    error => dispatch(el, 'error', { text, error }),
+  )
+}
 
-        if (/(string|number)/.test(typeof text)) {
-          option.text = () => text
-        } else {
-          throw new Error('[vue-clipboard] Invalid value.')
-        }
-      }
-
-      if (vnode.data.attrs && vnode.data.attrs.model) {
-        $parent = isDom(vnode.data.attrs.model)
-          ? vnode.data.attrs.model
-          : document.querySelector(vnode.data.attrs.model)
-      }
-
-      if (vnode.elm.offsetParent) {
-        option.container = vnode.elm.offsetParent
-      } else if (isDom($parent)) {
-        option.container = $parent
-      } else {
-        option.container = el.parentElement || document.body
-      }
-
-      clipboard[key] = new Clipboard(el, option)
-
-      const { comoponentOptions, data } = vnode
-      const listeners = comoponentOptions ? comoponentOptions.listeners : null
-      const on = data ? data.on : null
-      const events = listeners || on
-
-      if (events && typeof events === 'object' && Object.keys(events).length) {
-        Object.keys(events).map(cb => clipboard[key].on(cb, events[cb].fn || events[cb].fns))
-      }
-
-      return clipboard[key]
-    },
-    unbind(vnode) {
-      const key = vnode.key || vnode.key === 0 ? vnode.key : DEFAULTKEY
-
-      if (clipboard[key] && clipboard[key].destroy) {
-        clipboard[key].destroy()
-        clipboard[key] = null
-      }
-    },
-    update(el, binding, vnode) {
-      binding.def.unbind(vnode)
-      binding.def.bind(el, binding, vnode)
-    },
-  })
+export default {
+  mounted(el, binding) {
+    el._clipboardValue = binding.value
+    el.addEventListener('click', onClick)
+  },
+  updated(el, binding) {
+    el._clipboardValue = binding.value
+  },
+  unmounted(el) {
+    el.removeEventListener('click', onClick)
+    delete el._clipboardValue
+  },
 }

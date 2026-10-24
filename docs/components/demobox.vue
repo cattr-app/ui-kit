@@ -5,15 +5,10 @@
     </div>
     <collapse-transition>
       <div v-show="isShow" class="at-component__code">
-        <slot name="source-code"></slot>
-        <span
-          v-clipboard="
-            $slots['source-code'][0] &&
-            $slots['source-code'][0].elm &&
-            $slots['source-code'][0].elm.innerText
-          "
-          class="btn-copy"
-          @success="handleCopySuccess"
+        <div ref="source">
+          <slot name="source-code"></slot>
+        </div>
+        <span v-clipboard="sourceCode" class="btn-copy" @success="handleCopySuccess"
           ><i class="icon icon-clipboard"></i
         ></span>
       </div>
@@ -28,7 +23,7 @@
 </template>
 
 <script>
-import CollapseTransition from 'src/utils/collapse-transition'
+import CollapseTransition from '../../src/utils/collapse-transition.js'
 
 export default {
   components: {
@@ -45,6 +40,9 @@ export default {
     },
   },
   methods: {
+    sourceCode() {
+      return this.$refs.source ? this.$refs.source.innerText : ''
+    },
     handleCopySuccess() {
       this.$Message.success(`Code copied.`)
     },

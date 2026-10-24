@@ -1,12 +1,30 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import NavConfig from './nav.config.yml'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import NavConfig from './nav.config.js'
+import { preferredLang } from '../i18n.js'
 
-Vue.use(Router)
+const pages = import.meta.glob('../markdown/**/*.md')
+const views = import.meta.glob('../views/*.vue')
 
-function regeisterRoute() {
-  const routes = []
+function lazy(modules, path) {
+  const loader = modules[path]
+  if (!loader) throw new Error(`[docs router] missing page ${path}`)
+  return loader
+}
+
+function view(name, lang) {
+  return lazy(views, `../views/${name}${lang === 'zh' ? '' : `-${lang}`}.vue`)
+}
+
+function registerRoutes() {
   const parentRoutes = {}
+
+  function addRoute(parentName, item, lang) {
+    parentRoutes[`${parentName}-${lang}`].children.push({
+      path: item.name.toLowerCase(),
+      name: `${item.name}-${lang}`,
+      component: lazy(pages, `../markdown/${lang}/${item.name.toLowerCase()}.md`),
+    })
+  }
 
   Object.keys(NavConfig).forEach(lang => {
     const pageNavs = NavConfig[lang]
@@ -14,137 +32,77 @@ function regeisterRoute() {
     for (const pageName in pageNavs) {
       pageNavs[pageName].forEach(nav => {
         const parentName = nav.name
-        parentRoutes[`${parentName}-${lang}`] =
-          parentRoutes[`${parentName}-${lang}`] || addParentRoute(parentName, lang)
+        const key = `${parentName}-${lang}`
+
+        parentRoutes[key] = parentRoutes[key] || {
+          path: `/${lang}/${parentName.toLowerCase()}`,
+          component: view(parentName.toLowerCase(), lang),
+          children: [],
+        }
 
         if (nav.groups) {
-          nav.groups.forEach(group => {
-            group.items.forEach(item => {
-              addRoute(parentName, item, lang)
-            })
-          })
+          nav.groups.forEach(group => group.items.forEach(item => addRoute(parentName, item, lang)))
         } else if (nav.items) {
-          nav.items.forEach(item => {
-            addRoute(parentName, item, lang)
-          })
+          nav.items.forEach(item => addRoute(parentName, item, lang))
         }
       })
     }
   })
 
-  function addParentRoute(parentName, lang) {
-    return {
-      path: `/${lang}/${parentName.toLowerCase()}`,
-      component: require(
-        `../views/${parentName.toLowerCase()}${lang === 'zh' ? '' : `-${lang}`}.vue`,
-      ),
-      children: [],
-    }
-  }
-
-  function addRoute(parentName, item, lang) {
-    parentRoutes[`${parentName}-${lang}`].children.push({
-      path: `${item.name.toLowerCase()}`,
-      name: `${item.name}-${lang}`,
-      component: require(`../markdown/${lang}/${item.name.toLowerCase()}.md`),
-    })
-  }
-
-  for (const key in parentRoutes) {
-    if (Object.prototype.hasOwnProperty.call(parentRoutes, key)) {
-      routes.push(parentRoutes[key])
-    }
-  }
-
-  return routes
+  return Object.values(parentRoutes)
 }
 
-let routes = regeisterRoute(NavConfig)
-let navigatorLang = window.navigator.language.slice(0, 2)
-
-if (['en', 'zh'].indexOf(navigatorLang) <= -1) {
-  navigatorLang = ''
+// Default child of each section: `/zh/docs` → first page. Route names: Docs, Docs-en, Guide, …
+const sectionNames = {
+  '/zh/guide': 'Guide',
+  '/en/guide': 'Guide-en',
+  '/zh/docs': 'Docs',
+  '/en/docs': 'Docs-en',
+  '/zh/resource': 'Resource',
+  '/en/resource': 'Resource-en',
 }
 
-const userLang = localStorage.getItem('cattr-ui-language') || navigatorLang || 'zh'
+const routes = registerRoutes()
 
-routes = routes.concat([
+routes.forEach(page => {
+  const name = sectionNames[page.path]
+  if (name) {
+    page.children.push({ path: '', name, redirect: { name: page.children[0].name } })
+  }
+})
+
+const userLang = preferredLang()
+
+routes.push(
   {
     path: '/zh',
     name: 'Home',
-    component: require('../views/index.vue'),
+    component: lazy(views, '../views/index.vue'),
   },
   {
     path: '/en',
     name: 'Home-en',
-    component: require('../views/index-en.vue'),
+    component: lazy(views, '../views/index-en.vue'),
   },
   {
     path: '/',
     redirect: { name: userLang === 'zh' ? 'Home' : `Home-${userLang}` },
   },
   {
-    path: '*',
+    path: '/:pathMatch(.*)*',
     redirect: { name: 'Home' },
   },
-])
+)
 
-routes.forEach(page => {
-  if (page.path === '/zh/guide') {
-    page.children.push({
-      path: '',
-      name: 'Guide',
-      redirect: { name: page.children[0].name },
-    })
-  } else if (page.path === '/en/guide') {
-    page.children.push({
-      path: '',
-      name: 'Guide-en',
-      redirect: { name: page.children[0].name },
-    })
-  } else if (page.path === '/zh/docs') {
-    page.children.push({
-      path: '',
-      name: 'Docs',
-      redirect: { name: page.children[0].name },
-    })
-  } else if (page.path === '/en/docs') {
-    page.children.push({
-      path: '',
-      name: 'Docs-en',
-      redirect: { name: page.children[0].name },
-    })
-  } else if (page.path === '/zh/resource') {
-    page.children.push({
-      path: '',
-      name: 'Resource',
-      redirect: { name: page.children[0].name },
-    })
-  } else if (page.path === '/en/resource') {
-    page.children.push({
-      path: '',
-      name: 'Resource-en',
-      redirect: { name: page.children[0].name },
-    })
-  }
-})
-
-// routes.push({
-//   path: '*',
-//   redirect: { name: 'Home' }
-// })
-
-const router = new Router({
+const router = createRouter({
+  history: createWebHashHistory(),
   routes,
-  root: process.env.serverConfig.portalPrefix,
   scrollBehavior(to) {
     if (to.hash) {
-      return {
-        selector: to.hash,
-      }
+      return { el: to.hash }
     }
 
-    return { x: 0, y: 0 }
+    return { top: 0 }
   },
 })
 

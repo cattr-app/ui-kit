@@ -108,8 +108,8 @@
 </template>
 
 <script>
-import MHeader from '../components/header'
-import MFooter from '../components/footer'
+import MHeader from '../components/header.vue'
+import MFooter from '../components/footer.vue'
 
 export default {
   components: {

@@ -41,5 +41,8 @@ scripts/node.sh pnpm build:docs
 ## Найдено по ходу
 - (из 00-04) `installation.md` и `introduction.md` (en/zh) ссылаются на UMD `dist/at.min.js` через CDN и на пакет стилей `cattr-ui-style`, который приватный. Переписать на ESM-импорт и `@amazingcat/cattr-ui/src/stylesheet/src/index.scss`.
 - (из 00-04) В `docs/components/header.vue` используются `docs/assets/logo-at*.svg|png` — логотипа Cattr в репозитории нет. Либо добавить логотип Cattr (взять из фронтенда), либо оставить текстовый заголовок.
+- (из 40-01) Не компилируются в Vue 3 (на сайте плашка `.demo-error`, в консоли сборки `[docs] demo does not compile`): `dropdown.md` en/zh — 3 демо (стр. 40, 67, 85: `<i class="icon …">` без `</i>` внутри `<at-button>`), `collapse.md` en:68 / zh:69 — незакрытые теги. Раньше их чинил cheerio в webpack-пайплайне.
+- (из 40-01) Падают в рантайме: `table.md` en/zh — `render: (h, params) => …` (`h is not a function`, в Vue 3 `h` импортируется из `vue`). `color.md` en/zh:25 — символ `\v` перед `class` (сейчас заменяется на пробел в `transforms.before` в `vite.docs.config.js`; после правки контента можно убрать).
+- (из 40-01) Молча ломаются (`slot="…"` в Vue 3 — обычный атрибут, контент уходит в default-слот): card, collapse, dropdown, input, menu, modal, popover, switch, tabs, timeline, tooltip (en и zh), а также в тексте changelog. `new Vue`/`Vue.use`/`Vue.prototype` в примерах кода (не живых демо): installation, i18n, introduction, quickstart, message, modal, notification, loadingbar.
 
 ## Заметки агента
