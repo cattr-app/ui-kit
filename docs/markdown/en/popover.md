@@ -56,13 +56,13 @@ Specify the position of Popover by `placement` property. Default is `top`.
 
 ## Nested Content
 
-In addition to using the properties `title` and `content`, you can also use `slot="title"` and `slot="content"` to set the nested content of popover.
+In addition to using the properties `title` and `content`, you can also use the slots `#title` and `#content` to set the nested content of popover. Use `v-model` to open and close the popover from the code.
 
 :::demo
 ```html
-<at-popover placement="top" v-model="show" @toggle="toggleShow">
+<at-popover v-model="show" placement="top" @toggle="toggleShow">
   <at-button size="small">Delete</at-button>
-  <template slot="content">
+  <template #content>
     <p>This is part of the content, sure to delete it?</p>
     <div style="text-align: right; margin-top: 8px;">
       <at-button size="smaller" @click="show = false">Cancel</at-button>
@@ -77,10 +77,27 @@ In addition to using the properties `title` and `content`, you can also use `slo
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| title | the title of popover | String | - | - |
-| content | the content of popover | String | - | - |
+| title | the title of popover, inserted as HTML (escape untrusted strings or use the `#title` slot) | String | - | - |
+| content | the content of popover, inserted as HTML (escape untrusted strings or use the `#content` slot) | String | - | - |
 | trigger | the way to trigger | String | `hover`, `focus`, `click` | `click` |
 | placement | the position of popover | String | `top`, `top-left`, `top-right`, `left`, `left-top`, `left-bottom`, `right`, `right-top`, `right-bottom`, `bottom`, `bottom-left`, `bottom-right` | `top` |
+| modelValue (v-model) | whether the popover is visible | Boolean | - | false |
+| transition | name of the show/hide transition | String | - | `fade` |
+
+## Popover Events
+
+| Event Name      | Description          | Return Value  |
+|---------- |-------------- |---------- |
+| update:modelValue | emitted on every open/close (trigger, click outside), used by `v-model` | Boolean |
+| toggle | emitted when the popover is toggled by the `click` trigger | Boolean, the new visibility |
+
+## Popover Slots
+
+| Name      | Description |
+|----------|-------- |
+| - | the trigger element |
+| title | the title, rendered only when the `title` prop is not empty |
+| content | the content |
 
 <style lang="scss" scoped>
 .at-popover + .at-popover {

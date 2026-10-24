@@ -18,17 +18,17 @@ Basic usage, trigger events when status changed.
 
 ## Inline Text or Icon
 
-The contents of switch button can be customized, such as inserting text or icons to enhance visual effects. Complete by `slot="checkedText"` and `slot="unCheckedText"`
+The contents of switch button can be customized, such as inserting text or icons to enhance visual effects. Complete by the `#checkedText` and `#unCheckedText` slots.
 
 :::demo
 ```html
 <at-switch>
-  <span slot="checkedText">Open</span>
-  <span slot="unCheckedText">Close</span>
+  <template #checkedText><span>Open</span></template>
+  <template #unCheckedText><span>Close</span></template>
 </at-switch>
 <at-switch>
-  <span slot="checkedText"><i class="icon icon-left-arrow"></i></span>
-  <span slot="unCheckedText"><i class="icon icon-right-arrow"></i></span>
+  <template #checkedText><span><i class="icon icon-left-arrow"></i></span></template>
+  <template #unCheckedText><span><i class="icon icon-right-arrow"></i></span></template>
 </at-switch>
 ```
 :::
@@ -39,13 +39,13 @@ To make a switch button as disabled, add `disabled` property to the Switch Butto
 
 :::demo
 ```html
-<at-switch disabled :value="true">
-  <span slot="checkedText">Open</span>
-  <span slot="unCheckedText">Close</span>
+<at-switch disabled :model-value="true">
+  <template #checkedText><span>Open</span></template>
+  <template #unCheckedText><span>Close</span></template>
 </at-switch>
 <at-switch disabled>
-  <span slot="checkedText">Open</span>
-  <span slot="unCheckedText">Close</span>
+  <template #checkedText><span>Open</span></template>
+  <template #unCheckedText><span>Close</span></template>
 </at-switch>
 <at-switch disabled></at-switch>
 ```
@@ -60,25 +60,25 @@ There are three sizes of a Switch Button: `large`，`normal`，`small`.
 <div>
   <at-switch size="small"></at-switch>
   <at-switch size="small">
-    <span slot="checkedText">Open</span>
-    <span slot="unCheckedText">Close</span>
+    <template #checkedText><span>Open</span></template>
+    <template #unCheckedText><span>Close</span></template>
   </at-switch>
   <at-switch size="small" disabled></at-switch>
 </div>
 <div style="margin-top: 8px;">
   <at-switch></at-switch>
   <at-switch>
-    <span slot="checkedText">Open</span>
-    <span slot="unCheckedText">Close</span>
+    <template #checkedText><span>Open</span></template>
+    <template #unCheckedText><span>Close</span></template>
   </at-switch>
   <at-switch disabled></at-switch>
 </div>
 <div style="margin-top: 8px;">
   <at-switch size="large"></at-switch>
   <at-switch size="large">
-    <span slot="checkedText">Open</span>
-    <span slot="unCheckedText">Close</span>
-  </at-switch size="large">
+    <template #checkedText><span>Open</span></template>
+    <template #unCheckedText><span>Close</span></template>
+  </at-switch>
   <at-switch size="large" disabled></at-switch>
 </div>
 ```
@@ -88,7 +88,7 @@ There are three sizes of a Switch Button: `large`，`normal`，`small`.
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | whether the Switch is checked | Boolean | - | false |
+| modelValue (v-model) | whether the Switch is checked | Boolean | - | false |
 | size | size of Switch | String | `small`, `normal`, `large` | normal |
 | disabled | whether the Switch is disabled | Boolean | — | false |
 
@@ -103,7 +103,8 @@ There are three sizes of a Switch Button: `large`，`normal`，`small`.
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| change | Emitted when the state of the switch changed | true or false |
+| update:modelValue | Emitted on every click (not when `disabled`), used by `v-model` | true or false |
+| change | Emitted when the state of the switch is changed by a click | true or false |
 
 <script>
 export default {

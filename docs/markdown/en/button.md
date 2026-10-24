@@ -160,6 +160,11 @@ Set the `size` property to use different size of button, it's `normal` size by d
 | icon | set the icon of button, input the `classname` | String | see the document of `Icon` | - |
 | loading | set the loading status of button | Boolean | - | false |
 | circle | set the circle shape of button | Boolean | - | false |
+| disabled | whether the button is disabled | Boolean | - | false |
+
+## Button Events
+
+Button has no own events: listeners such as `@click` are attached to the native `<button>` element (no event modifier is needed) and receive the native `MouseEvent`. A `disabled` button does not trigger `click`; `loading` does not block it, add `:disabled="loading"` if needed.
 
 ## Button Group Props
 

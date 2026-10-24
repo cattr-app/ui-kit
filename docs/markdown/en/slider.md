@@ -49,7 +49,7 @@ Control the interval of slider through the `step` property, the value of interva
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | the value of slider, use `v-model` to enable a two-way binding | Number | - | - |
+| modelValue (v-model) | the value of slider | Number | - | 0 |
 | step | the granularity that slider can step through values | Number | - | 1 |
 | min | minimum | Number | - | 0 |
 | max | maximum | Number | - | 100 |
@@ -59,6 +59,7 @@ Control the interval of slider through the `step` property, the value of interva
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
+| update:modelValue | Emitted when the value is changed by dragging or clicking (and when it is clamped to `min`/`max`), used by `v-model` | value |
 | change | Emitted when the value of slider changed | value |
 
 <script>

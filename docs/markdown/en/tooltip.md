@@ -20,13 +20,13 @@ When the mouse hovers, the tooltip box defaults to the top position.
 
 ## Customize Content
 
-Customize the content of tooltip by `slot="content"` property.
+Customize the content of tooltip with the `#content` slot.
 
 :::demo
 ```html
 <at-tooltip>
   <span>Information</span>
-  <template slot="content">
+  <template #content>
     <p>Text One</p>
     <p>Text Two</p>
   </template>
@@ -71,8 +71,25 @@ The ToolTip has 12 placements choice.
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| content | the content of tooltip | String | - | - |
+| content | the content of tooltip (plain text) | String | - | - |
 | placement | the position of tooltip | String | `top`, `top-left`, `top-right`, `left`, `left-top`, `left-bottom`, `right`, `right-top`, `right-bottom`, `bottom`, `bottom-left`, `bottom-right` | `top` |
+| trigger | the way to trigger | String | `hover`, `focus`, `click` | `hover` |
+| modelValue (v-model) | whether the tooltip is visible | Boolean | - | false |
+| transition | name of the show/hide transition | String | - | `fade` |
+
+## Tooltip Events
+
+| Event Name      | Description          | Return Value  |
+|---------- |-------------- |---------- |
+| update:modelValue | emitted on every show/hide, used by `v-model` | Boolean |
+| toggle | emitted when the tooltip is toggled by the `click` trigger | Boolean, the new visibility |
+
+## Tooltip Slots
+
+| Name      | Description |
+|----------|-------- |
+| - | the trigger element |
+| content | the content of tooltip |
 
 <style lang="scss" scoped>
 .at-tooltip {

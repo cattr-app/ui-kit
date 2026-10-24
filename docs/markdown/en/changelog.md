@@ -1,9 +1,23 @@
 
 # Change Log
 
-> История AT UI до форка: записи ниже относятся к upstream-версиям AT UI.
-
 ----
+
+## 2.0.0 (Vue 3)
+
+`Cattr UI` 2.0 is a breaking release for Vue 3. Full list of changes with migration steps: [migration changelog](https://github.com/cattr-app/ui-kit/blob/main/CHANGELOG.md).
+
+- Requires `vue ^3.5`; the package is ESM only (`import CattrUI from '@amazingcat/cattr-ui'`), UMD builds and the global `at` are removed.
+- Installed with `createApp(App).use(CattrUI, { locale, i18n })`; services `$Message`, `$Modal`, `$Notify`, `$Loading` are available through `app.config.globalProperties` and as named exports.
+- `v-model` uses the `modelValue` prop and the `update:modelValue` event in every form component, as well as in Modal, Tabs, Collapse, Tooltip, Popover and Dropdown; Pagination supports `v-model:current` and `v-model:page-size`.
+- Slots use the Vue 3 syntax (`<template #title>`); listeners such as `@click` on `at-button` work without event modifiers.
+- Table column `render` receives `({ item, column, index })`, `h` is imported from `vue`; `index` is the row index.
+- The i18n hook is `(key, values) => i18n.global.t(key, values)`; locales are imported from `@amazingcat/cattr-ui/locale/<lang>`.
+- Default titles of the `$Modal` status dialogs are `Info`, `Success`, `Warning`, `Error`.
+
+## 1.x
+
+> History of AT UI before the fork: the entries below refer to upstream AT UI versions.
 
 `AT-UI` strictly follows [Semantic Versioning 2.0.0](http://semver.org/lang/zh-CN/).
 
@@ -18,7 +32,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.3.0</p>
       <p class="time"><span>2017-11-10</span></p>
       <ul class="content">
@@ -39,7 +53,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.2.0</p>
       <p class="time"><span>2017-11-01</span></p>
       <ul class="content">
@@ -79,7 +93,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.1.0</p>
       <p class="time"><span>2017-08-01</span></p>
       <ul class="content">
@@ -88,7 +102,7 @@
       </ul>
     </at-timeline-item>
     <at-timeline-item color="red">
-      <i slot="dot" class="icon icon-award"></i>
+      <template #dot><i class="icon icon-award"></i></template>
       <p class="head">v1.0.0</p>
       <p class="time"><span>2017-06-27</span></p>
       <ul class="content">

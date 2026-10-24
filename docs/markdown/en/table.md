@@ -438,15 +438,18 @@ There are three type of `sortType`: `normal (No sort)`, `desc (Descending)`, `as
 
 ## Custom Column Template
 
-You can render the column by setting `render` to certain columns prop's items. It is based on Vue's Render function.
+You can render the column by setting `render` to certain columns prop's items. It is based on Vue's [render function](https://vuejs.org/guide/extras/render-function.html).
 
-`render` accepts two arguments: the first is `h`, the second is an object including `row`, `column` and `index` (current cell's data, current column's data, current index).
+`render` receives one argument, an object `{ item, column, index }`: the data of the current row, the current column and the index of the row as displayed (position in the current page / sort order, from 0; the original index in `data` is `item.index`). It returns a VNode created with `h` imported from `vue`, using the Vue 3 VNode format: props and listeners (`onClick`) at the top level, children of components as a function or an object of slots. Import the components you render (`import { AtButton } from '@amazingcat/cattr-ui'`) or use `resolveComponent('AtButton')` inside the render function.
 
 :::demo
 ```html
 <at-table :columns="columns3" :data="data2" sort></at-table>
 
 <script>
+  import { h } from 'vue'
+  import { AtButton } from '@amazingcat/cattr-ui'
+
   export default {
     data () {
       return {
@@ -466,33 +469,19 @@ You can render the column by setting `render` to certain columns prop's items. I
           },
           {
             title: 'Operation',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, 'View Name'),
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, 'View Address')
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => 'View Name'),
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => 'View Address')
               ])
             }
           }
@@ -537,6 +526,9 @@ There are three type of size: `small`, `normal`, `large`. Default is `normal`.
 <at-table style="margin-top: 24px;" :columns="columns4" :data="data2" size="small" sort></at-table>
 
 <script>
+  import { h } from 'vue'
+  import { AtButton } from '@amazingcat/cattr-ui'
+
   export default {
     data () {
       return {
@@ -556,33 +548,19 @@ There are three type of size: `small`, `normal`, `large`. Default is `normal`.
           },
           {
             title: 'Operation',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, 'View Name'),
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, 'View Address')
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => 'View Name'),
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => 'View Address')
               ])
             }
           }
@@ -603,33 +581,19 @@ There are three type of size: `small`, `normal`, `large`. Default is `normal`.
           },
           {
             title: 'Operation',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, 'View Name'),
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, 'View Address')
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => 'View Name'),
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => 'View Address')
               ])
             }
           }
@@ -779,10 +743,27 @@ Set `pagination` to apply pagination function.
 |---------- |-------------- |---------- |
 | on-selection-change | Emitted when the row was selected | rows of selected |
 | on-select-all | Emitted when all rows was selected | rows of selected |
+| on-sort-change | Emitted when the sort order of a column was changed | `{ column, order, key }` |
 | on-page-change | Emitted when the page was changed | page number |
 | on-page-size-change | Emitted when the page sizer was changed | page size |
+| rowClick | Emitted when a row was clicked | native `MouseEvent` |
+
+## Column Options
+
+| Property      | Description          | Type      | Accepted values                           | Default  |
+|---------- |-------------- |---------- |--------------------------------  |-------- |
+| title | the title of column | String | - | - |
+| key | the key of the row data shown in the column | String | - | - |
+| render | custom cell render function `({ item, column, index }) => VNode`, `h` is imported from `vue` | Function | - | - |
+| sortType | enables sorting by the column, initial order | String | `normal`, `asc`, `desc` | - |
+| sortMethod | custom compare function `(a, b, type)` | Function | - | - |
+| width | the width of column | Number / String | - | - |
+| className | class name of the column header | String | - | - |
 
 <script>
+  import { h } from 'vue'
+  import { AtButton } from '@amazingcat/cattr-ui'
+
   export default {
     data () {
       return {
@@ -831,33 +812,19 @@ Set `pagination` to apply pagination function.
           },
           {
             title: 'Operation',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, 'View Name'),
-                h('AtButton', {
-                  props: {
-                    size: 'small',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, 'View Address')
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => 'View Name'),
+                h(AtButton, {
+                  size: 'small',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => 'View Address')
               ])
             }
           }
@@ -878,33 +845,19 @@ Set `pagination` to apply pagination function.
           },
           {
             title: 'Operation',
-            render: (h, params) => {
+            render: ({ item }) => {
               return h('div', [
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  style: {
-                    marginRight: '8px'
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.name)
-                    }
-                  }
-                }, 'View Name'),
-                h('AtButton', {
-                  props: {
-                    size: 'smaller',
-                    hollow: true
-                  },
-                  on: {
-                    click: () => {
-                      this.$Message(params.item.address)
-                    }
-                  }
-                }, 'View Address')
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  style: { marginRight: '8px' },
+                  onClick: () => this.$Message(item.name)
+                }, () => 'View Name'),
+                h(AtButton, {
+                  size: 'smaller',
+                  hollow: true,
+                  onClick: () => this.$Message(item.address)
+                }, () => 'View Address')
               ])
             }
           }

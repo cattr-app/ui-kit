@@ -5,7 +5,7 @@
 
 ## Basic
 
-Need to bind `model` separately for standalone use.
+Bind `v-model` (a Boolean) separately for standalone use.
 
 :::demo
 ```html
@@ -46,21 +46,33 @@ Use `CheckboxGroup` combined with array to generate a combination.
 
 | Property      | Description          | Type      | Accepted values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| label | value of selection | String | - | - |
+| modelValue (v-model) | whether the checkbox is selected (standalone use only) | Boolean | - | false |
+| label | value of selection, used inside Checkbox Group | String / Number / Boolean | - | - |
+| name | same as native checkbox | String | - | - |
 | disabled | disable selection or not | Boolean | - | false |
-| checked | whether the checkbox is selected | Boolean | - | false |
+| checked | initial selected state (standalone use only; inside a group use `modelValue` of the group) | Boolean | - | false |
 
 ## Checkbox Events
 
+Emitted only when the checkbox is used alone; inside a group listen to the events of Checkbox Group.
+
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| on-change | Emitted when the state of selection is changed | the `lavel` value of selected button |
+| update:modelValue | Emitted when the user toggles the checkbox, used by `v-model` | `true` / `false` |
+| on-change | Emitted when the user toggles the checkbox | `true` / `false` |
+
+## Checkbox Group Props
+
+| Property      | Description          | Type      | Accepted values                           | Default  |
+|---------- |-------------- |---------- |--------------------------------  |-------- |
+| modelValue (v-model) | `label` values of the selected checkboxes | Array | - | [] |
 
 ## Checkbox Group Events
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| on-change | Emitted when the state of selection is changed | the `lavel` value of selected button |
+| update:modelValue | Emitted when the user toggles a checkbox of the group, used by `v-model` | new array of the selected `label` values (the original array is not mutated) |
+| on-change | Emitted when the user toggles a checkbox of the group | new array of the selected `label` values |
 
 <script>
 export default {

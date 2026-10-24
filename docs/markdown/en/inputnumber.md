@@ -77,7 +77,8 @@ There are three sizes of an InputNumber box: `large`，`normal`，`small`.
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | value of inputnumber，can binding with `v-model` | Number | - | - |
+| modelValue (v-model) | value of inputnumber | Number | - | 0 |
+| name | same as native input | String | - | - |
 | size | size of inputnumber | String | `small`, `normal`, `large` | normal |
 | step | The number to which the current value is increased or decreased. It can be an integer or decimal | Number | - | 1 |
 | min | min value | Number | - | -Infinity |
@@ -90,9 +91,12 @@ There are three sizes of an InputNumber box: `large`，`normal`，`small`.
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| focus | Emitted when focus | event |
-| blur | Emitted when blur | event |
-| change | Emitted when the value of input is changed | the value of input |
+| update:modelValue | Emitted once per change of the value (+/- buttons, typed number applied on blur or Enter, clamped to `min`/`max`), used by `v-model` | the new value (Number) |
+| change | Emitted once per change of the value, together with `update:modelValue` | the new value (Number) |
+| focus | Emitted when focus | native `Event` |
+| blur | Emitted when blur | native `Event` |
+
+Other attributes and listeners (`id`, `placeholder`, `aria-*`, `@keyup`, `@keydown`…) are passed to the native `<input>`; `class` and `style` stay on the wrapper. Events are not emitted when `modelValue` is changed by the parent.
 
 <script>
 export default {

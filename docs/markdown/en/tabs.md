@@ -66,7 +66,7 @@ The Tab with Icon.
 
 ## Extra content
 
-You can add extra actions to the right of Tabs by adding the slot extra.
+You can add extra actions to the right of Tabs with the `#extra` slot.
 
 :::demo
 ```html
@@ -80,9 +80,11 @@ You can add extra actions to the right of Tabs by adding the slot extra.
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">Extra Content</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">Extra Content</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -103,9 +105,11 @@ Set the property `size` to `small` can be displayed as a mini-type.
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">Extra Content</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">Extra Content</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -126,9 +130,11 @@ Set the property `type` to `card` can display the card style.
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">Extra Content</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">Extra Content</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -149,9 +155,11 @@ Mini card tab.
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">Extra Content</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">Extra Content</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -178,19 +186,21 @@ Animating can be disabled by setting the property `animated` to `false`.
 
 ## Add & close tab
 
-Set the property `closable` to `false` can disable close. But you should delete `at-tab-pane` manually by listen to `on-tab-remove` event.
+Set the property `closable` on Tabs to make the tabs closable, and `:closable="false"` on a TabPane to keep that tab. Tabs does not remove the pane itself: delete the `at-tab-pane` in the `on-tab-remove` handler (e.g. `tabList.splice(index, 1)`).
 
 :::demo
 ```html
-<at-tabs :animated="false" value="tab6" closable @on-tab-remove="removeHandle">
+<at-tabs :animated="false" model-value="tab6" closable @on-tab-remove="removeHandle">
   <at-tab-pane
     v-for="(item, index) in tabList" :key="index"
-    :label="item.label" :name="item.name" :unclosable="index === 0 ? true : false">
+    :label="item.label" :name="item.name" :closable="index !== 0">
     <p>{{ item.content }}</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small" @click="addHandle">Add</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small" @click="addHandle">Add</at-button>
+    </div>
+  </template>
 </at-tabs>
 
 <script>
@@ -247,7 +257,7 @@ Set the property `closable` to `false` can disable close. But you should delete 
 ## Tabs Props
 | Property      | Description       | Type      | Accepted values             | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | name of the selected tab. Use v-model to enable a two-way binding | String | - | name of first tab |
+| modelValue (v-model) | `name` of the selected tab | String | - | name of first tab |
 | type | type of Tab | String | `line` `card` | `line` |
 | size | size of Tab | String | `default` `small` | `default` |
 | closable | whether the tab can be closed | Boolean | - | false |
@@ -257,8 +267,9 @@ Set the property `closable` to `false` can disable close. But you should delete 
 
 | Event Name   | Description     | 	Return Value  |
 |---------- |-------------- |---------- |
-| on-change | triggers when switching tab | the current tab `{index, name}` |
-| on-tab-remove | triggers when deleting tab | the deleted tab `{index, name}` |
+| update:modelValue | triggers when the user selects a tab (click, or closing the active tab), used by `v-model` | `name` of the selected tab |
+| on-change | triggers when the user selects a tab (not on mount and not when `modelValue` is changed by the parent) | the current tab `{index, name}` |
+| on-tab-remove | triggers when the close icon of a tab is clicked; remove the pane in the handler | the deleted tab `{index, name}` |
 
 ## Tabs slot
 
@@ -271,11 +282,11 @@ Set the property `closable` to `false` can disable close. But you should delete 
 
 | Property     | Description      | Type    | Accepted values            | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| name | identifier corresponding to the activeName of Tabs, representing the alias of the tab-pane | String / Number | - | ordinal number of the tab-pane in the sequence, e.g. the first tab-pane is 1 |
+| name | identifier corresponding to the `modelValue` of Tabs, representing the alias of the tab-pane | String | - | index of the tab-pane in DOM order as a string: `'0'`, `'1'`, … |
 | label | title of the tab | String | - | - |
 | icon | icon of the tab | String | - | - |
 | disabled | whether to disable the tab | Boolean | - | false |
-| closable | whether the tab can be closed, the priority is higher than the Tabs `closable` | Boolean | - | true |
+| closable | whether the tab can be closed; works only when Tabs has `closable` | Boolean | - | true |
 
 ## TabPane slot
 

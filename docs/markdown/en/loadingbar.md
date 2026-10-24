@@ -5,11 +5,11 @@
 
 Create a loading progress bar globally to display the status of asynchronous requests.
 
-Because of reusability, `LoadingBar` creates only one instance globally. You can use the `this.$Loading` instance directly.
+Because of reusability, `LoadingBar` creates only one instance globally (lazily, on the first call). `Cattr UI` adds it to `app.config.globalProperties` as `$Loading`, so you can use `this.$Loading` directly in components. In `<script setup>` import the service: `import { LoadingBar } from '@amazingcat/cattr-ui'`.
 
 ## Basic
 
-Invoke `$Loading` by thress methods: `start()`、`finish()`、`error()`
+Invoke `$Loading` by three methods: `start()`, `finish()`, `error()`; `update(percent)` sets the progress manually.
 
 :::demo
 ```html
@@ -44,9 +44,11 @@ Invoke `$Loading` by thress methods: `start()`、`finish()`、`error()`
 | Function Name      | Description          | Parameter      |
 |---------- |-------------- |---------- |
 | start | start loading the progress from 0, and load automatically | - |
-| finish | complete progress | - |
-| error | display the error type of progress bar | - |
-| update | specify and update the percentage of progress | percentage |
+| finish | complete progress, the bar is removed 800 ms later | - |
+| error | display the error type of progress bar, the bar is removed 800 ms later | - |
+| update | stop the automatic progress and set the percentage | percent, Number (0–100) |
+| config | global configuration, also applied to the bar already shown | `{ width }` |
+| destroy | remove the bar immediately and stop all timers (e.g. on route change or in tests) | - |
 
 ## LoadingBar Configs
 
@@ -64,7 +66,7 @@ this.$Loading.config({
 ```
 :::
 
-## LoadingBar Props
+## LoadingBar Config Options
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |

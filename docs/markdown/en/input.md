@@ -40,42 +40,42 @@ To display the tooltip icon after the input box, add `icon` property to Input. I
 
 ## Pre / Post Label
 
-Set `slot="prepend"` or `slot="append"` to customize the input box.
+Use the `#prepend` or `#append` slot to customize the input box.
 
 :::demo
 ```html
 <at-input v-model="inputValue4" placeholder="Please input">
-  <template slot="prepend">
+  <template #prepend>
     <span>Https://</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input" size="small">
-  <template slot="append">
+  <template #append>
     <span>@cattr.app</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input">
-  <template slot="prepend">
+  <template #prepend>
     <i class="icon icon-link"></i>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input" prepend-button>
-  <template slot="prepend">
+  <template #prepend>
     <span>Search</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input" append-button>
-  <template slot="append">
+  <template #append>
     <span>Search</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input" prepend-button>
-  <template slot="prepend">
+  <template #prepend>
     <i class="icon icon-search"></i>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input" append-button>
-  <template slot="append">
+  <template #append>
     <i class="icon icon-search"></i>
   </template>
 </at-input>
@@ -98,9 +98,9 @@ There are three sizes of an Input box: `large`，`normal`，`small`.
 
 | Property      | Description          | Type      | Accepted values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| type | input type | String | `text`, `passowrd`, `textarea` | - |
+| type | type of the native input | String | `text`, `password`, `number`, `email`… | `text` |
 | name | same as `name` in native input | String | - | - |
-| value | binding value | String / Number | - | - |
+| modelValue (v-model) | binding value | String / Number | - | - |
 | placeholder | placeholder of input | String | - | - |
 | disabled | whether input is disabled | Boolean | - | false |
 | readonly | same as native input | Boolean | - | false |
@@ -109,8 +109,9 @@ There are three sizes of an Input box: `large`，`normal`，`small`.
 | max | same as native input | Number | - | - |
 | min | same as native input | Number | - | - |
 | autofocus | same as native input | Boolean | - | false |
-| size | size of input, works when type is not 'textarea' | String | `small`, `normal`, `large` | normal |
+| size | size of input | String | `small`, `normal`, `large` | normal |
 | status | status of input | String | `success`, `error`, `warning`, `info` | - |
+| icon | name of the icon shown after the input (without the `icon-` prefix) | String | - | - |
 | prependButton | whether has prepend button or not | Boolean | - | false |
 | appendButton | whether has append button or not | Boolean | - | false |
 
@@ -118,15 +119,19 @@ There are three sizes of an Input box: `large`，`normal`，`small`.
 
 | Name | Description          |
 |------ |------------ |
-| prepend | Preposed content, only works in text type |
-| append | Append content, only works in text type |
+| prepend | Preposed content |
+| append | Append content |
 
 ## Input Events
 
 | Event Name | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| focus | Emitted when focus | event |
-| blur | Emitted when blur | event |
+| update:modelValue | Emitted on every input, used by `v-model` | the input value (String) |
+| change | Emitted on every input | the input value (String) |
+| focus | Emitted when focus | native `Event` |
+| blur | Emitted when blur | native `Event` |
+
+Other attributes and listeners (`id`, `autocomplete`, `aria-*`, `@keyup.enter`, `@keydown`, `@paste`…) are passed to the native `<input>`; `class` and `style` stay on the wrapper `div.at-input`. Note that `@input` on `<at-input>` therefore receives the native `Event`; use `@update:model-value` or `@change` to get the value.
 
 <script>
 export default {

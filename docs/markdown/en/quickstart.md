@@ -1,41 +1,41 @@
-
 # Quickstart
 
 ----
 
 ## Before Start
 
-> Before using Cattr UI, we recommend you to learn `Vue` and `ES2015`, and make sure that you had installed [Node.js](https://nodejs.org/en/) (≥ v6.x) correctly.
+> Before using Cattr UI, we recommend you to learn `Vue` and modern JavaScript (ES modules), and make sure that you had installed [Node.js](https://nodejs.org/en/) correctly.
 
-`Cattr UI` is based on the `Vue.js` 2.x+ version, so we encourage you to know the basics below:
+`Cattr UI` is based on `Vue.js` 3.5+, so we encourage you to know the basics below:
 
-- [Vue Components](https://cn.vuejs.org/v2/guide/components.html)
-- [Single File Components](https://cn.vuejs.org/v2/guide/single-file-components.html)
+- [Vue Components](https://vuejs.org/guide/essentials/component-basics.html)
+- [Single File Components](https://vuejs.org/guide/scaling-up/sfc.html)
 
 ## Starter Kit
 
->  `Vue.js` provides an [official CLI](https://github.com/vuejs/vue-cli) for quickly scaffolding ambitious Single Page Applications. It provides batteries-included build setups for a modern frontend workflow. It takes only a few minutes to get up and running with hot-reload, lint-on-save, and production-ready builds.
-
+> [Vite](https://vite.dev/) provides an official template for Vue (`npm create vite@latest`, template `vue`). It takes only a few minutes to get up and running with hot-reload and production-ready builds.
 
 ## Standard Development Flow
 
-In Production Project, often use `Webpack`, `Rollup` or `Gulp` workflow, most ot them can achieve loading components on demand. So it's not recommended to use `<script>` for global use.
+`Cattr UI` is an ES module package, it is used with a bundler that understands ESM (Vite, webpack 5).
 
 ### Global Components Usage
 
-Import all components or required components in the entry file of the project.
+Install the plugin in the entry file of the project. All components are registered globally as `<at-*>`.
 
 ```js
-import Vue from 'vue'
-import AtComponents from '@amazingcat/cattr-ui'
-import 'cattr-ui-style'    // Import CSS
+import { createApp } from 'vue'
+import CattrUI from '@amazingcat/cattr-ui'
+import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'   // Import styles (SCSS, requires `sass`)
+import App from './App.vue'
 
-// import 'cattr-ui-style/src/index.scss'      // Or import the unbuilt version of SCSS
+const app = createApp(App)
 
-Vue.use(AtComponents)
+app.use(CattrUI)    // or app.use(CattrUI, { locale, i18n }), see Internationalization
+app.mount('#app')
 ```
 
-If you had imported all the components globally, you can use global instance methods of `Cattr UI` directly, such as:
+The plugin also adds the global services `$Message`, `$Modal`, `$Notify` and `$Loading` to `app.config.globalProperties`, so in the Options API you can use them directly, such as:
 
 ```js
 this.$Loading.start()
@@ -44,27 +44,20 @@ this.$Modal.alert(config)
 this.$Notify(config)
 ```
 
+In `<script setup>` or outside components, import the services as named exports (call them after `app.use(CattrUI)`, the services are rendered in the context of that application):
+
+```js
+import { Message, Dialog, Notification, LoadingBar } from '@amazingcat/cattr-ui'
+
+LoadingBar.start()
+Message.success('Saved')
+Dialog.confirm('Are you sure?').then(() => {})
+Notification({ title: 'Title', message: 'Content' })
+```
+
 ### Import On Demand
 
-The components that can be registered locally are applicable to scenarios that are used to combination with other frameworks. Firstly, you can load components on demand and reduce the size of files by using the [babel-plugin-import](https://github.com/ant-design/babel-plugin-import) plugin.
-
-```bash
-npm install babel-plugin-component
-```
-
-Then update `.babelrc` file:
-
-```json
-{
-  "presets": ["es2015", "stage-2"],
-  "plugins": [["import", {
-    "libraryName": "at",
-    "libraryDirectory": "src/components"
-  }]]
-}
-```
-
-Now you can import components that you want.
+Each component is a named export with the name of the component (`AtButton`, `AtInput`, …); unused components are removed by tree-shaking. Register them locally:
 
 ```js
 import { AtInput } from '@amazingcat/cattr-ui'
@@ -91,63 +84,72 @@ In template, use components with custom tag as `<at-input></at-input>`, use `v-m
 </template>
 ```
 
+Or register a single component globally with `app.use(AtButton)` (same as `app.component(AtButton.name, AtButton)`). A component can also be imported by path: `import AtButton from '@amazingcat/cattr-ui/src/components/button'`.
+
 The following are the complete list of components and the way to be imported:
 
 ```js
-import Vue from 'vue'
+import { createApp } from 'vue'
 import {
-  Button,
-  ButtonGroup,
-  Tag,
-  Radio,
-  RadioGroup,
-  RadioButton,
-  Checkbox,
-  CheckboxGroup,
-  Input,
-  InputNumber,
-  Textarea,
-  Badge,
-  Switch,
-  Slider,
-  Tooltip,
-  Popover,
-  Alert,
-  Progress,
-  LoadingBar,
-  Modal,
-  Select,
-  Option,
-  OptionGroup,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Breadcrumb,
-  BreadcrumbItem,
-  Pagination,
-  Menu,
-  MenuItem,
-  MenuItemGroup,
-  Submenu,
-  Table,
-  Card,
-  Collapse,
-  CollapseItem,
-  Steps,
-  Step,
-  Rate,
-  Tabs,
-  TabPane,
-  Timeline,
-  TimelineItem
+  AtButton,
+  AtButtonGroup,
+  AtTag,
+  AtRadio,
+  AtRadioGroup,
+  AtRadioButton,
+  AtCheckbox,
+  AtCheckboxGroup,
+  AtInput,
+  AtInputNumber,
+  AtTextarea,
+  AtBadge,
+  AtSwitch,
+  AtSlider,
+  AtTooltip,
+  AtPopover,
+  AtAlert,
+  AtProgress,
+  AtModal,
+  AtSelect,
+  AtOption,
+  AtOptionGroup,
+  AtDropdown,
+  AtDropdownMenu,
+  AtDropdownItem,
+  AtBreadcrumb,
+  AtBreadcrumbItem,
+  AtPagination,
+  AtMenu,
+  AtMenuItem,
+  AtMenuItemGroup,
+  AtSubmenu,
+  AtTable,
+  AtCard,
+  AtCollapse,
+  AtCollapseItem,
+  AtSteps,
+  AtStep,
+  AtRate,
+  AtTabs,
+  AtTabPane,
+  AtTimeline,
+  AtTimelineItem,
+  Message,
+  Dialog,
+  Notification,
+  LoadingBar
 } from '@amazingcat/cattr-ui'
 
-Vue.prototype.$Notify = Notification
-Vue.prototype.$Loading = LoadingBar
-Vue.prototype.$Modal = Dialog
-Vue.prototype.$Message = Message
+const app = createApp(App)
+
+app.use(AtButton)
+// …
+app.use(Message)        // adds $Message to app.config.globalProperties
+app.use(Dialog)         // adds $Modal
+app.use(Notification)   // adds $Notify
+app.use(LoadingBar)     // adds $Loading
 ```
 
 ## Customize Theme
 
-The style of `Cattr UI` is independent to a separate project [Cattr UI Style](https://github.com/cattr-app/ui-kit), The variables for each component are stored in the file `cattr-ui-style/src/variables/default.scss`. User can customize the style of components according to actual needs.
+The styles of `Cattr UI` are included in the package (`@amazingcat/cattr-ui/src/stylesheet`). The variables for each component are stored in the file `src/stylesheet/src/variables/default.scss`. User can customize the style of components according to actual needs.

@@ -5,7 +5,7 @@
 
 Use `Modal` when you need to ask the user to process transactions, and do not want to jump the page.
 
-You can also use the default lite modal box when you need to popup a concise confirmation box. `Cattr UI` adds the global object `$Modal` to `Vue.prototype`. You can use the `$Modal` instance directly.
+You can also use the default lite modal box when you need to popup a concise confirmation box. `Cattr UI` adds the global object `$Modal` to `app.config.globalProperties`, so you can use `this.$Modal` directly in components. In `<script setup>` import the service: `import { Dialog } from '@amazingcat/cattr-ui'` (call it after `app.use(CattrUI)`).
 
 ## Modal Methods
 
@@ -17,6 +17,14 @@ Usage methods below:
 - `this.$Modal.success(config)`
 - `this.$Modal.warning(config)`
 - `this.$Modal.error(config)`
+- `this.$Modal.close()`
+
+Every method accepts either an options object `config` or the arguments `(content, title, config)`, and returns a `Promise`:
+
+- `confirm` and `prompt` resolve when OK is clicked (`'confirm'`; `prompt` resolves with `{ value, action: 'confirm' }`) and reject with `'cancel'` when the dialog is cancelled (Cancel button, close icon, click on the mask, `Escape`);
+- `alert`, `info`, `success`, `warning` and `error` resolve on any close (`'confirm'` or `'cancel'`).
+
+Dialogs are shown one at a time: the next call opens its dialog after the current one has closed. `this.$Modal.close()` closes the current dialog and drops the queued ones (their promises are not settled).
 
 ## Alert
 
@@ -36,7 +44,7 @@ You can capture operational feedback in `Promise`, or you can pass the `callback
         this.$Modal.alert({
           title: 'Here is Title',
           content: 'Here is Content',
-          callback: function (action) {
+          callback: action => {
             this.$Message(action)
           }
         })
@@ -87,14 +95,16 @@ Pop up the input dialog to remind user to enter appropriate content. (similar to
 <script>
   export default {
     methods: {
-      this.$Modal.prompt({
-        title: 'Tips',
-        content: 'Please input your email:'
-      }).then((data) => {
-        this.$Message(`Click 'Confirm' Button, input value is ${data.value}`)
-      }).catch(() => {
-        this.$Message('Click \'Cancel\' Button')
-      })
+      modalPrompt () {
+        this.$Modal.prompt({
+          title: 'Tips',
+          content: 'Please input your email:'
+        }).then((data) => {
+          this.$Message(`Click 'Confirm' Button, input value is ${data.value}`)
+        }).catch(() => {
+          this.$Message('Click \'Cancel\' Button')
+        })
+      }
     }
   }
 </script>
@@ -103,7 +113,7 @@ Pop up the input dialog to remind user to enter appropriate content. (similar to
 
 ## Message Type
 
-In addition to the `window` dialog above, `Cattr UI` also provides four message types of Modal that are used to display important information. These message modal only allows click the OK button to close.
+In addition to the `window` dialog above, `Cattr UI` also provides four message types of Modal that are used to display important information. These message modal only allows click the OK button to close. Without `title` in the options object the dialogs get the default titles `Info`, `Success`, `Warning` and `Error` (pass `title` to translate them); the string form `this.$Modal.info('text')` has no title.
 
 :::demo
 ```html
@@ -170,22 +180,26 @@ As mentioned earlier, you use the `this.$Modal` methods. If you want to customiz
 
 ## Customize Style
 
-Customize the header and footer of `Modal` by `slot` property.
+Customize the header and footer of `Modal` with the `#header` and `#footer` slots.
 
 :::demo
 ```html
 <at-button @click="modal2=true">Customize header and footer</at-button>
 <at-button @click="modal3=true">Without Header</at-button>
 <at-modal v-model="modal2">
-  <div slot="header" style="text-align:center;">
-    <span>Here is Title</span>
-  </div>
+  <template #header>
+    <div style="text-align:center;">
+      <span>Here is Title</span>
+    </div>
+  </template>
   <div style="text-align:center;">
     <p>Can you see the contents here?</p>
   </div>
-  <div slot="footer">
-    <at-button style="width:100%;" type="error" @click="closeModal2">Here is Button</at-button>
-  </div>
+  <template #footer>
+    <div>
+      <at-button style="width:100%;" type="error" @click="closeModal2">Here is Button</at-button>
+    </div>
+  </template>
 </at-modal>
 <at-modal v-model="modal3">
   <p>Here is Content!</p>
@@ -232,26 +246,32 @@ To customize the style of Modal, add `styles` property.
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | whether to show Modal, use `v-model` to enable a two-way binding | Boolean | - | false |
+| modelValue (v-model) | whether to show Modal | Boolean | - | false |
 | title | title of modal | String | - | - |
 | content | content of modal | String | - | - |
-| cancelText | content of cancel button | String | - | Cancel |
-| okText | content of ok button | String | - | Confirm |
+| cancelText | content of cancel button | String | - | `Cancel` (from locale) |
+| okText | content of ok button | String | - | `OK` (from locale) |
 | maskClosable | enable the mask to close the modal | Boolean | - | true |
 | showHead | whether to show Head | Boolean | - | true |
 | showClose | whether to show Close Button | Boolean | - | true |
 | showFooter | whether to show Footer | Boolean | - | true |
-| showInput | whether to show Input | Boolean | - | false |
+| showCancelButton | whether to show the cancel button | Boolean | - | true |
+| showConfirmButton | whether to show the confirm button | Boolean | - | true |
+| showInput | whether to show Input (it gets focus when the modal opens) | Boolean | - | false |
+| inputValue | initial value of the input | String / Number | - | - |
+| inputPlaceholder | placeholder of the input | String | - | - |
 | width | the width of Modal | Number / String | - | `520` |
-| closeOnPressEsc | enable the `ESC` key to close Modal | Boolean | - | true |
+| closeOnPressEsc | enable the `ESC` key to close Modal (`showClose: false` disables it too) | Boolean | - | true |
 | styles | customize styles of Modal | Object | - | - |
 
 ## Modal Events
 
 | Event Name | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| on-cancel | Emitted when cancel button clicked | - |
-| on-confirm | Emitted when confirm button clicked | - |
+| update:modelValue | Emitted when the modal is closed by OK, Cancel, the close icon, the mask or `ESC`, used by `v-model` | false |
+| on-confirm | Emitted when the confirm button is clicked | - |
+| on-cancel | Emitted when the modal is cancelled: cancel button, close icon, click on the mask (`maskClosable`), `ESC` | - |
+| after-leave | Emitted after the close animation has finished | - |
 
 ## Modal Slots
 
@@ -260,6 +280,14 @@ To customize the style of Modal, add `styles` property.
 | header | customize the header of modal |
 | footer | customize the footer of modal |
 | - | customize the main content of modal |
+
+## $Modal Options
+
+The options object of `this.$Modal.*` is passed to `AtModal` as props: `title`, `content`, `okText`, `cancelText`, `maskClosable`, `showClose`, `showCancelButton`, `showConfirmButton`, `showInput`, `inputValue`, `inputPlaceholder`, `width`, `styles` and others from the table above; unknown keys are ignored. Additionally:
+
+| Property | Description | Type | Default |
+|---------- |-------------- |---------- |-------- |
+| callback | called together with the `Promise`: `callback(action)`, for `prompt` — `callback(value, action)`, where `action` is `'confirm'` or `'cancel'`. Can also be passed as the second argument of `Dialog(options, callback)` | Function | - |
 
 <script>
   export default {

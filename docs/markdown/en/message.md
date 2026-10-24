@@ -8,7 +8,7 @@ Compared to `Notification`, `Message` is lighter,, centered at the top of the pa
 - Provide four type of Message: `success`, `Error`, `Warning`, `Info`
 - Showing and disappearing at the center of the top is a lightweight cue that does not interrupt user operations.
 
-`Cattr UI` adds the global object `$Message` to `Vue.prototype`. You can use the `$Message` instance directly.
+`Cattr UI` adds the global object `$Message` to `app.config.globalProperties`, so you can use `this.$Message` directly in components. In `<script setup>` import the service: `import { Message } from '@amazingcat/cattr-ui'` (call it after `app.use(CattrUI)`).
 
 - `this.$Message(config)`
 - `this.$Message.info(config)`
@@ -16,6 +16,9 @@ Compared to `Notification`, `Message` is lighter,, centered at the top of the pa
 - `this.$Message.warning(config)`
 - `this.$Message.error(config)`
 - `this.$Message.loading(config)`
+- `this.$Message.closeAll()`
+
+`config` is a string (the message text) or an options object, see below. Every call returns a function that closes this message.
 
 ## Basic
 
@@ -50,7 +53,7 @@ There are four type of Message: `success`, `error`, `warning`, `info`.
 
 ## Customize Duration
 
-Customize message display duration by `duration` property default `3s`.
+Customize message display duration by the `duration` option, in milliseconds (default `3000`). `0` keeps the message until it is closed.
 
 :::demo
 ```html
@@ -73,7 +76,7 @@ Customize message display duration by `duration` property default `3s`.
 
 ## Message of Loading
 
-`this.$Message.loading` return the method of close, which can be used to close manually.
+`this.$Message.loading` (like every other method) returns the method of close, which can be used to close manually.
 
 :::demo
 ```html
@@ -95,15 +98,15 @@ Customize message display duration by `duration` property default `3s`.
 ```
 :::
 
-## Message Props
+## Message Options
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| type | the type of Message | String | `success`, `error`, `warning`, `info` | `info` |
-| message | the content of Message | String | - | - |
-| duration | time before auto-dismiss, in seconds, default `3000` | Number | - | 3000 |
-| icon | customize the icon of Message | String | - | `info` |
-| onClose | specify a function that will be called after the message closed | Function | - | - |
+| type | the type of Message | String | `success`, `error`, `warning`, `info`, `loading` | `info` |
+| message | the content of Message (shown as text) | String / Number | - | - |
+| duration | time before auto-dismiss, in milliseconds; `0` disables auto-dismiss | Number | - | 3000 |
+| icon | class name of a custom icon (e.g. `icon-star`), has priority over the icon of the type | String | - | icon of the type |
+| onClose | specify a function that will be called when the message is closed, receives the message component instance | Function | - | - |
 
 <script>
   export default {

@@ -119,22 +119,33 @@ There are three sizes of a radio grouop: `large`，`normal`，`small`.
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 | :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
 | label | value of Radio | String / Number | - | - |
-| value | compare with label to determine whether it is selected (only valid when use alone) | String / Number | - | - |
+| modelValue (v-model) | compare with label to determine whether it is selected (only valid when use alone) | String / Number | - | - |
+| name | same as native radio | String | - | - |
 | disabled | whether Radio is disabled |Boolean | - | false |
+
+## Radio Events
+
+| Event Name      | Description          | Return Value  |
+|---------- |-------------- |---------- |
+| update:modelValue | Emitted when the user selects the Radio (only when used alone, inside a group listen to the events of Radio Group), used by `v-model` | the `label` of the radio |
 
 ## Radio Button Props
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 | :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
 | label | value of Radio Button | String / Number | - | - |
+| modelValue (v-model) | compare with label to determine whether it is selected (only valid when use alone) | String / Number | - | - |
+| name | same as native radio | String | - | - |
 | disabled | whether Radio Button is disabled | Boolean | - | false |
+
+Radio Button emits `update:modelValue` when used alone, like Radio. `size`, `fill` and `text-color` are set on Radio Group only.
 
 ## Radio Group Props
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | size | size of Radio Group | String | `small`, `normal`, `large` | normal |
-| value | value of Radio Button, binding with `v-model` | String / Number | - | - |
+| modelValue (v-model) | `label` of the selected Radio / Radio Button | String / Number | - | - |
 | fill | background color of selected button | String (Hex) | - | - |
 | textColor | text color of selected button | String (Hex) | - | - |
 
@@ -142,7 +153,8 @@ There are three sizes of a radio grouop: `large`，`normal`，`small`.
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| radio-group-change | Emitted when the value of Radio is changed | the value of radio |
+| update:modelValue | Emitted when the user selects a radio, used by `v-model` | the `label` of the selected radio |
+| radio-group-change | Emitted only when the user selects a radio (not when `modelValue` is changed by the parent; selecting a disabled or the already selected radio emits nothing) | the `label` of the selected radio |
 
 <style lang="scss" scoped>
   .row + .row {

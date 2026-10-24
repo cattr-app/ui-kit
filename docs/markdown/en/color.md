@@ -22,7 +22,7 @@ Used to identify brand colors.
 Used to identify the state of Button
 
 <div class="row no-gutter">
-  <div class="col-sm-12 col-md-6 col-lg-5">
+  <div class="col-sm-12 col-md-6 col-lg-5">
     <div class="at-color-container" style="background-color: #13CE66;">
       <p class="color-name">Green - Positive</p>
       <p class="color-value">#13CE66</p>

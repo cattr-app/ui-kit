@@ -15,7 +15,7 @@ Set `mode` to `horizontal`.
   <at-menu-item name="1"><i class="icon icon-home"></i>Navigation One</at-menu-item>
   <at-menu-item name="2" disabled><i class="icon icon-layers"></i>Navigation Two</at-menu-item>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Three - Submenu</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Three - Submenu</template>
     <at-menu-item-group title="Group One">
       <at-menu-item name="3-1">Submenu One</at-menu-item>
       <at-menu-item name="3-2" disabled>Submenu Two</at-menu-item>
@@ -40,11 +40,11 @@ Nested `Submenu` in `Submenu` can bi combined into multilevel menus.
   <at-menu-item name="1"><i class="icon icon-home"></i>Navigation One</at-menu-item>
   <at-menu-item name="2"><i class="icon icon-layers"></i>Navigation Two</at-menu-item>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Three</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Three</template>
     <at-menu-item name="3-1"><i class="icon icon-settings"></i>Submenu One</at-menu-item>
     <at-menu-item name="3-2"><i class="icon icon-settings"></i>Submenu Two</at-menu-item>
     <at-submenu>
-      <template slot="title"><i class="icon icon-life-buoy"></i>Submenu Three</template>
+      <template #title><i class="icon icon-life-buoy"></i>Submenu Three</template>
       <at-menu-item name="3-3-1"><i class="icon icon-settings"></i>Submenu Four</at-menu-item>
       <at-menu-item name="3-3-2"><i class="icon icon-settings"></i>Submenu Five</at-menu-item>
     </at-submenu>
@@ -64,7 +64,7 @@ Set `mode` to `vertical`.
   <at-menu-item name="1"><i class="icon icon-home"></i>Navigation One</at-menu-item>
   <at-menu-item name="2" disabled><i class="icon icon-layers"></i>Navigation Two</at-menu-item>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Three</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Three</template>
     <at-menu-item-group title="Group One">
       <at-menu-item name="3-1">Submenu One</at-menu-item>
       <at-menu-item name="3-2" disabled>Submenu Two</at-menu-item>
@@ -87,7 +87,7 @@ Set `mode` to `vertical`.
   <at-menu-item name="1"><i class="icon icon-home"></i>Navigation One</at-menu-item>
   <at-menu-item name="2"><i class="icon icon-layers"></i>Navigation Two</at-menu-item>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Three</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Three</template>
     <at-menu-item-group title="Group One">
       <at-menu-item name="3-1">Submenu One</at-menu-item>
       <at-menu-item name="3-2">Submenu Two</at-menu-item>
@@ -98,11 +98,11 @@ Set `mode` to `vertical`.
     </at-menu-item-group>
   </at-submenu>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Four</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Four</template>
     <at-menu-item name="4-1"><i class="icon icon-settings"></i>Submenu Five</at-menu-item>
     <at-menu-item name="4-2"><i class="icon icon-settings"></i>Submenu Six</at-menu-item>
     <at-submenu>
-      <template slot="title"><i class="icon icon-life-buoy"></i>Submenu Seven</template>
+      <template #title><i class="icon icon-life-buoy"></i>Submenu Seven</template>
       <at-menu-item name="4-3-1"><i class="icon icon-settings"></i>Submenu Eight</at-menu-item>
       <at-menu-item name="4-3-2"><i class="icon icon-settings"></i>Submenu Night</at-menu-item>
     </at-submenu>
@@ -121,7 +121,7 @@ Set `mode` to `inline`.
   <at-menu-item name="1"><i class="icon icon-home"></i>Navigation One</at-menu-item>
   <at-menu-item name="2" disabled><i class="icon icon-layers"></i>Navigation Two</at-menu-item>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Three</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Three</template>
     <at-menu-item-group title="Group One">
       <at-menu-item name="3-1">Submenu One</at-menu-item>
       <at-menu-item name="3-2">Submenu Two</at-menu-item>
@@ -133,7 +133,7 @@ Set `mode` to `inline`.
   </at-submenu>
   <at-menu-item name="4"><i class="icon icon-settings"></i>Navigation Four</at-menu-item>
   <at-submenu disabled>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Submenu Five</template>
+    <template #title><i class="icon icon-life-buoy"></i>Submenu Five</template>
     <at-menu-item name="5-1">Submenu Six</at-menu-item>
     <at-menu-item name="5-2">Submenu Seven</at-menu-item>
   </at-submenu>
@@ -149,7 +149,7 @@ Set `inline-collapsed` property to open collapsed mode. Which means only one sub
 ```html
 <at-menu active-name="1-1" inline-collapsed>
   <at-submenu opened>
-    <template slot="title"><i class="icon icon-home"></i>Navigation One</template>
+    <template #title><i class="icon icon-home"></i>Navigation One</template>
     <at-menu-item-group title="Group One">
       <at-menu-item name="1-1">Submenu One</at-menu-item>
       <at-menu-item name="1-2">Submenu Two</at-menu-item>
@@ -160,21 +160,21 @@ Set `inline-collapsed` property to open collapsed mode. Which means only one sub
     </at-menu-item-group>
   </at-submenu>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Two</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Two</template>
     <at-menu-item name="2-1">Submenu One</at-menu-item>
     <at-menu-item name="2-2">Submenu Two</at-menu-item>
     <at-menu-item name="2-3">Submenu Three</at-menu-item>
     <at-menu-item name="2-4">Submenu Four</at-menu-item>
   </at-submenu>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Three</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Three</template>
     <at-menu-item name="3-1">Submenu One</at-menu-item>
     <at-menu-item name="3-2">Submenu Two</at-menu-item>
     <at-menu-item name="3-3">Submenu Three</at-menu-item>
     <at-menu-item name="3-4">Submenu Four</at-menu-item>
   </at-submenu>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Four</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Four</template>
     <at-menu-item name="4-1">Submenu One</at-menu-item>
     <at-menu-item name="4-2">Submenu Two</at-menu-item>
   </at-submenu>
@@ -189,9 +189,9 @@ There are two built-in themes: `light` and `dark`. The default value is `light`.
 :::demo
 ```html
 <div class="row" style="margin-bottom: 24px;">
-  <at-switch :value="true" @change="changeTheme">
-    <span slot="checkedText">Dark</span>
-    <span slot="unCheckedText">Light</span>
+  <at-switch :model-value="theme === 'dark'" @change="changeTheme">
+    <template #checkedText><span>Dark</span></template>
+    <template #unCheckedText><span>Light</span></template>
   </at-switch>
   <at-radio-group v-model="mode" style="margin-left: 40px;">
     <at-radio label="inline">Inline</at-radio>
@@ -202,7 +202,7 @@ There are two built-in themes: `light` and `dark`. The default value is `light`.
 <at-menu :theme="theme" :mode="mode" active-name="0" >
   <at-menu-item name="0" disabled><i class="icon icon-box"></i>Submenu</at-menu-item>
   <at-submenu>
-    <template slot="title"><i class="icon icon-home"></i>Navigation One</template>
+    <template #title><i class="icon icon-home"></i>Navigation One</template>
     <at-menu-item-group title="Group One">
       <at-menu-item name="1-1">Submenu One</at-menu-item>
       <at-menu-item name="1-2">Submenu Two</at-menu-item>
@@ -213,21 +213,21 @@ There are two built-in themes: `light` and `dark`. The default value is `light`.
     </at-menu-item-group>
   </at-submenu>
   <at-submenu>
-    <template slot="title"><i class="icon icon-life-buoy"></i>Navigation Two</template>
+    <template #title><i class="icon icon-life-buoy"></i>Navigation Two</template>
     <at-menu-item name="2-1">Submenu One</at-menu-item>
     <at-menu-item name="2-2">Submenu Two</at-menu-item>
     <at-menu-item name="2-3" disabled>Submenu Three</at-menu-item>
     <at-menu-item name="2-4">Submenu Four</at-menu-item>
   </at-submenu>
   <at-submenu>
-    <template slot="title"><i class="icon icon-command"></i>Navigation Three</template>
+    <template #title><i class="icon icon-command"></i>Navigation Three</template>
     <at-menu-item name="3-1">Submenu One</at-menu-item>
     <at-menu-item name="3-2">Submenu Two</at-menu-item>
     <at-menu-item name="3-3">Submenu Three</at-menu-item>
     <at-menu-item name="3-4">Submenu Four</at-menu-item>
   </at-submenu>
   <at-submenu disabled>
-    <template slot="title"><i class="icon icon-inbox"></i>Navigation Four</template>
+    <template #title><i class="icon icon-inbox"></i>Navigation Four</template>
     <at-menu-item name="4-1">Submenu One</at-menu-item>
     <at-menu-item name="4-2">Submenu Two</at-menu-item>
   </at-submenu>
@@ -265,7 +265,7 @@ Used together with `vue-router`. Set `router` property to `at-menu`, and Passed 
 
 | Event Name | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| on-select | Emitted when the menu item was clicked | name |
+| on-select | Emitted once when a menu item is clicked (also inside nested submenus) | name |
 
 ## MenuGroup Props
 
@@ -278,14 +278,21 @@ Used together with `vue-router`. Set `router` property to `at-menu`, and Passed 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | disabled | whether the Submenu is disabled | Boolean | - | false |
-| opened | whether to expand the submenu | Boolean | - | false |
+| opened | whether the submenu is expanded initially | Boolean | - | false |
+
+## Submenu Slots
+
+| Name      | Description |
+|----------|-------- |
+| title | the title of submenu, `<template #title>…</template>` |
+| - | menu items of the submenu |
 
 ## MenuItem Props
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | name | the name of Menu Item | String / Number | - | - |
-| to | the object of `vue-router`, same as the `to` property in `vue-router` | String / Object | - | - |
+| to | the target route, same as the `to` property of `router-link` in `vue-router`; the item is rendered as `router-link` only when `to` is not empty | String / Object | - | - |
 | replace | whether to add new history when using `to` | Boolean | - | false |
 | disabled | whether the MenuItem is disabled | Boolean | - | false |
 

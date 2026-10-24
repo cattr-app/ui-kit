@@ -56,19 +56,19 @@ Accepts a `slot` to customize the timeline item's content, such as the icon.
 ```html
 <at-timeline>
   <at-timeline-item color="blue">
-    <i slot="dot" class="icon icon-github"></i>
+    <template #dot><i class="icon icon-github"></i></template>
     <p>Brush teeth and wash face</p>
   </at-timeline-item>
   <at-timeline-item color="green">
-    <i slot="dot" class="icon icon-zap"></i>
+    <template #dot><i class="icon icon-zap"></i></template>
     <p>Have breakfast</p>
   </at-timeline-item>
   <at-timeline-item color="red">
-    <i slot="dot" class="icon icon-award"></i>
+    <template #dot><i class="icon icon-award"></i></template>
     <p>Work</p>
   </at-timeline-item>
   <at-timeline-item color="yellow">
-    <i slot="dot" class="icon icon-watch"></i>
+    <template #dot><i class="icon icon-watch"></i></template>
     <p>Sleep</p>
   </at-timeline-item>
 </at-timeline>

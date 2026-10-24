@@ -9,23 +9,32 @@ The notification will display in the upper right corner of the page, similar to 
 - Interactive notification
 - Systematic push
 
-`Cattr UI` adds the global object `$Notify` to `Vue.prototype`. You can use the `$Notify` instance directly.
+`Cattr UI` adds the global object `$Notify` to `app.config.globalProperties`, so you can use `this.$Notify` directly in components. In `<script setup>` import the service: `import { Notification } from '@amazingcat/cattr-ui'` (call it after `app.use(CattrUI)`).
 
 - `this.$Notify(config)`
 - `this.$Notify.success(config)`
 - `this.$Notify.error(config)`
 - `this.$Notify.warning(config)`
 - `this.$Notify.info(config)`
+- `this.$Notify.closeAll()` - close all notifications
 
-The `$Notify` instance receives the following parameters:
+`config` is a string (the message) or an options object:
 
 - type - the status of Notification
 - title - the title of Notification
 - message - the content of Notification
-- duration - time before auto-dismiss
+- duration - time before auto-dismiss, in milliseconds
 - showClose - whether to show close button
 - icon - customize the icon of Notification
 - onClose - specify a function that will be called after the notification closed
+
+Every call returns a function that closes this notification:
+
+```js
+const close = this.$Notify({ title: 'Uploading…', duration: 0 })
+// later
+close()
+```
 
 
 ## Basic
@@ -170,17 +179,17 @@ By default, click the close button to dismiss the notification, or you can use g
 ```
 :::
 
-## Notification Props
+## Notification Options
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| type | the type of Notification | String | `success`, `error`, `warning`, `info` | `info` |
-| title | required, the title of Notification | String | - | - |
-| message | the content of Notification | String | - | - |
-| duration | time before auto-dismiss, in seconds, default `4000` | Number | - | 4000 |
+| type | the type of Notification; without a type no icon is shown | String | `success`, `error`, `warning`, `info` | - |
+| title | the title of Notification (shown as text) | String / Number | - | - |
+| message | the content of Notification (shown as text) | String / Number | - | - |
+| duration | time before auto-dismiss, in milliseconds; `0` disables auto-dismiss | Number | - | 4000 |
 | showClose | whether to show close button | Boolean | - | true |
-| icon | customize the icon of Notification | String | - | - |
-| onClose | specify a function that will be called after the notification closed | Function | - | - |
+| icon | class name of a custom icon (e.g. `icon-star`), has priority over the icon of the type and is shown without `type` too | String | - | - |
+| onClose | specify a function that will be called when the notification is closed, receives the notification component instance | Function | - | - |
 
 <script>
 export default {

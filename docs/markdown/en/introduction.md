@@ -2,27 +2,24 @@
 
 ----
 
-`Cattr UI` is a modular front-end UI framework for developing fast and powerful web interfaces based on Vue.js.
+`Cattr UI` is a modular front-end UI framework for developing fast and powerful web interfaces based on Vue 3.
 
 ## Features
 
-- Based on `Vue`
-- A NPM + Webpack + Babel Front-End development workflow
-- Support `ES2015`
-- CSS Style independent, make consistent user interfaces (See: [Cattr UI Style](https://github.com/cattr-app/ui-kit))
+- Based on `Vue` 3.5
+- Distributed as ES modules, works with Vite and webpack 5
+- Named exports of the components (`AtButton`, `AtSelect`, …) for importing only what you need
+- SCSS styles included in the package (`@amazingcat/cattr-ui/src/stylesheet`), make consistent user interfaces
 - Friendly API
 
 ## Environment Support
 
-- Modern browsers and Internet Explorer 9+
-- [Electron](http://electron.atom.io/)
-- [NW.js](http://nwjs.io)
+- Modern browsers supported by Vue 3
+- [Electron](https://www.electronjs.org/)
 
 ## Version
 
 `Cattr UI`：[![npm version](https://badge.fury.io/js/%40amazingcat%2Fcattr-ui.svg)](https://badge.fury.io/js/%40amazingcat%2Fcattr-ui)
-
-`Cattr UI Style`：[![npm version](https://badge.fury.io/js/cattr-ui-style.svg)](https://badge.fury.io/js/cattr-ui-style)
 
 ## Contribution
 
