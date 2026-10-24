@@ -11,7 +11,9 @@
         'at-input--append': $slots.append,
         'at-input--icon': icon,
       },
+      $attrs.class,
     ]"
+    :style="$attrs.style"
   >
     <!-- S prepend element -->
     <div
@@ -25,6 +27,7 @@
 
     <!-- S input -->
     <input
+      v-bind="inputAttrs()"
       class="at-input__original"
       :type="type"
       :name="name"
@@ -60,17 +63,15 @@
 </template>
 
 <script>
-import Emitter from '../../../mixins/emitter'
-
 export default {
   name: 'AtInput',
-  mixins: [Emitter],
+  inheritAttrs: false,
   props: {
     type: {
       type: String,
       default: 'text',
     },
-    value: [String, Number],
+    modelValue: [String, Number],
     name: String,
     placeholder: String,
     size: String,
@@ -101,9 +102,10 @@ export default {
     max: Number,
     min: Number,
   },
+  emits: ['update:modelValue', 'change', 'focus', 'blur'],
   data() {
     return {
-      currentValue: this.value,
+      currentValue: this.modelValue,
     }
   },
   computed: {
@@ -113,27 +115,32 @@ export default {
     },
   },
   watch: {
-    value(val) {
+    modelValue(val) {
       this.setCurrentValue(val)
     },
   },
   methods: {
+    // Everything except class/style goes to the native <input>: listeners
+    // (@keyup.enter, @keydown, @paste…) and attributes (autocomplete, id, aria-*).
+    inputAttrs() {
+      // eslint-disable-next-line no-unused-vars
+      const { class: _class, style: _style, ...rest } = this.$attrs
+      return rest
+    },
     handleFocus(evt) {
       this.$emit('focus', evt)
     },
     handleBlur(evt) {
       this.$emit('blur', evt)
-      this.dispatch('AtFormItem', 'on-form-item-blur', this.currentValue)
     },
     handleInput(evt) {
       const value = evt.target.value
-      this.$emit('input', value)
+      this.$emit('update:modelValue', value)
       this.$emit('change', value)
     },
     setCurrentValue(val) {
       if (val === this.currentValue) return
       this.currentValue = val
-      this.dispatch('AtFormItem', 'on-form-item-change', this.currentValue)
     },
   },
 }

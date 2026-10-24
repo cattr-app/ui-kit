@@ -1,7 +1,7 @@
 ---
 id: 30-w1-input
 title: Input → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -37,7 +37,12 @@ scripts/node.sh pnpm build
 
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
+Записано: «По компонентам» → Input (`inheritAttrs: false`, слушатели/атрибуты на нативный `<input>`, `class`/`style` на обёртке, `@input` больше не событие компонента).
 
 ## Найдено по ходу
 
 ## Заметки агента
+- `inheritAttrs: false`; `$attrs.class`/`$attrs.style` — на корень `div.at-input`, остальное — `v-bind="inputAttrs()"` (метод, а не computed: `$attrs` не следует кешировать) на `<input>` перед явными биндингами, поэтому props компонента (`value`, `type`, `disabled`…) имеют приоритет, а слушатели потребителя мержатся с внутренними.
+- Emitter и `dispatch('AtFormItem', …)` удалены; `emits: ['update:modelValue', 'change', 'focus', 'blur']`. Других событий (`keyup`, `clear`, `on-*`) у компонента не было; clear/иконка без обработчиков, `.native` в input не было.
+- **modal (30-w3-modal):** в `modal.vue` `<at-input @keyup.enter.native="handleAction('confirm')">` → `@keyup.enter="…"` (`.native` в Vue 3 удалён, ловит `vue/no-deprecated-v-on-native-modifier`); слушатель придёт с нативного `<input>`. `v-model`/`:placeholder` работают без правок. `ref="input"` в modal не используется для `.focus()`; если 30-w3-modal захочет фокусировать — `this.$refs.input.$el.querySelector('input')`, публичного `focus()` у AtInput нет.
+- **pagination, select:** `<at-input>` не используют — у них нативные `<input class="at-input__original">` (свои `$refs.input` в select — нативный input). Правок под Input не требуется.

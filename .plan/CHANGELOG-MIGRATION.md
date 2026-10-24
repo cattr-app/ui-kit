@@ -62,6 +62,14 @@
 
 (заполняется задачами 30-*)
 
+### Input
+
+- v-model: prop `modelValue` + событие `update:modelValue` вместо `value` + `input`. `v-model` работает как раньше; `:value`/`@input` → `:model-value`/`@update:model-value`. Событие `change` (значение строкой на каждый ввод), `focus`, `blur` (нативный `Event`) — без изменений.
+- Было: атрибуты и слушатели потребителя вешались на корневой `div.at-input`, нативные события ловились через `.native` (`@keyup.enter.native`). Стало: `inheritAttrs: false` — `class` и `style` остаются на обёртке `div.at-input`, всё остальное (слушатели `@keyup.enter`, `@keydown`, `@paste`, атрибуты `id`, `autocomplete`, `aria-*`, `data-*`…) уходит на внутренний `<input class="at-input__original">`.
+  Что править: `@keyup.enter.native="…"` → `@keyup.enter="…"` (модификатор `.native` в Vue 3 удалён); `id`/`data-*`/`aria-*` теперь на `<input>`, а не на обёртке — проверить селекторы в CSS/тестах.
+  `@input` на `<at-input>` больше не событие компонента: он вешается на нативный `<input>` и получает `Event`, а не строку — использовать `@update:model-value` или `@change`.
+- Удалены внутренние вызовы `dispatch('AtFormItem', 'on-form-item-blur/change')` (Form удалён), наружу эти события не эмитились и не эмитятся.
+
 ### Radio, RadioGroup, RadioButton
 
 - v-model: prop `modelValue` + `update:modelValue` вместо `value` + `input` (у `AtRadioGroup` и одиночного `AtRadio`). `v-model` в шаблонах работает как раньше.
