@@ -13,7 +13,7 @@
       }"
       @click.self="handleWrapperClick"
     >
-      <transition name="fade">
+      <transition name="fade" @after-leave="$emit('after-leave')">
         <div v-show="visible" class="at-modal" :style="modalStyle">
           <div v-if="showHead && ($slots.header || title)" class="at-modal__header">
             <div class="at-modal__title">
@@ -28,22 +28,22 @@
               <div v-if="showInput" class="at-modal__input">
                 <at-input
                   ref="input"
-                  v-model="inputValue"
+                  v-model="currentInputValue"
                   :placeholder="inputPlaceholder"
-                  @keyup.enter.native="handleAction('confirm')"
+                  @keyup.enter="handleAction('confirm')"
                 ></at-input>
               </div>
             </slot>
           </div>
           <div v-if="showFooter" class="at-modal__footer">
             <slot name="footer">
-              <at-button v-show="showCancelButton" @click.native="handleAction('cancel')">{{
+              <at-button v-show="showCancelButton" @click="handleAction('cancel')">{{
                 localeCancelText
               }}</at-button>
               <at-button
                 v-show="showConfirmButton"
                 type="primary"
-                @click.native="handleAction('confirm')"
+                @click="handleAction('confirm')"
                 >{{ localeOKText }}</at-button
               >
             </slot>
@@ -67,7 +67,7 @@ export default {
   props: {
     title: String,
     content: String,
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
@@ -93,9 +93,25 @@ export default {
       type: Boolean,
       default: true,
     },
+    showCancelButton: {
+      type: Boolean,
+      default: true,
+    },
+    showConfirmButton: {
+      type: Boolean,
+      default: true,
+    },
     showInput: {
       type: Boolean,
       default: false,
+    },
+    inputValue: {
+      type: [String, Number],
+      default: null,
+    },
+    inputPlaceholder: {
+      type: String,
+      default: '',
     },
     width: {
       type: [Number, String],
@@ -113,16 +129,14 @@ export default {
     },
     type: String,
   },
+  // `after-leave`: the close transition has finished (the $Modal service unmounts here).
+  emits: ['update:modelValue', 'on-confirm', 'on-cancel', 'after-leave'],
   data() {
     return {
       wrapShow: false,
-      showCancelButton: true,
-      showConfirmButton: true,
-      action: '',
-      visible: this.value,
-      inputValue: null,
-      inputPlaceholder: '',
-      callback: null,
+      visible: this.modelValue,
+      currentInputValue: this.inputValue,
+      timer: null,
     }
   },
   computed: {
@@ -157,15 +171,19 @@ export default {
     },
   },
   watch: {
-    value(val) {
+    modelValue(val) {
       this.visible = val
     },
+    inputValue(val) {
+      this.currentInputValue = val
+    },
     visible(val) {
+      this.clearTimer()
       if (val) {
-        if (this.timer) {
-          clearTimeout(this.timer)
-        }
         this.wrapShow = true
+        if (this.showInput) {
+          this.$nextTick(() => this.$refs.input?.$el.querySelector('input')?.focus())
+        }
       } else {
         this.timer = setTimeout(() => {
           this.wrapShow = false
@@ -178,49 +196,43 @@ export default {
       this.wrapShow = true
     }
 
-    document.addEventListener('keydown', this.handleKeyCode)
+    document.addEventListener('keydown', this.handleKeydown)
+  },
+  beforeUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown)
+    this.clearTimer()
   },
   methods: {
-    doClose() {
+    close() {
       this.visible = false
-      this.$emit('input', false)
-      this.$emit('on-cancel')
-
-      if (this.action && this.callback) {
-        this.callback(this.action, this)
-      }
+      this.$emit('update:modelValue', false)
     },
     handleMaskClick() {
       if (this.maskClosable) {
-        this.doClose()
+        this.handleAction('cancel')
       }
     },
     handleWrapperClick() {
       if (this.maskClosable) {
-        this.doClose()
+        this.handleAction('cancel')
       }
     },
     handleAction(action) {
-      this.action = action
-
-      if (action === 'confirm') {
-        this.$emit('input', false)
-        this.$emit('on-confirm')
-      }
-
-      this.doClose()
+      if (!this.visible) return
+      this.close()
+      this.$emit(action === 'confirm' ? 'on-confirm' : 'on-cancel')
     },
-    handleKeyCode(evt) {
-      if (this.visible && this.showClose) {
-        if (evt.keyCode === 27) {
-          // Escape
-          this.doClose()
-        }
+    handleKeydown(evt) {
+      if (this.visible && this.showClose && this.closeOnPressEsc && evt.key === 'Escape') {
+        this.handleAction('cancel')
       }
     },
-  },
-  beforeDestory() {
-    document.removeEventListener('keydown', this.handleKeyCode)
+    clearTimer() {
+      if (this.timer) {
+        clearTimeout(this.timer)
+        this.timer = null
+      }
+    },
   },
 }
 </script>

@@ -62,6 +62,16 @@
 - Публичный API не изменился: имена props/событий и поведение те же. Prop `percent` больше не помечен `required` (при `default: 0` это давало предупреждение Vue в dev-режиме); поведение при отсутствии `percent` прежнее — `0`.
 - Событие `on-status-success` теперь объявлено в `emits`; слушатель `@on-status-success` работает как раньше. Что править: ничего.
 
+### Modal
+
+- v-model: prop `modelValue` + событие `update:modelValue` вместо `value` + `input`. `v-model="show"` работает как раньше; `:value`/`@input` → `:model-value`/`@update:model-value`. Корень — один `div`, обёртка не менялась.
+- Было: кнопка OK эмитила `input(false)` дважды, `on-confirm` **и затем `on-cancel`**. Стало: OK → `update:modelValue(false)` + `on-confirm`; отмена (кнопка Cancel, крестик, клик по маске при `maskClosable`, Escape) → `update:modelValue(false)` + `on-cancel`. По одному событию на действие.
+  Что править: если обработчик `on-cancel` молча рассчитывал отработать и после OK — перенести эту логику в `on-confirm`.
+- Escape: было `keyCode === 27`, и слушатель `keydown` на `document` никогда не снимался (опечатка `beforeDestory`) → стало `event.key === 'Escape'`, слушатель снимается в `beforeUnmount`. Prop `closeOnPressEsc` (в 1.x был в документации, но ни на что не влиял) теперь работает: `:close-on-press-esc="false"` отключает Escape; `:show-close="false"` по-прежнему тоже отключает Escape.
+- Новые props (в 1.x были внутренним `data`, их заполнял `$Modal`): `showCancelButton`, `showConfirmButton` (Boolean, по умолчанию `true`), `inputValue` (начальное значение поля при `showInput`), `inputPlaceholder`. При `showInput` поле получает фокус при открытии.
+- Новое событие `after-leave` — после завершения анимации закрытия (на нём `$Modal` размонтирует диалог). Внутренние `callback`/`action` из `data` удалены.
+- Слоты: `<div slot="header">` → `<template #header>`, `slot="footer"` → `#footer` (синтаксис Vue 3); имена слотов `header`/`footer`/default без изменений. Слушатели на кнопках внутри своего `#footer`: `@click`, без `.native`.
+
 (заполняется задачами 30-*)
 
 ### Pagination
