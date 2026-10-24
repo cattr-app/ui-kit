@@ -1,5 +1,6 @@
 import NotificationVue from './notification.vue'
 import { mountService } from '../../../utils/mount-service.js'
+import { getCurrentApp, setCurrentApp } from '../../../utils/context.js'
 
 const noticeType = ['success', 'error', 'warning', 'info']
 const GAP = 16
@@ -92,7 +93,9 @@ noticeType.forEach(type => {
   Notification[type] = options => Notification({ ...normalize(options), type })
 })
 
+// Standalone `app.use(Notification)` (without CattrUI): render the service in this app's context.
 Notification.install = app => {
+  if (!getCurrentApp()) setCurrentApp(app)
   app.config.globalProperties.$Notify = Notification
 }
 

@@ -1,6 +1,7 @@
 import { nextTick } from 'vue'
 import Modal from './modal.vue'
 import { mountService } from '../../../utils/mount-service.js'
+import { getCurrentApp, setCurrentApp } from '../../../utils/context.js'
 
 const modalProps = Object.keys(Modal.props)
 
@@ -215,7 +216,9 @@ Dialog.success = createStatusDialog('success')
 Dialog.warning = createStatusDialog('warning')
 Dialog.error = createStatusDialog('error')
 
+// Standalone `app.use(Dialog)` (without CattrUI): render the service in this app's context.
 Dialog.install = app => {
+  if (!getCurrentApp()) setCurrentApp(app)
   app.config.globalProperties.$Modal = Dialog
 }
 

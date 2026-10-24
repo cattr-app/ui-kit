@@ -1,4 +1,5 @@
 import LoadingBarClass from './src/loading-bar.js'
+import { getCurrentApp, setCurrentApp } from '../../utils/context.js'
 
 const HIDE_DELAY = 800
 
@@ -109,7 +110,9 @@ const LoadingBar = {
   destroy,
 }
 
+// Standalone `app.use(LoadingBar)` (without CattrUI): render the service in this app's context.
 LoadingBar.install = app => {
+  if (!getCurrentApp()) setCurrentApp(app)
   app.config.globalProperties.$Loading = LoadingBar
 }
 

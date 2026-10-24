@@ -150,6 +150,8 @@ app.use(Notification)   // adds $Notify
 app.use(LoadingBar)     // adds $Loading
 ```
 
+> A service renders in the context of the first app that ran `app.use(CattrUI)` or `app.use(<Service>)` (`app.use(CattrUI)` always wins, the last one installed). `$Modal` (`Dialog`) registers its `AtButton`/`AtInput` itself, so a standalone `app.use(Dialog)` is enough.
+
 ## Customize Theme
 
 The styles of `Cattr UI` are included in the package (`@amazingcat/cattr-ui/src/stylesheet`). The variables for each component are stored in the file `src/stylesheet/src/variables/default.scss`. User can customize the style of components according to actual needs.

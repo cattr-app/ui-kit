@@ -157,7 +157,7 @@ app.use(Dialog)                       // app.config.globalProperties.$Modal
 app.mount('#app')
 ```
 
-> `$Modal`（`Dialog`）内部使用 `<at-button>`、`<at-input>` 以及语言包文案，它们从安装了 `CattrUI` 插件的应用上下文中解析。按需注册时请同时执行 `app.use(CattrUI)`，或者只使用 `Message`、`Notification`、`LoadingBar`。
+> 服务在第一个执行 `app.use(CattrUI)` 或 `app.use(<服务>)` 的应用上下文中渲染（`app.use(CattrUI)` 总是以最后一次安装为准）。`$Modal`（`Dialog`）内部的 `AtButton`、`AtInput` 已在组件内注册，单独 `app.use(Dialog)` 即可使用。
 
 ## 自定义主题
 

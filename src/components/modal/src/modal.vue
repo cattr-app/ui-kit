@@ -61,9 +61,13 @@
 
 <script>
 import { t } from '../../../locale'
+import AtButton from '../../button'
+import AtInput from '../../input'
 
 export default {
   name: 'AtModal',
+  // local: the dialog works with a standalone `app.use(Dialog)` / `app.use(AtModal)`
+  components: { AtButton, AtInput },
   props: {
     title: String,
     content: String,

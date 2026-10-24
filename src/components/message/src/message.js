@@ -1,5 +1,6 @@
 import MessageVue from './message.vue'
 import { mountService } from '../../../utils/mount-service.js'
+import { getCurrentApp, setCurrentApp } from '../../../utils/context.js'
 
 const messageType = ['info', 'success', 'warning', 'error', 'loading']
 const GAP = 8
@@ -81,7 +82,9 @@ messageType.forEach(type => {
   Message[type] = options => Message({ ...normalize(options), type })
 })
 
+// Standalone `app.use(Message)` (without CattrUI): render the service in this app's context.
 Message.install = app => {
+  if (!getCurrentApp()) setCurrentApp(app)
   app.config.globalProperties.$Message = Message
 }
 
