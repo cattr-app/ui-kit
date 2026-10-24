@@ -1,7 +1,7 @@
 ---
 id: 00-04
 title: Переименовать идентификаторы at-ui → cattr-ui (без CSS-префикса и имён компонентов)
-status: todo
+status: done
 depends_on: [00-03]
 parallel: false
 model: haiku
@@ -55,4 +55,18 @@ ls dist/at.js dist/at.min.js dist/locale
 ## Найдено по ходу
 - (из 00-02) `src/stylesheet/src/components/form.scss` и закомментированный `@import './form.scss'` в `index.scss` остались после удаления Form. Стили вне scope 00-04; решить в 50-01 (удалить, если `.at-form*` нигде не используется).
 
+- (из 00-04) `build/component.js`, `build/locale.js`: баннеры собранного dist `AT-UI ... https://at.aotu.io ... O2Team`; `build/webpack.base.conf.js` и `build/webpack.prod.conf.js`: alias `at-ui*`. Не трогал (вне touches), уйдёт вместе с переписыванием сборки в 10-01.
+- (из 00-04) корневой `.eslintrc.js` extends `o2team`; корневой и стилевой `package.json` держат devDependency `eslint-config-o2team`. Удалить в 10-02 вместе с конфигом.
+- (из 00-04) `docs/components/header.vue` использует `logo-at@2x.png` (логотип AT). Замены логотипа Cattr в репо нет, файл оставлен.
+- (из 00-04) Ссылки на `npm/@amazingcat/cattr-ui/dist/at.min.js` и `cattr-ui-style` в installation.md/introduction.md ведут на UMD-dist и приватный пакет; переписать в 40-02.
+
+
 ## Заметки агента
+- Сделано: word-boundary замена `at-ui`/`AT-UI`/`AT UI` в src, docs, README; `at-ui-style`/`at-ui-language` → `cattr-ui-*`; `'at-ui'` импорты в markdown → `'@amazingcat/cattr-ui'`; `src/stylesheet/package.json` (name, private, description, keywords, author); корневые keywords; `CONTRIBUTING.md` стилей сокращён; footer/header/index.html без AOTU/O2Team; Hotjar-сниппет удалён из `docs/index.html` (трекер upstream-сайта at-ui.github.io, не относится к cattr); ссылки на upstream GitHub → `cattr-app/ui-kit`, у feather-ссылки в design.md — `feathericons/feather`; `vue init at-ui/at-template` и starter-kit абзац в quickstart удалены; картинка card-демо с misc.aotu.io удалена; демо-текст `O2Team`/`凹凸实验室` → `Cattr`; README: upstream-ссылка и дубль «Исходный проект» оставлены только в строке про форк.
+- Удалённые ассеты: docs/assets/aotu.png, aotu@2x.png, o2logo.png, o2logo@2x.png, o2logo_2.png, o2logo-doc.png; logo-at* оставлены (используются header.vue). Удалён `src/stylesheet/.eslintrc.js` (extends o2team, мешал grep-критерию).
+- Grep-критерий (после правок) выдаёт 5 строк: `src/stylesheet/package.json:31` и `package.json:65` — devDependency `eslint-config-o2team` (оставлена, уйдёт в 10-02, lockfile не трогал); `docs/main.js:9-12` — alias-импорты `at-ui-lib`, `at-ui-locale-zh/en`, `import 'at-ui-style'` (сознательно, заменит 40-01). `localStorage` ключ в docs/main.js и docs/router/index.js переименован в `cattr-ui-language`.
+- `class="at-` в src/components: feat/vue-3 = 206, worktree = 206 (совпало). main = 210, разница от удалённых Form/FormItem; сравнивал с feat/vue-3 по брифу. Сверка at-токенов в diff: удалены только `at-ui*`, `at-template`, `at-webpack-boilerplate` (quickstart).
+- `scripts/node.sh pnpm install --frozen-lockfile`: OK, lockfile не менялся (workspace-переименование ему не помешало).
+- `scripts/node.sh pnpm --filter cattr-ui-style build`: OK (css/at.css, at.min.css; много deprecation-варнингов sass, не ошибки).
+- Baseline `build:package` (с `NODE_OPTIONS=--openssl-legacy-provider`): OK, `dist/at.js`, `dist/at.min.js`, `dist/locale/*` созданы.
+- Commit: один, ветка task/00-04, без push/merge/rebase.

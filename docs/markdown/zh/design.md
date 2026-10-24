@@ -3,11 +3,11 @@
 
 ----
 
-提供 `AT-UI` 的视觉相关资源下载
+提供 `Cattr UI` 的视觉相关资源下载
 
 <div class="at-resource">
   <div class="at-resource__item">
-    <a href="https://github.com/AT-UI/feather-font" target="_blank" class="flex flex-middle">
+    <a href="https://github.com/cattr-app/ui-kit" target="_blank" class="flex flex-middle">
       <span class="at-resource__logo">
         <img src="../../assets/feather.png">
       </span>

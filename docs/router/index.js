@@ -64,7 +64,7 @@ if (['en', 'zh'].indexOf(navigatorLang) <= -1) {
   navigatorLang = ''
 }
 
-const userLang = localStorage.getItem('at-ui-language') || navigatorLang || 'zh'
+const userLang = localStorage.getItem('cattr-ui-language') || navigatorLang || 'zh'
 
 routes = routes.concat([{
   path: '/zh',

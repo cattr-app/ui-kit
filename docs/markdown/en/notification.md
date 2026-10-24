@@ -9,7 +9,7 @@ The notification will display in the upper right corner of the page, similar to 
 - Interactive notification
 - Systematic push
 
-`AT-UI` adds the global object `$Notify` to `Vue.prototype`. You can use the `$Notify` instance directly.
+`Cattr UI` adds the global object `$Notify` to `Vue.prototype`. You can use the `$Notify` instance directly.
 
 - `this.$Notify(config)`
 - `this.$Notify.success(config)`

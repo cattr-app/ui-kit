@@ -21,7 +21,7 @@
 :::demo
 ```html
 <at-checkbox v-model="checkboxValue2" label="深圳" disabled>深圳</at-checkbox>
-<at-checkbox v-model="checkboxValue3" label="凹凸实验室" disabled checked>凹凸实验室</at-checkbox>
+<at-checkbox v-model="checkboxValue3" label="Cattr" disabled checked>Cattr</at-checkbox>
 ```
 :::
 
@@ -36,7 +36,7 @@
   <at-checkbox label="北京">北京</at-checkbox>
   <at-checkbox label="上海">上海</at-checkbox>
   <at-checkbox label="广州" disabled>广州</at-checkbox>
-  <at-checkbox label="凹凸实验室" disabled>凹凸实验室</at-checkbox>
+  <at-checkbox label="Cattr" disabled>Cattr</at-checkbox>
 </at-checkbox-group>
 <p class="demo-desc">{{ checkboxValue4 }}</p>
 ```
@@ -69,7 +69,7 @@ export default {
       checkboxValue1: true,
       checkboxValue2: false,
       checkboxValue3: false,
-      checkboxValue4: ['深圳', '凹凸实验室']
+      checkboxValue4: ['深圳', 'Cattr']
     }
   }
 }

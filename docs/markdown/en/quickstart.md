@@ -5,9 +5,9 @@
 
 ## Before Start
 
-> Before using AT-UI, we recommend you to learn `Vue` and `ES2015`, and make sure that you had installed [Node.js](https://nodejs.org/en/) (≥ v6.x) correctly.
+> Before using Cattr UI, we recommend you to learn `Vue` and `ES2015`, and make sure that you had installed [Node.js](https://nodejs.org/en/) (≥ v6.x) correctly.
 
-`AT-UI` is based on the `Vue.js` 2.x+ version, so we encourage you to know the basics below:
+`Cattr UI` is based on the `Vue.js` 2.x+ version, so we encourage you to know the basics below:
 
 - [Vue Components](https://cn.vuejs.org/v2/guide/components.html)
 - [Single File Components](https://cn.vuejs.org/v2/guide/single-file-components.html)
@@ -16,13 +16,6 @@
 
 >  `Vue.js` provides an [official CLI](https://github.com/vuejs/vue-cli) for quickly scaffolding ambitious Single Page Applications. It provides batteries-included build setups for a modern frontend workflow. It takes only a few minutes to get up and running with hot-reload, lint-on-save, and production-ready builds.
 
-We provide a `vue cli template` for you to create SPA (Single Page Application) quickly.
-
-```shell
-vue init at-ui/at-template my-project
-```
-
-If you prefer not to use `vue-cli`, we also provide Starter Kit: [at-webpack-boilerplate](https://github.com/at-ui/at-webpack-boilerplate)
 
 ## Standard Development Flow
 
@@ -34,15 +27,15 @@ Import all components or required components in the entry file of the project.
 
 ```js
 import Vue from 'vue'
-import AtComponents from 'at-ui'
-import 'at-ui-style'    // Import CSS
+import AtComponents from '@amazingcat/cattr-ui'
+import 'cattr-ui-style'    // Import CSS
 
-// import 'at-ui-style/src/index.scss'      // Or import the unbuilt version of SCSS
+// import 'cattr-ui-style/src/index.scss'      // Or import the unbuilt version of SCSS
 
 Vue.use(AtComponents)
 ```
 
-If you had imported all the components globally, you can use global instance methods of `AT-UI` directly, such as:
+If you had imported all the components globally, you can use global instance methods of `Cattr UI` directly, such as:
 
 ```js
 this.$Loading.start()
@@ -74,7 +67,7 @@ Then update `.babelrc` file:
 Now you can import components that you want.
 
 ```js
-import { AtInput } from 'at-ui'
+import { AtInput } from '@amazingcat/cattr-ui'
 
 export default {
   components: {
@@ -82,7 +75,7 @@ export default {
   },
   data () {
     return {
-      value: 'O2Team'
+      value: 'Cattr'
     }
   }
 }
@@ -147,7 +140,7 @@ import {
   TabPane,
   Timeline,
   TimelineItem
-} from 'at-ui'
+} from '@amazingcat/cattr-ui'
 
 Vue.prototype.$Notify = Notification
 Vue.prototype.$Loading = LoadingBar
@@ -157,4 +150,4 @@ Vue.prototype.$Message = Message
 
 ## Customize Theme
 
-The style of `AT-UI` is independent to a separate project [AT-UI-Style](https://github.com/at-ui/at-ui-style), The variables for each component are stored in the file `at-ui-style/src/variables/default.scss`. User can customize the style of components according to actual needs.
+The style of `Cattr UI` is independent to a separate project [Cattr UI Style](https://github.com/cattr-app/ui-kit), The variables for each component are stored in the file `cattr-ui-style/src/variables/default.scss`. User can customize the style of components according to actual needs.

@@ -5,7 +5,7 @@
 
 Use `Modal` when you need to ask the user to process transactions, and do not want to jump the page.
 
-You can also use the default lite modal box when you need to popup a concise confirmation box. `AT-UI` adds the global object `$Modal` to `Vue.prototype`. You can use the `$Modal` instance directly.
+You can also use the default lite modal box when you need to popup a concise confirmation box. `Cattr UI` adds the global object `$Modal` to `Vue.prototype`. You can use the `$Modal` instance directly.
 
 ## Modal Methods
 
@@ -103,7 +103,7 @@ Pop up the input dialog to remind user to enter appropriate content. (similar to
 
 ## Message Type
 
-In addition to the `window` dialog above, `AT-UI` also provides four message types of Modal that are used to display important information. These message modal only allows click the OK button to close.
+In addition to the `window` dialog above, `Cattr UI` also provides four message types of Modal that are used to display important information. These message modal only allows click the OK button to close.
 
 :::demo
 ```html

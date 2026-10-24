@@ -8,7 +8,7 @@ Compared to `Notification`, `Message` is lighter,, centered at the top of the pa
 - Provide four type of Message: `success`, `Error`, `Warning`, `Info`
 - Showing and disappearing at the center of the top is a lightweight cue that does not interrupt user operations.
 
-`AT-UI` adds the global object `$Message` to `Vue.prototype`. You can use the `$Message` instance directly.
+`Cattr UI` adds the global object `$Message` to `Vue.prototype`. You can use the `$Message` instance directly.
 
 - `this.$Message(config)`
 - `this.$Message.info(config)`

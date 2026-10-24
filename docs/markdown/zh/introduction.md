@@ -2,13 +2,13 @@
 
 ----
 
-`AT-UI` 是一款基于 `Vue.js 2.0` 的前端 UI 组件库，主要用于快速开发 PC 网站中后台产品
+`Cattr UI` 是一款基于 `Vue.js 2.0` 的前端 UI 组件库，主要用于快速开发 PC 网站中后台产品
 
 ## 特性
 
 - 基于 `Vue` 开发的 UI 组件
 - 使用 npm + webpack + babel 的工作流，支持 ES2015
-- CSS 样式独立，即使使用不同的框架实现，也都能保持统一的 UI 风格（ 详见：[AT-UI Style](https://github.com/at-ui/at-ui-style) ）
+- CSS 样式独立，即使使用不同的框架实现，也都能保持统一的 UI 风格（ 详见：[Cattr UI Style](https://github.com/cattr-app/ui-kit) ）
 - 提供友好的 API，可灵活的使用组件
 
 ## 浏览器支持
@@ -19,10 +19,10 @@
 
 ## 版本
 
-`AT-UI`：[![npm version](https://badge.fury.io/js/at-ui.svg)](https://badge.fury.io/js/at-ui)
+`Cattr UI`：[![npm version](https://badge.fury.io/js/%40amazingcat%2Fcattr-ui.svg)](https://badge.fury.io/js/%40amazingcat%2Fcattr-ui)
 
-`AT-UI-Style`：[![npm version](https://badge.fury.io/js/at-ui-style.svg)](https://badge.fury.io/js/at-ui-style)
+`Cattr UI Style`：[![npm version](https://badge.fury.io/js/cattr-ui-style.svg)](https://badge.fury.io/js/cattr-ui-style)
 
 ## 贡献
 
-如果你在使用 `AT-UI` 时遇到问题，或者有好的建议，欢迎给我们提 [Issue](https://github.com/at-ui/at-ui/issues) 或 [Pull Request](https://github.com/at-ui/at-ui/pulls)
+如果你在使用 `Cattr UI` 时遇到问题，或者有好的建议，欢迎给我们提 [Issue](https://github.com/cattr-app/ui-kit/issues) 或 [Pull Request](https://github.com/cattr-app/ui-kit/pulls)

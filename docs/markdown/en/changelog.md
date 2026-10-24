@@ -1,6 +1,8 @@
 
 # Change Log
 
+> История AT UI до форка: записи ниже относятся к upstream-версиям AT UI.
+
 ----
 
 `AT-UI` strictly follows [Semantic Versioning 2.0.0](http://semver.org/lang/zh-CN/).

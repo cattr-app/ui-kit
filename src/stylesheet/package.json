@@ -1,7 +1,8 @@
 {
-  "name": "at-ui-style",
+  "name": "cattr-ui-style",
+  "private": true,
   "version": "1.5.1",
-  "description": "The StyleSheet for AT-UI",
+  "description": "Stylesheet for Cattr UI",
   "scss": "src/index.scss",
   "main": "css/at.css",
   "style": "css/at.css",
@@ -16,14 +17,13 @@
     "start": "sass --watch --style=expanded --source-map src/index.scss:css/at.css"
   },
   "keywords": [
-    "at",
-    "at-ui",
-    "at-ui-style",
+    "cattr",
+    "cattr-ui",
     "css",
     "scss",
     "framework"
   ],
-  "author": "Koppt Ho <kopptsoft@gmail.com>",
+  "author": "Cattr Team <hi@cattr.app>",
   "license": "MIT",
   "devDependencies": {
     "autoprefixer": "^7.1.1",

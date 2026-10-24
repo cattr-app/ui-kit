@@ -17,7 +17,7 @@ The grid system use `Flexbox` implementation to support the `Flex` layout, allow
 
 ## Screen Breakpoint
 
-Refer to [Bootstrap](http://getbootstrap.com/css/#grid-media-queries) and [Semantic UI](https://semantic-ui.com/elements/container.html), `AT-UI` selected the `Breakpoint` as follows:
+Refer to [Bootstrap](http://getbootstrap.com/css/#grid-media-queries) and [Semantic UI](https://semantic-ui.com/elements/container.html), `Cattr UI` selected the `Breakpoint` as follows:
 
 | Breakpoint | Device |
 | :--: | :--: |
@@ -67,7 +67,7 @@ To make some offset between column, add classname `col-md-offset-3` and so on.
 
 ## Flex
 
-The grid system of `AT-UI` use `Flexbox` implementation to support `Flex`. If you want to set `Flex` layout for some elements, use `class="flex"`. Child elements defines its arrangement in the parent element by adding different class `flex-start`，`flex-center`，`flex-end`，`flex-top`，`flex-middle`，`flex-around`，`flex-between`.
+The grid system of `Cattr UI` use `Flexbox` implementation to support `Flex`. If you want to set `Flex` layout for some elements, use `class="flex"`. Child elements defines its arrangement in the parent element by adding different class `flex-start`，`flex-center`，`flex-end`，`flex-top`，`flex-middle`，`flex-around`，`flex-between`.
 
 :::demo
 ```html

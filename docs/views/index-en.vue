@@ -21,7 +21,7 @@
         <h1>A Lightweight and Modular Front-End UI Library</h1>
         <div class="btn-container">
           <div class="btn btn-begin"><router-link :to="{ name: 'Introduction-en' }">GET STARTED</router-link></div>
-          <div class="btn btn-github"><a href="https://github.com/at-ui/at-ui">GITHUB</a></div>
+          <div class="btn btn-github"><a href="https://github.com/cattr-app/ui-kit">GITHUB</a></div>
         </div>
       </div>
       <div class="prototype-screens flex">

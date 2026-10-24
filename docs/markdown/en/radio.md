@@ -49,7 +49,7 @@ Button style of Radio Group. Combined `AtRadioGroup` with `AtRadioButton`
   <at-radio-button label="Beijing">Beijing</at-radio-button>
   <at-radio-button label="Shanghai" disabled>Shanghai</at-radio-button>
   <at-radio-button label="Shenzhen">Shenzhen</at-radio-button>
-  <at-radio-button label="O2Team">O2Team</at-radio-button>
+  <at-radio-button label="Cattr">Cattr</at-radio-button>
 </at-radio-group>
 ```
 :::
@@ -66,7 +66,7 @@ Use `fill` property to change the background color of button. Use `text-color` p
     <at-radio-button label="Beijing">Beijing</at-radio-button>
     <at-radio-button label="Shanghai" disabled>Shanghai</at-radio-button>
     <at-radio-button label="Shenzhen">Shenzhen</at-radio-button>
-    <at-radio-button label="O2Team">O2Team</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <p class="demo-desc">Customize Text Color</p>
@@ -75,7 +75,7 @@ Use `fill` property to change the background color of button. Use `text-color` p
     <at-radio-button label="Beijing">Beijing</at-radio-button>
     <at-radio-button label="Shanghai" disabled>Shanghai</at-radio-button>
     <at-radio-button label="Shenzhen">Shenzhen</at-radio-button>
-    <at-radio-button label="O2Team">O2Team</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 ```
@@ -92,7 +92,7 @@ There are three sizes of a radio grouop: `large`，`normal`，`small`.
     <at-radio-button label="Beijing">Beijing</at-radio-button>
     <at-radio-button label="Shanghai" disabled>Shanghai</at-radio-button>
     <at-radio-button label="Shenzhen">Shenzhen</at-radio-button>
-    <at-radio-button label="O2Team">O2Team</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <div class="row">
@@ -100,7 +100,7 @@ There are three sizes of a radio grouop: `large`，`normal`，`small`.
     <at-radio-button label="Beijing">Beijing</at-radio-button>
     <at-radio-button label="Shanghai" disabled>Shanghai</at-radio-button>
     <at-radio-button label="Shenzhen">Shenzhen</at-radio-button>
-    <at-radio-button label="O2Team">O2Team</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <div class="row">
@@ -108,7 +108,7 @@ There are three sizes of a radio grouop: `large`，`normal`，`small`.
     <at-radio-button label="Beijing">Beijing</at-radio-button>
     <at-radio-button label="Shanghai" disabled>Shanghai</at-radio-button>
     <at-radio-button label="Shenzhen">Shenzhen</at-radio-button>
-    <at-radio-button label="O2Team">O2Team</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 ```

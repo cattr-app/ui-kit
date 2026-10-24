@@ -1,6 +1,8 @@
 
 # 更新日志
 
+> AT UI 分叉之前的历史：以下记录为上游 AT UI 版本的更新内容。
+
 ----
 
 项目遵循 [Semantic Versioning 2.0.0](http://semver.org/lang/zh-CN/) 语义化版本规范

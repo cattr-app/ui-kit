@@ -11,7 +11,7 @@
   Импорт отдельных компонентов: `import { AtButton } from '@amazingcat/cattr-ui'` (tree-shaking через `sideEffects`) или `@amazingcat/cattr-ui/src/components/button`.
 - `[TODO 10-01]` Локали: `@amazingcat/cattr-ui/locale/<lang>` (ESM) вместо `dist/locale/<lang>.js` (UMD).
 - Внутренние импорты вида `at-ui/src/...` удалены. Alias `at-ui` в конфиге потребителя больше не нужен.
-- `[TODO 00-04]` Название `at-ui` в документации, баннерах и workspace-пакете стилей заменено на `cattr-ui`. CSS-классы `at-*`, теги `<at-*>` и ключи локали `at.*` не менялись — правок в проекте не требует.
+- Название `at-ui` в документации, баннерах и workspace-пакете стилей заменено на `cattr-ui`. CSS-классы `at-*`, теги `<at-*>` и ключи локали `at.*` не менялись — правок в проекте не требует.
 
 ## Подключение
 

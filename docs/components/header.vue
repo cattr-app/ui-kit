@@ -10,7 +10,7 @@
         <div class="logo">
           <router-link :to="{ name: lang === 'en' ? 'Home-en' : 'Home' }">
             <img class="logo-img" src="../assets/logo-at@2x.png" preload="">
-            <span>AT UIKIT</span>
+            <span>Cattr UIKIT</span>
           </router-link>
         </div>
         <i class="icon icon-menu nav-icon" @click="toggleMenu"></i>
@@ -89,7 +89,7 @@ export default {
       if (this.lang === targetLang) return
 
       this.$i18n.locale = targetLang
-      localStorage.setItem('at-ui-language', targetLang)
+      localStorage.setItem('cattr-ui-language', targetLang)
 
       if (this.$route.name === 'Home') {
         this.$router.push({ name: 'Home-en' })

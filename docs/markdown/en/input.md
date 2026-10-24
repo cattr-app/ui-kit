@@ -51,7 +51,7 @@ Set `slot="prepend"` or `slot="append"` to customize the input box.
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input" size="small">
   <template slot="append">
-    <span>@aotu.io</span>
+    <span>@cattr.app</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="Please input">

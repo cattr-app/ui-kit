@@ -7,7 +7,7 @@
 
 > 在使用之前，推荐学习 `Vue` 和 `ES2015` ，并正确配置 `Node.js` v6.x 或以上版本
 
-`AT-UI` 基于 `Vue.js` 2.x+ 版本开发，所以有必要了解以下基础知识：
+`Cattr UI` 基于 `Vue.js` 2.x+ 版本开发，所以有必要了解以下基础知识：
 - [Vue 组件](https://cn.vuejs.org/v2/guide/components.html)
 - [单文件组件](https://cn.vuejs.org/v2/guide/single-file-components.html)
 
@@ -15,13 +15,6 @@
 
 > `Vue.js` 提供一个官方命令行工具 `vue-cli`，可用于快速搭建大型单页应用。该工具提供开箱即用的构建工具配置，带来现代化的前端开发流程。只需几分钟即可创建并启动一个带热重载、保存时静态检查以及可用于生产环境的构建配置的项目。
 
-我们提供了一个模板工程，可通过 `vue-cli` 工具初始化模板项目，快速搭建单页应用
-
-```shell
-vue init at-ui/at-template my-project
-```
-
-如果不想使用 `vue-cli` 工具，我们也同样提供了可直接使用的模板工程：[at-webpack-boilerplate](https://github.com/at-ui/at-webpack-boilerplate)
 
 ## 标准开发
 
@@ -33,15 +26,15 @@ vue init at-ui/at-template my-project
 
 ```js
 import Vue from 'vue'
-import AtComponents from 'at-ui'
-import 'at-ui-style'    // 引入组件样式
+import AtComponents from '@amazingcat/cattr-ui'
+import 'cattr-ui-style'    // 引入组件样式
 
-// import 'at-ui-style/src/index.scss'      // 或者引入未构建版本的 scss 样式
+// import 'cattr-ui-style/src/index.scss'      // 或者引入未构建版本的 scss 样式
 
 Vue.use(AtComponents)
 ```
 
-如果全局引入了所有组件，那么可以直接使用 `AT-UI` 的全局实例方法，如：
+如果全局引入了所有组件，那么可以直接使用 `Cattr UI` 的全局实例方法，如：
 
 ```js
 this.$Message.success(config)
@@ -73,7 +66,7 @@ npm install babel-plugin-component
 接下来引入你需要用的组件
 
 ```js
-import { Input as AtInput } from 'at-ui'
+import { Input as AtInput } from '@amazingcat/cattr-ui'
 
 export default {
   components: {
@@ -81,7 +74,7 @@ export default {
   },
   data () {
     return {
-      value: 'O2Team'
+      value: 'Cattr'
     }
   }
 }
@@ -146,7 +139,7 @@ import {
   TabPane,
   Timeline,
   TimelineItem
-} from 'at-ui'
+} from '@amazingcat/cattr-ui'
 
 Vue.prototype.$Notify = Notification
 Vue.prototype.$Loading = LoadingBar
@@ -156,4 +149,4 @@ Vue.prototype.$Message = Message
 
 ## 自定义主题
 
-`AT-UI` 的样式已抽离成单独的项目 [AT-UI-Style](https://github.com/at-ui/at-ui-style)，各个组件的样式变量都存放在 `at-ui-style/src/variables/default.scss` 文件中。用户可根据实际需要，自定义组件的样式
+`Cattr UI` 的样式已抽离成单独的项目 [Cattr UI Style](https://github.com/cattr-app/ui-kit)，各个组件的样式变量都存放在 `cattr-ui-style/src/variables/default.scss` 文件中。用户可根据实际需要，自定义组件的样式

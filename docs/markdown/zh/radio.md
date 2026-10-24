@@ -49,7 +49,7 @@
   <at-radio-button label="北京">北京</at-radio-button>
   <at-radio-button label="上海" disabled>上海</at-radio-button>
   <at-radio-button label="深圳">深圳</at-radio-button>
-  <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+  <at-radio-button label="Cattr">Cattr</at-radio-button>
 </at-radio-group>
 ```
 :::
@@ -66,7 +66,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <p class="demo-desc">更换字体颜色</p>
@@ -75,7 +75,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 ```
@@ -92,7 +92,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <div class="row">
@@ -100,7 +100,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <div class="row">
@@ -108,7 +108,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 ```

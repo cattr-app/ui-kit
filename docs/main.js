@@ -25,7 +25,7 @@ if (['en', 'zh'].indexOf(navigatorLang) <= -1) {
   navigatorLang = ''
 }
 
-const userLang = urlLang || window.localStorage.getItem('at-ui-language') || navigatorLang || 'zh'
+const userLang = urlLang || window.localStorage.getItem('cattr-ui-language') || navigatorLang || 'zh'
 
 const i18n = new VueI18n({
   locale: userLang,

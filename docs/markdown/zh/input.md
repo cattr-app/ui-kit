@@ -51,7 +51,7 @@
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容" size="small">
   <template slot="append">
-    <span>@aotu.io</span>
+    <span>@cattr.app</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容">

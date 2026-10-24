@@ -26,12 +26,12 @@
     "url": "https://github.com/cattr-app/ui-kit/issues"
   },
   "keywords": [
-    "at",
-    "at-ui",
-    "desktop",
+    "cattr",
+    "cattr-ui",
+    "vue",
+    "vue3",
     "ui",
-    "framework",
-    "component"
+    "components"
   ],
   "files": [
     "dist/locale",
