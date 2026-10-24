@@ -58,11 +58,11 @@
 </template>
 
 <script>
-import Clickoutside from 'at-ui/src/directives/clickoutside'
-import Emitter from 'at-ui/src/mixins/emitter'
-import PopoverMixin from 'at-ui/src/mixins/popover'
-import Locale from 'at-ui/src/mixins/locale'
-import { findComponentsDownward } from 'at-ui/src/utils/util'
+import Clickoutside from '../../../directives/clickoutside'
+import Emitter from '../../../mixins/emitter'
+import PopoverMixin from '../../../mixins/popover'
+import Locale from '../../../mixins/locale'
+import { findComponentsDownward } from '../../../utils/util'
 
 export default {
   name: 'AtSelect',

@@ -50,7 +50,7 @@
 </template>
 
 <script>
-  import Emitter from 'at-ui/src/mixins/emitter'
+  import Emitter from '../../../mixins/emitter'
 
   export default {
     name: 'AtInput',

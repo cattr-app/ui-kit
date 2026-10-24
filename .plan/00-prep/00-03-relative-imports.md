@@ -1,7 +1,7 @@
 ---
 id: 00-03
 title: Заменить alias-импорты at-ui/src/... на относительные пути
-status: todo
+status: done
 depends_on: [00-01]
 parallel: true
 model: haiku
@@ -39,3 +39,9 @@ scripts/node.sh pnpm build:package
 ## Найдено по ходу
 
 ## Заметки агента
+- Замены: 22 файла в `src/components/**` (вне `src/components/form/**`, по требованию оркестратора), 40 строк импортов `at-ui/src/...` → относительный путь. Расширения не добавлялись. Каждый целевой путь проверен на существование (`.js`/`.vue`/`index.js`), неразрешённых нет.
+- Группы: `mixins/emitter` и `mixins/popover`, `utils/util`, `mixins/locale`, `directives/clickoutside`, `utils/collapse-transition`, `locale` (modal → `../../../locale`, резолвится в `src/locale/index.js`), межкомпонентные `components/{tooltip,input-number,checkbox,pagination}` → `../../<name>` (через `index.js` каталога).
+- Критерий: `grep -rn "from 'at-ui/src\|from 'src/" src --exclude-dir=form` → пусто (exit 1). Дополнительно `grep -rn "at-ui/src" src | grep -v src/components/form/` → 0 строк.
+- `scripts/node.sh pnpm install --frozen-lockfile` ПАДАЕТ на postinstall пакета `phantomjs-prebuilt@2.1.16` (зависимость `supports-color@4.5.0`): `tar jxf /tmp/phantomjs/phantomjs-2.1.1-linux-x86_64.tar.bz2` → `tar (child): bzip2: Cannot exec: No such file or directory`; `ERR_PNPM_EXECUTOR_LIFECYCLE_SCRIPT_FAILED`. Не чинилось (по инструкции). Следствие: `scripts/node.sh pnpm build:package` не запускалась, проверка сборки невозможна в этой задаче. Нужна отдельная задача/решение по устаревшему phantomjs (пакет и его postinstall, вероятно, уходят вместе с Webpack-тулингом в 10-*).
+- `package.json`, `pnpm-lock.yaml`, `src/stylesheet`, `docs/`, `build/` не менялись. Alias'ы в `build/webpack.base.conf.js` оставлены.
+- CHANGELOG-MIGRATION.md: снята пометка `[TODO 00-03]` с записи о внутренних импортах (текст записи не менялся).

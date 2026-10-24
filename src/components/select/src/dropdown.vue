@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import PopoverMixin from 'at-ui/src/mixins/popover'
+import PopoverMixin from '../../../mixins/popover'
 
 export default {
   name: 'Dropdown',

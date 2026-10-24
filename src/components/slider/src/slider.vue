@@ -51,9 +51,9 @@
 </template>
 
 <script>
-import AtTooltip from 'at-ui/src/components/tooltip'
-import AtInputNumber from 'at-ui/src/components/input-number'
-import { getStyle } from 'at-ui/src/utils/util'
+import AtTooltip from '../../tooltip'
+import AtInputNumber from '../../input-number'
+import { getStyle } from '../../../utils/util'
 
 export default {
   name: 'AtSlider',

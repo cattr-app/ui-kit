@@ -141,11 +141,11 @@
 </template>
 
 <script>
-import Locale from 'at-ui/src/mixins/locale'
-import { getStyle, deepCopy } from 'at-ui/src/utils/util'
+import Locale from '../../../mixins/locale'
+import { getStyle, deepCopy } from '../../../utils/util'
 import Cell from './render'
-import Checkbox from 'at-ui/src/components/checkbox'
-import Pagination from 'at-ui/src/components/pagination'
+import Checkbox from '../../checkbox'
+import Pagination from '../../pagination'
 
 export default {
   name: 'AtTable',
