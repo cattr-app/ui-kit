@@ -1,3 +1,4 @@
+/* eslint-disable vue/one-component-per-file -- every test creates its own root app */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createApp, nextTick } from 'vue'
 import { mount } from '@vue/test-utils'
