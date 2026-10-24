@@ -1,7 +1,7 @@
 ---
 id: 30-w1-slider
 title: Slider → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -44,3 +44,9 @@ scripts/node.sh pnpm build
 ## Найдено по ходу
 
 ## Заметки агента
+- Публичный API: только `value`→`modelValue`/`input`→`update:modelValue`; `change` сохранён (как в 1.x эмитится и при программной смене `modelValue`). `emits: ['update:modelValue', 'change']`.
+- `@keyup.native` на `at-input-number` убран (решение архитектора): значение из InputNumber применяется через `v-model="inputValue"` + watch. До мержа 30-w1-input-number связка не работает (он ждёт prop `value`), но InputNumber всё равно скрыт `v-show="false"`. **После мержа 30-w1-input-number проверить связку slider ↔ input-number вручную/тестом.**
+- Добавлено локальное `currentValue`: точка двигается сразу, без ожидания эха от родителя (в 1.x `setPosition` читал устаревший prop). Ширина трека — `getBoundingClientRect()` при каждом событии вместо кэширующего computed по `getStyle` (не обновлялся при ресайзе).
+- `this._timer` → поле `hoverTimer` (в `created`); `$refs.tooltip.show = false` → `hidePopover()` mixin popover. Слушатели `window` mousemove/mouseup (в коде `window`, не `document`) и таймер снимаются в `beforeUnmount`.
+- Подозрительное (не чинил, вне scope): `value.toFixed(0)` в `setPosition` округляет до целого — дробный `step` (0.5) не работает, как и в 1.x.
+- Тест `test/components/slider.spec.js`: 5 `it` (позиция, клик + v-model, disabled, step/min/max, drag + cleanup); ввод через input-number не проверяется.

@@ -9,7 +9,6 @@
       :disabled="disabled"
       :min="min"
       :max="max"
-      @keyup.native="onInputChange"
     ></at-input-number>
     <!-- E InputNumber -->
 
@@ -44,7 +43,9 @@
               'at-slider__dot--drag': isDrag,
             }"
           ></div>
-          <span slot="content">{{ value }}</span>
+          <template #content>
+            <span>{{ currentValue }}</span>
+          </template>
         </at-tooltip>
       </div>
       <!-- E tooltip and dot -->
@@ -56,7 +57,8 @@
 <script>
 import AtTooltip from '../../tooltip'
 import AtInputNumber from '../../input-number'
-import { getStyle } from '../../../utils/util'
+
+const HIDE_DELAY = 200
 
 export default {
   name: 'AtSlider',
@@ -65,7 +67,7 @@ export default {
     AtTooltip,
   },
   props: {
-    value: {
+    modelValue: {
       type: Number,
       default: 0,
     },
@@ -86,64 +88,91 @@ export default {
       default: 1,
     },
   },
+  emits: ['update:modelValue', 'change'],
   data() {
     return {
-      inputValue: null,
+      // local copy of modelValue: the dot follows it right away, without waiting
+      // for the parent to pass the emitted value back
+      currentValue: this.modelValue,
+      inputValue: this.modelValue,
       isHover: false,
       isDrag: false,
       startX: 0,
-      currentX: 0,
-      oldValue: this.value,
       startPos: 0,
       newPos: null,
-      currentPosition: `${((this.value - this.min) * 100) / (this.max - this.min)}%`,
+      oldValue: this.modelValue,
     }
   },
   computed: {
-    sliderWidth() {
-      return parseInt(getStyle(this.$refs.slider, 'width'))
+    currentPosition() {
+      return `${((this.currentValue - this.min) * 100) / (this.max - this.min)}%`
     },
   },
   watch: {
+    // value typed into the (hidden) AtInputNumber, comes in through its v-model
     inputValue(val) {
-      this.$emit('input', Number(val))
+      const num = Number(val)
+      if (val === '' || val === null || isNaN(num) || num === this.currentValue) return
+      this.setPosition(this.toPercent(num))
     },
-    value(val) {
+    modelValue(val) {
       if (typeof val !== 'number' || isNaN(val) || val < this.min) {
-        this.$emit('input', this.min)
+        this.$emit('update:modelValue', this.min)
         return
       }
 
       if (val > this.max) {
-        this.$emit('input', this.max)
+        this.$emit('update:modelValue', this.max)
         return
       }
 
+      this.currentValue = val
       this.inputValue = val
-      this.setPosition(((val - this.min) * 100) / (this.max - this.min))
+
+      // programmatic change (not an echo of our own emit): report it as 1.x did
+      if (!this.isDrag && val !== this.oldValue) {
+        this.oldValue = val
+        this.$emit('change', val)
+      }
     },
   },
   created() {
-    if (typeof this.value !== 'number' || isNaN(this.value) || this.value < this.min) {
-      this.$emit('input', this.min)
-    } else if (this.value > this.max) {
-      this.$emit('input', this.max)
-    }
+    // plain instance field, not reactive
+    this.hoverTimer = null
 
-    this.inputValue = this.inputValue || this.value
+    if (
+      typeof this.modelValue !== 'number' ||
+      isNaN(this.modelValue) ||
+      this.modelValue < this.min
+    ) {
+      this.$emit('update:modelValue', this.min)
+    } else if (this.modelValue > this.max) {
+      this.$emit('update:modelValue', this.max)
+    }
+  },
+  beforeUnmount() {
+    clearTimeout(this.hoverTimer)
+    this.removeDragListeners()
   },
   methods: {
+    toPercent(val) {
+      return ((val - this.min) * 100) / (this.max - this.min)
+    },
+    getSliderRect() {
+      return this.$refs.slider.getBoundingClientRect()
+    },
     handleMouseEnter() {
-      clearTimeout(this._timer)
+      clearTimeout(this.hoverTimer)
       this.isHover = true
-      this.$refs.tooltip.showPopover()
+      this.$refs.tooltip?.showPopover()
     },
     handleMouseLeave() {
       if (this.isDrag) return
       this.isHover = false
-      this._timer = setTimeout(() => {
-        this.$refs.tooltip.show = false
-      }, 200)
+      clearTimeout(this.hoverTimer)
+      this.hoverTimer = setTimeout(() => {
+        this.$refs.tooltip?.hidePopover()
+      }, HIDE_DELAY)
     },
     handleMouseDown(evt) {
       if (this.disabled) return
@@ -152,29 +181,32 @@ export default {
       window.addEventListener('mousemove', this.onDragging)
       window.addEventListener('mouseup', this.onDragEnd)
     },
+    removeDragListeners() {
+      window.removeEventListener('mousemove', this.onDragging)
+      window.removeEventListener('mouseup', this.onDragEnd)
+    },
     onDragStart(evt) {
       this.isDrag = true
       this.startX = evt.clientX
-      this.startPos = parseInt(this.currentPosition)
+      this.startPos = this.toPercent(this.currentValue)
+      this.newPos = this.startPos
     },
     onDragging(evt) {
-      if (this.isDrag) {
-        this.$refs.tooltip.showPopover()
-        this.currentX = evt.clientX
-        const diff = ((this.currentX - this.startX) * 100) / this.sliderWidth
-        this.newPos = this.startPos + diff
-        this.setPosition(this.newPos)
-      }
+      if (!this.isDrag) return
+      const width = this.getSliderRect().width
+      if (!width) return
+
+      this.$refs.tooltip?.showPopover()
+      this.newPos = this.startPos + ((evt.clientX - this.startX) * 100) / width
+      this.setPosition(this.newPos)
     },
     onDragEnd() {
-      if (this.isDrag) {
-        this.$refs.tooltip.show = false
-        this.isDrag = false
-        this.setPosition(this.newPos)
+      this.removeDragListeners()
+      if (!this.isDrag) return
 
-        window.removeEventListener('mousemove', this.onDragging)
-        window.removeEventListener('mouseup', this.onDragEnd)
-      }
+      this.$refs.tooltip?.hidePopover()
+      this.isDrag = false
+      this.setPosition(this.newPos)
     },
     setPosition(pos) {
       if (pos < 0) {
@@ -189,24 +221,22 @@ export default {
 
       value = parseFloat(value.toFixed(0))
 
-      this.$emit('input', value)
-      this.currentPosition = `${((this.value - this.min) * 100) / (this.max - this.min)}%`
+      if (value !== this.currentValue) {
+        this.currentValue = value
+        this.inputValue = value
+        this.$emit('update:modelValue', value)
+      }
 
-      if (!this.isDrag && this.value !== this.oldValue) {
-        this.$emit('change', this.value)
-        this.oldValue = this.value
+      if (!this.isDrag && value !== this.oldValue) {
+        this.oldValue = value
+        this.$emit('change', value)
       }
     },
     onSliderClick(evt) {
       if (this.disabled || this.isDrag) return
-      const sliderOffsetLeft = this.$refs.slider.getBoundingClientRect().left
-      this.setPosition(((evt.clientX - sliderOffsetLeft) / this.sliderWidth) * 100)
-    },
-    onInputChange() {
-      if (this.value === '') return
-      if (!isNaN(this.value)) {
-        this.setPosition(((this.value - this.min) * 100) / (this.max - this.min))
-      }
+      const { left, width } = this.getSliderRect()
+      if (!width) return
+      this.setPosition(((evt.clientX - left) / width) * 100)
     },
   },
 }
