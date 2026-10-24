@@ -1,7 +1,10 @@
-# @parcel/watcher (optional dep of sass, used only by `sass --watch`) ships prebuilt
-# binaries in @parcel/watcher-<platform>; its install script only runs node-gyp when
-# npm_config_build_from_source=true, so it is denied explicitly (no "ignored build" warning).
-allowBuilds:
-  '@parcel/watcher': false
 packages:
   - src/stylesheet
+# sass-embedded falls back to the pure-JS `sass` on platforms without a native binary
+# (sass-embedded-all-unknown / -unknown-all). pnpm still puts that `sass` into the graph
+# and links it as Vite's optional peer, which drags in `sass`'s optional watcher with an
+# install script (ERR_PNPM_IGNORED_BUILDS). Linux/macOS/Windows/Android binaries are
+# unaffected by dropping the fallback.
+ignoredOptionalDependencies:
+  - sass-embedded-all-unknown
+  - sass-embedded-unknown-all
