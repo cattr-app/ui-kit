@@ -22,6 +22,7 @@ touches: [src/components/slider/**]
 - файлы: slider.vue 
 
 ## Специфика
+- (из 30-w1-input) `<at-input-number … @keyup.native="onInputChange">` → без `.native`; согласовать с 30-w1-input-number, как у него пробрасываются listeners (inheritAttrs/нативный input).
 - v-model; `slot="content"` у tooltip → `#content`; `@…native` на at-tooltip/at-input-number; `this._timer`; обработчики `document mousemove/mouseup` снимать в `beforeUnmount`.
 
 ## Критерии приёмки

@@ -43,6 +43,7 @@ scripts/node.sh pnpm exec eslint docs vite.docs.config.js
 Команды разработки.
 
 ## Найдено по ходу
+- (из 30-w1-alert) `docs/assets/style/docs.scss` использует классы переходов Vue 2 `.fade-enter`/`.fade-leave-active`; в Vue 3 это `.fade-enter-from`/`.fade-leave-active` + `.fade-enter-active`. Проверить все `*-enter`/`*-leave` в docs scss и в `src/stylesheet/src/components/animation.scss` (последнее — общая анимация библиотеки, чинить в 50-01 или здесь, записать решение).
 - (из 10-02) В `docs/` остаются 7 ошибок `no-undef` (`require` в `router/index.js`, `directives/clipboard.js`; `process` в `main.js`, `router/index.js`) — уйдут при переходе на Vite/ESM.
 
 ## Заметки агента

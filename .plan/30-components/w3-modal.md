@@ -24,6 +24,7 @@ touches: [src/components/modal/**, src/components/dialog/index.js]
 - файлы: dialog.js modal.vue 
 
 ## Специфика
+- (из 30-w1-input) `@keyup.enter.native="handleAction('confirm')"` на `<at-input>` → `@keyup.enter` (слушатель теперь падает на нативный input). У AtInput нет публичного `focus()`: фокус через `this.$refs.input.$el.querySelector('input').focus()` или добавить `focus()` в Input через `defineExpose`/methods (тогда записать в changelog Input).
 - `modal.vue`: v-model (`value` → `modelValue`), `.native` ×3, `keyCode === 27` → `event.key === 'Escape'`, слушатель keydown на document снимать в `beforeUnmount`.
 - `dialog.js`: `Vue.extend(Modal)`, `new DialogConstructer({ el })`, присваивание опций в instance (`instance[prop] = options[prop]`), очередь `modalQueue`, promise-API `alert/confirm/prompt/info/success/warning/error`, `Dialog.close`. Переписать через `mountService` (20-03): опции передавать как props, `visible` управлять через reactive-объект props, колбэки — через `onAction`. Сохранить промис-семантику (resolve на confirm, reject на cancel для confirm/prompt). Титулы по умолчанию в `createStatusDialog` на китайском — заменить на `t('at.modal.<type>')` или английские строки, записать в changelog.
 - Smoke-тесты: `Dialog.confirm('x')` монтирует `.at-modal`, клик по кнопке confirm резолвит промис; `Dialog.prompt` возвращает `{ value, action }`.
