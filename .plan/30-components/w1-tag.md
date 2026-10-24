@@ -1,7 +1,7 @@
 ---
 id: 30-w1-tag
 title: Tag → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: haiku
@@ -38,3 +38,9 @@ scripts/node.sh pnpm build
 ## Найдено по ходу
 
 ## Заметки агента
+- (ревью при мерже) `<transition name="fade">` вокруг корня удалён вместе с фиктивным `visible: true`: закрытие тега делает родитель, анимация никогда не проигрывалась и в 1.x. Корень теперь `span.at-tag`.
+- `tag.vue`: добавлен `emits: ['on-close']` (имя события и аргументы `(evt, name)` сохранены). Ничего из чеклиста про v-model/lifecycle/.native/провайд не применимо: у компонента нет `value`/`input`, `$parent`, `beforeDestroy`.
+- `<transition name="fade">`: внутренний `<span>` получил `v-show="visible"`, `data() { visible: true }`. Флаг константный, поэтому видимое поведение не меняется; закрытие по-прежнему делает родитель (удаление компонента), fade-out при размонтировании сохраняется, так как transition остаётся корнем компонента.
+- Публичного API не менялось (props, события, слоты, имена), поэтому `CHANGELOG-MIGRATION.md` не трогал.
+- Подозрительно: `visible` всегда `true`, то есть директива формально удовлетворяет правилу `require-toggle-inside-transition`, но реально ничего не скрывает. Если нужно скрытие по on-close без участия родителя, это уже изменение поведения, вне scope задачи.
+- Тест: при `<transition>` корне в VTU `wrapper.element`/`wrapper.classes()` указывают не на span, поэтому в тесте используется `wrapper.find('.at-tag')`. happy-dom отдаёт цвет как `#ff0000`, а не `rgb(...)`.
