@@ -1,7 +1,7 @@
 ---
 id: 30-w1-textarea
 title: Textarea → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: haiku
@@ -36,5 +36,11 @@ scripts/node.sh pnpm build
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
 ## Найдено по ходу
+- Vue 3 warn "Property "style" was accessed during render" из `<AtButton>` в test/utils/mount-service.spec.js, test/helpers/mount.spec.js (вне textarea, для 30-w1-button).
 
 ## Заметки агента
+- Textarea: prop `value` → `modelValue`, `$emit("input")` → `update:modelValue`, `watch: { value }` → `watch: { modelValue }`, `mixins: [Emitter]` удалён (dispatch не использовался), добавлен `emits: [update:modelValue, change, focus, blur]`.
+- Public API: кроме `modelValue`/`update:modelValue` ничего не менялось (события `change/focus/blur` и пропсы прежние), поэтому CHANGELOG-MIGRATION.md не правился (общая строка про v-model уже покрывает Textarea).
+- Smoke-тест test/components/textarea.spec.js: 4 it (значение из modelValue, ввод → update:modelValue + change, disabled/readonly, maxlength/rows + focus/blur).
+- Проверки: eslint 0, format:check ok, pnpm test 59/59, pnpm build ok; grep-критерий пуст.
+- Для `pnpm test` есть warn про AtButton `style` (не textarea), не блокирует.

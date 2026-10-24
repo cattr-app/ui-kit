@@ -26,14 +26,12 @@
 </template>
 
 <script>
-import Emitter from '../../../mixins/emitter'
 import { calcTextareaHeight } from './utils'
 
 export default {
   name: 'AtTextarea',
-  mixins: [Emitter],
   props: {
-    value: String,
+    modelValue: String,
     name: String,
     placeholder: String,
     readonly: Boolean,
@@ -56,9 +54,10 @@ export default {
       default: 'vertical', // none, both, horizontal, vertical
     },
   },
+  emits: ['update:modelValue', 'change', 'focus', 'blur'],
   data() {
     return {
-      store: this.value,
+      store: this.modelValue,
       calculateStyle: {},
     }
   },
@@ -70,14 +69,14 @@ export default {
     },
   },
   watch: {
-    value(value) {
+    modelValue(value) {
       this.store = value
     },
     store(value) {
       this.$nextTick(() => {
         this.resizeTextarea()
       })
-      this.$emit('input', value)
+      this.$emit('update:modelValue', value)
       this.$emit('change', value)
     },
   },
