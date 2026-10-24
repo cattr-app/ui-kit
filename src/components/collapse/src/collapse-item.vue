@@ -23,6 +23,8 @@
 
 <script>
 import CollapseTransition from '../../../utils/collapse-transition'
+import { useChild } from '../../../composables/useChildren'
+import { CollapseContext } from './context'
 
 export default {
   name: 'AtCollapseItem',
@@ -42,20 +44,22 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      index: 0,
-      isActive: false,
-    }
+  setup() {
+    const { parent: collapse, index } = useChild(CollapseContext.inject(null), null)
+    return { collapse, index }
+  },
+  computed: {
+    itemName() {
+      return this.name || String(this.index)
+    },
+    isActive() {
+      return !!this.collapse && this.collapse.activeKeys.includes(this.itemName)
+    },
   },
   methods: {
     toggle() {
-      if (this.disabled) return false
-
-      this.$parent.toggle({
-        name: this.name || this.index,
-        isActive: this.isActive,
-      })
+      if (this.disabled || !this.collapse) return
+      this.collapse.toggle(this.itemName)
     },
   },
 }

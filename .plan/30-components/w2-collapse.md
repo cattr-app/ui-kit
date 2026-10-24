@@ -1,7 +1,7 @@
 ---
 id: 30-w2-collapse
 title: Collapse, CollapseItem → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -37,6 +37,14 @@ scripts/node.sh pnpm build
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
+Записано: «Collapse, CollapseItem» — `update:modelValue` теперь эмитится (в 1.x не было), исходный массив не мутируется, item без `name` = индекс в DOM-порядке, item вне Collapse — no-op.
+
 ## Найдено по ходу
 
 ## Заметки агента
+- Новый `src/components/collapse/src/context.js` (`CollapseContext`); Collapse отдаёт `reactive({ activeKeys, accordion, children, register, unregister, toggle })`, состояние в `setup()` (ref `currentValue` + watch `modelValue`), чтобы работало и без v-model, как в 1.x.
+- CollapseItem: `useChild(ctx, null)` — индекс по DOM-порядку, `exposed` не нужен (родителю не требуется читать детей; `children` в контексте только ради регистрации). `isActive` — computed от `ctx.activeKeys`.
+- 1.x не эмитил `input` вообще — `update:modelValue` добавлен как новое поведение, `on-change` сохранён с тем же аргументом (массив строк).
+- В тесте `isVisible()` VTU без `attachTo` всегда true в happy-dom — проверяю `style.display` у `.at-collapse__body`.
+- Item без `name` до `mounted` имеет индекс `-1` → раскрытие по индексу происходит после монтирования с enter-анимацией (так же было в 1.x через `setActive` в `mounted`).
+- `src/utils/collapse-transition.js` и `useChildren.js` не менялись.

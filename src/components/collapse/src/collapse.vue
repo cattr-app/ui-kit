@@ -10,6 +10,15 @@
 </template>
 
 <script>
+import { computed, reactive, ref, toRef, watch } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { CollapseContext } from './context'
+
+function normalize(value) {
+  if (value === undefined || value === null || value === '') return []
+  return (Array.isArray(value) ? value : [value]).map(String)
+}
+
 export default {
   name: 'AtCollapse',
   props: {
@@ -17,7 +26,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    value: {
+    modelValue: {
       type: [Array, String, Number],
     },
     simple: {
@@ -25,81 +34,48 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      currentValue: this.inputValueCheck(this.value),
+  emits: ['update:modelValue', 'on-change'],
+  setup(props, { emit }) {
+    const { children, register, unregister } = useChildren()
+    const currentValue = ref(normalize(props.modelValue))
+
+    watch(
+      () => props.modelValue,
+      value => {
+        currentValue.value = normalize(value)
+      },
+    )
+
+    const activeKeys = computed(() =>
+      props.accordion ? currentValue.value.slice(0, 1) : currentValue.value,
+    )
+
+    function toggle(name) {
+      const key = String(name)
+      const active = activeKeys.value.includes(key)
+      let next
+
+      if (props.accordion) {
+        next = active ? [] : [key]
+      } else {
+        next = active ? activeKeys.value.filter(k => k !== key) : [...activeKeys.value, key]
+      }
+
+      currentValue.value = next
+      emit('update:modelValue', next)
+      emit('on-change', next)
     }
-  },
-  watch: {
-    value(val) {
-      this.currentValue = this.inputValueCheck(val)
-    },
-    currentValue() {
-      this.setActive()
-    },
-  },
-  mounted() {
-    this.setActive()
-  },
-  methods: {
-    setActive() {
-      const activeKey = this.getActiveKey()
-      const accordion = this.accordion
 
-      this.$children.forEach((item, index) => {
-        const name = item.name || index.toString()
-
-        if (accordion) {
-          item.isActive = activeKey[0] === name
-        } else {
-          item.isActive = activeKey.indexOf(name) >= 0
-        }
-
-        item.index = index
-      })
-    },
-    getActiveKey() {
-      let activeKey = this.currentValue || []
-
-      if (!Array.isArray(activeKey)) {
-        activeKey = [activeKey]
-      }
-
-      if (this.accordion && activeKey.length > 1) {
-        activeKey = [activeKey[0].toString()]
-      } else {
-        let i = activeKey.length
-        while (i--) {
-          activeKey[i] = activeKey[i].toString()
-        }
-      }
-
-      return activeKey
-    },
-    toggle(itemData) {
-      const name = itemData.name.toString()
-      let newActiveKey = []
-
-      if (this.accordion && !itemData.isActive) {
-        newActiveKey.push(name)
-      } else {
-        const activeKey = this.getActiveKey()
-        const nameIndex = activeKey.indexOf(name)
-
-        if (itemData.isActive && nameIndex >= 0) {
-          activeKey.splice(nameIndex, 1)
-        } else if (nameIndex < 0) {
-          activeKey.push(name)
-        }
-        newActiveKey = activeKey
-      }
-
-      this.currentValue = newActiveKey
-      this.$emit('on-change', this.currentValue)
-    },
-    inputValueCheck(val) {
-      return typeof val === 'number' ? `${val}` : val
-    },
+    CollapseContext.provide(
+      reactive({
+        activeKeys,
+        accordion: toRef(props, 'accordion'),
+        children,
+        register,
+        unregister,
+        toggle,
+      }),
+    )
   },
 }
 </script>
