@@ -19,6 +19,17 @@
 </template>
 
 <script>
+import { useChild } from '../../../composables/useChildren'
+import { TimelineContext } from './context'
+
+const COLORS = {
+  blue: 'default',
+  red: 'error',
+  green: 'success',
+  yellow: 'warning',
+}
+const DEFAULT_COLOR = 'blue'
+
 export default {
   name: 'AtTimelineItem',
   props: {
@@ -27,42 +38,26 @@ export default {
       default: 'blue',
     },
   },
-  data() {
-    return {
-      colors: {
-        blue: 'default',
-        red: 'error',
-        green: 'success',
-        yellow: 'warning',
-      },
-      defaultColor: 'blue',
-      isLastItem: false,
-      isPendingItem: false,
-    }
+  emits: [],
+  setup() {
+    const { parent, index } = useChild(TimelineContext.inject(null))
+    return { timeline: parent, index }
   },
   computed: {
     status() {
-      const colorKey = this.color
-      const status = this.colors[colorKey] || this.colors[this.defaultColor]
-
-      return status
+      return COLORS[this.color] || COLORS[DEFAULT_COLOR]
     },
-  },
-  mounted() {
-    this.checkForLast()
-  },
-  methods: {
-    checkForLast() {
-      const children = this.$parent.$children
-      const index = children.indexOf(this)
-      const isPending = this.$parent.pending
-      const lastItemIndex = isPending ? children.length - 2 : children.length - 1
-
-      this.isLastItem = index === lastItemIndex
-
-      if (isPending) {
-        this.isPendingItem = index === lastItemIndex + 1
-      }
+    // With `pending` the last child is the pending item, so the "last" one is the one before it.
+    lastItemIndex() {
+      if (!this.timeline) return -1
+      const count = this.timeline.children.length
+      return this.timeline.pending ? count - 2 : count - 1
+    },
+    isLastItem() {
+      return this.index !== -1 && this.index === this.lastItemIndex
+    },
+    isPendingItem() {
+      return !!this.timeline?.pending && this.index !== -1 && this.index === this.lastItemIndex + 1
     },
   },
 }

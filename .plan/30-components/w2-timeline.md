@@ -1,7 +1,7 @@
 ---
 id: 30-w2-timeline
 title: Timeline, TimelineItem → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -39,3 +39,8 @@ scripts/node.sh pnpm build
 ## Найдено по ходу
 
 ## Заметки агента
+- `$parent`/`$children` заменены на `TimelineContext` (`src/components/timeline/src/context.js`): `AtTimeline` отдаёт `reactive({ pending, children, register, unregister })` из `useChildren`, `AtTimelineItem` берёт `index` через `useChild`.
+- `isLastItem`/`isPendingItem` стали computed (были data + `checkForLast()` из `mounted`/watch `pending`): «последний» = `index === length - 1`, при `pending` — `length - 2`, а pending-элемент = `length - 1`. Добавление/удаление item и переключение `pending` теперь реактивны; в 1.x `isPendingItem` не сбрасывался при `pending → false` — исправлено попутно.
+- Публичное API (props `pending`/`color`, слот `dot`, классы) не менялось → в changelog не записывалось. Внутренние data `colors`/`defaultColor` и метод `checkForLast` удалены (вынесены в модульные константы).
+- `$slots.dot` используется только в шаблоне (`!!$slots.dot`), в script обращений нет. `emits: []` у обоих компонентов.
+- Item без `AtTimeline` не падает: `index = -1`, классов last/pending нет. Переупорядочивание keyed `v-for` без перемонтирования не обрабатывается (`sort()` в `onUpdated` не вызывается), как и в 1.x.

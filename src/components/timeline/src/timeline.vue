@@ -10,6 +10,10 @@
 </template>
 
 <script>
+import { reactive, toRef } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { TimelineContext } from './context'
+
 export default {
   name: 'AtTimeline',
   props: {
@@ -18,12 +22,17 @@ export default {
       default: false,
     },
   },
-  watch: {
-    pending() {
-      this.$children.forEach(child => {
-        child.checkForLast()
-      })
-    },
+  emits: [],
+  setup(props) {
+    const { children, register, unregister } = useChildren()
+    TimelineContext.provide(
+      reactive({
+        pending: toRef(props, 'pending'),
+        children,
+        register,
+        unregister,
+      }),
+    )
   },
 }
 </script>
