@@ -16,9 +16,10 @@ Compared to `Notification`, `Message` is lighter,, centered at the top of the pa
 - `this.$Message.warning(config)`
 - `this.$Message.error(config)`
 - `this.$Message.loading(config)`
+- `this.$Message.close(id)`
 - `this.$Message.closeAll()`
 
-`config` is a string (the message text) or an options object, see below. Every call returns a function that closes this message.
+`config` is a string (the message text) or an options object, see below. Every call returns a function that closes this message; its `id` property can be passed to `this.$Message.close(id)`.
 
 ## Basic
 

@@ -16,9 +16,10 @@
 - `this.$Message.warning(config)`
 - `this.$Message.error(config)`
 - `this.$Message.loading(config)`
+- `this.$Message.close(id)`：关闭指定提示
 - `this.$Message.closeAll()`：关闭所有提示
 
-`config` 可以是字符串（即 `message`），也可以是配置对象。每次调用都返回一个关闭当前提示的函数。
+`config` 可以是字符串（即 `message`），也可以是配置对象。每次调用都返回一个关闭当前提示的函数，函数的 `id` 属性可传给 `this.$Message.close(id)`。
 
 ## 基础用法
 

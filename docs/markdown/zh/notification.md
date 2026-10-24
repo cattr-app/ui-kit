@@ -16,13 +16,14 @@
 - `this.$Notify.error(config)`
 - `this.$Notify.warning(config)`
 - `this.$Notify.info(config)`
+- `this.$Notify.close(id)`：关闭指定通知
 - `this.$Notify.closeAll()`：关闭所有通知
 
-`config` 可以是字符串（即 `message`），也可以是配置对象。每次调用都返回一个关闭当前通知的函数：
+`config` 可以是字符串（即 `message`），也可以是配置对象。每次调用都返回一个关闭当前通知的函数，函数的 `id` 属性可传给 `this.$Notify.close(id)`：
 
 ```js
 const close = this.$Notify({ title: '这里是标题', duration: 0 })
-close()
+close() // 或 this.$Notify.close(close.id)
 ```
 
 实例接收如下参数：

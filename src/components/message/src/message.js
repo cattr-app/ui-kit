@@ -11,7 +11,7 @@ const normalize = options => (typeof options === 'string' ? { message: options }
 
 /**
  * Show a message. `options`: a string or `{ message, type, icon, duration, onClose }`.
- * Returns a function that closes this message.
+ * Returns a function that closes this message; its `id` property is the message id.
  */
 const Message = options => {
   if (typeof window === 'undefined') return
@@ -30,7 +30,7 @@ const Message = options => {
     duration,
     top,
     zIndex: zindexSeed++,
-    onClose: () => Message.close(id, customCloseFunc),
+    onClose: () => Message.close(id),
     onDestroy: () => service.unmount(),
   })
 
@@ -39,24 +39,28 @@ const Message = options => {
     top,
     vm: service.vm,
     el: service.el,
+    onClose: customCloseFunc,
     update: service.update,
     unmount: service.unmount,
   })
 
-  // 返回关闭方法，用于手动消除
-  return function () {
-    service.vm.close()
-  }
+  // `close.id` can be passed to `Message.close(id)`
+  const close = () => service.vm.close()
+  close.id = id
+  return close
 }
 
-/** Remove a message from the stack and shift the ones below it up. */
-Message.close = (id, customCloseFunc) => {
+/**
+ * Close the message with this `id` (the `id` property of the function returned by the call),
+ * call its `onClose` and shift the ones below it up. Unknown or already closed `id` — no-op.
+ */
+Message.close = id => {
   const index = instances.findIndex(item => item.id === id)
   if (index === -1) return
 
   const [removed] = instances.splice(index, 1)
-  if (typeof customCloseFunc === 'function') {
-    customCloseFunc(removed.vm)
+  if (typeof removed.onClose === 'function') {
+    removed.onClose(removed.vm)
   }
   // The closing message is still visible (leave transition) — close() starts it.
   removed.vm.close()

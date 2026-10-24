@@ -12,7 +12,7 @@ const normalize = options => (typeof options === 'string' ? { message: options }
 /**
  * Show a notification in the top right corner.
  * `options`: a string (the message) or `{ title, message, type, icon, duration, showClose, onClose }`.
- * Returns a function that closes this notification.
+ * Returns a function that closes this notification; its `id` property is the notification id.
  */
 const Notification = options => {
   if (typeof window === 'undefined') return
@@ -41,7 +41,7 @@ const Notification = options => {
     showClose,
     top,
     zIndex: zindexSeed++,
-    onClose: () => Notification.close(id, customCloseFunc),
+    onClose: () => Notification.close(id),
     onDestroy: () => service.unmount(),
   })
 
@@ -50,23 +50,28 @@ const Notification = options => {
     top,
     vm: service.vm,
     el: service.el,
+    onClose: customCloseFunc,
     update: service.update,
     unmount: service.unmount,
   })
 
-  return function () {
-    service.vm.close()
-  }
+  // `close.id` can be passed to `Notification.close(id)`
+  const close = () => service.vm.close()
+  close.id = id
+  return close
 }
 
-/** Remove a notification from the stack and shift the ones below it up. */
-Notification.close = (id, customCloseFunc) => {
+/**
+ * Close the notification with this `id` (the `id` property of the function returned by the call),
+ * call its `onClose` and shift the ones below it up. Unknown or already closed `id` — no-op.
+ */
+Notification.close = id => {
   const index = instances.findIndex(item => item.id === id)
   if (index === -1) return
 
   const [removed] = instances.splice(index, 1)
-  if (typeof customCloseFunc === 'function') {
-    customCloseFunc(removed.vm)
+  if (typeof removed.onClose === 'function') {
+    removed.onClose(removed.vm)
   }
   // The closing notification is still visible (leave transition) — close() starts it.
   removed.vm.close()

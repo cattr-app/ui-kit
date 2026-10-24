@@ -204,9 +204,10 @@
 ## Сервисы
 
 - `Message` (`$Message`): API вызова без изменений — `Message('text')`, `Message({ message, type, icon, duration, onClose })`, `Message.info/success/warning/error/loading(...)`, `Message.close(id)`, `Message.closeAll()`, вызов возвращает функцию закрытия.
+  Новое: у возвращаемой функции есть свойство `id` — `const close = Message('…'); Message.close(close.id)` (в 1.x `id` наружу не отдавался, `close(id)` был внутренним).
   Импорт для `<script setup>`: `import { Message } from '@amazingcat/cattr-ui'`; также можно поставить отдельно: `app.use(Message)` (кладёт `$Message` в `globalProperties`).
   Было: работало сразу после импорта. Стало: сервис рендерится в контексте приложения, установившего плагин, — вызывать **после** `app.use(CattrUI)`, иначе `<at-*>`-компоненты и локаль внутри сервиса не отрендерятся (для `Message` сейчас некритично — иконки CSS-классами, текстов локали нет, — но для `$Modal`/`$Notify` обязательно; полагаться не стоит).
-  Мелочи: объект `options` больше не мутируется (раньше в него дописывались `type`/`onClose`); `Message.close(id)` теперь и прячет сообщение, а не только убирает его из стека; `Message.closeAll()` закрывает все сообщения (раньше пропускал каждое второе); в `onClose(vm)` приходит публичный экземпляр компонента сообщения, как и раньше.
+  Мелочи: объект `options` больше не мутируется (раньше в него дописывались `type`/`onClose`); `Message.close(id)` теперь и прячет сообщение, а не только убирает его из стека, и вызывает `onClose` (второй, внутренний аргумент `close(id, onClose)` убран); `Message.closeAll()` закрывает все сообщения (раньше пропускал каждое второе); в `onClose(vm)` приходит публичный экземпляр компонента сообщения, как и раньше.
 
 - `LoadingBar` (`$Loading`): API вызова без изменений — `start()`, `update(percent)` (число), `finish()`, `error()`, `config({ width })`; единственная полоса создаётся лениво при первом вызове и удаляется через 800 мс после `finish()`/`error()`.
   Импорт для `<script setup>`: `import { LoadingBar } from '@amazingcat/cattr-ui'`; отдельная установка: `app.use(LoadingBar)` (кладёт `$Loading` в `globalProperties`).
@@ -217,8 +218,8 @@
 
 - `Notification` (`$Notify`): вызов `Notification({ title, message, type, icon, duration, showClose, onClose })`, `Notification('text')` (строка = `message`), `Notification.info/success/warning/error(...)` — как раньше.
   Импорт для `<script setup>`: `import { Notification } from '@amazingcat/cattr-ui'`; отдельная установка `app.use(Notification)` (кладёт `$Notify` в `globalProperties`). Вызывать после `app.use(CattrUI)` (см. `Message`).
-  Было: вызов возвращал экземпляр компонента (`vm`, с `vm.id`, `vm.handleClose()`). Стало: возвращает функцию закрытия, как `Message`. Что править: `const n = this.$Notify(...); n.handleClose()` → `const close = this.$Notify(...); close()`.
-  Добавлено: `Notification.closeAll()` (в 1.x не было). `Notification.close(id)` теперь и прячет уведомление, а не только убирает его из стека и сдвигает остальные.
+  Было: вызов возвращал экземпляр компонента (`vm`, с `vm.id`, `vm.handleClose()`). Стало: возвращает функцию закрытия, как `Message`. Что править: `const n = this.$Notify(...); n.handleClose()` → `const close = this.$Notify(...); close()`; `n.id` → `close.id` (для `Notification.close(id)`).
+  Добавлено: `Notification.closeAll()` (в 1.x не было). `Notification.close(id)` теперь и прячет уведомление (и вызывает его `onClose`), а не только убирает его из стека и сдвигает остальные; `id` — свойство возвращённой функции закрытия.
   Было: `icon` показывался, только если `type` не из `success/error/warning/info` (иконка типа побеждала, без `type` иконки не было вовсе). Стало: `icon` имеет приоритет над иконкой типа и показывается и без `type` (как у `Message`). Тип по умолчанию по-прежнему пустой (без иконки), а не `info`, как написано в документации 1.x.
   `title`/`message` выводятся текстом (`{{ }}`, в 1.x `v-text`), HTML не интерпретируется — без изменений. Объект `options` не мутируется; в `onClose(vm)` приходит публичный экземпляр компонента.
 

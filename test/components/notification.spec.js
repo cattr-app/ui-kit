@@ -92,6 +92,23 @@ describe('Notification', () => {
     expect(notices()).toHaveLength(0)
   })
 
+  it('close(id) closes the notification whose id is on the returned function', async () => {
+    const onClose = vi.fn()
+    const closeFirst = Notification({ title: 'a', duration: 0, onClose })
+    Notification({ title: 'b', duration: 0 })
+    await nextTick()
+
+    expect(typeof closeFirst.id).toBe('string')
+    Notification.close(closeFirst.id)
+    Notification.close(closeFirst.id)
+    Notification.close('unknown')
+    await flush()
+
+    expect(onClose).toHaveBeenCalledOnce()
+    expect(notices()).toHaveLength(1)
+    expect(notices()[0].textContent).toContain('b')
+  })
+
   it('closeAll() removes every notification', async () => {
     Notification({ title: 'a', duration: 0 })
     Notification({ title: 'b', duration: 0 })

@@ -85,6 +85,23 @@ describe('Message', () => {
     expect(messages()).toHaveLength(0)
   })
 
+  it('close(id) closes the message whose id is on the returned function', async () => {
+    const onClose = vi.fn()
+    const closeFirst = Message({ message: 'a', duration: 0, onClose })
+    Message({ message: 'b', duration: 0 })
+    await nextTick()
+
+    expect(typeof closeFirst.id).toBe('string')
+    Message.close(closeFirst.id)
+    Message.close(closeFirst.id)
+    Message.close('unknown')
+    await flush()
+
+    expect(onClose).toHaveBeenCalledOnce()
+    expect(messages()).toHaveLength(1)
+    expect(messages()[0].textContent).toContain('b')
+  })
+
   it('closeAll() removes every message', async () => {
     Message({ message: 'a', duration: 0 })
     Message({ message: 'b', duration: 0 })

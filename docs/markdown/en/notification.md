@@ -16,6 +16,7 @@ The notification will display in the upper right corner of the page, similar to 
 - `this.$Notify.error(config)`
 - `this.$Notify.warning(config)`
 - `this.$Notify.info(config)`
+- `this.$Notify.close(id)` - close one notification by id
 - `this.$Notify.closeAll()` - close all notifications
 
 `config` is a string (the message) or an options object:
@@ -28,12 +29,12 @@ The notification will display in the upper right corner of the page, similar to 
 - icon - customize the icon of Notification
 - onClose - specify a function that will be called after the notification closed
 
-Every call returns a function that closes this notification:
+Every call returns a function that closes this notification; its `id` property can be passed to `this.$Notify.close(id)`:
 
 ```js
 const close = this.$Notify({ title: 'Uploading…', duration: 0 })
 // later
-close()
+close() // or this.$Notify.close(close.id)
 ```
 
 
