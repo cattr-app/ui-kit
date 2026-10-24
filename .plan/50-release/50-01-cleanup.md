@@ -35,6 +35,9 @@ scripts/node.sh pnpm build:docs
 Проверить, что в `CHANGELOG-MIGRATION.md` не осталось пометок `[TODO …]`.
 
 ## Найдено по ходу
+- (из 40-02-zh) `app.use(Dialog)` без `app.use(CattrUI)` даёт сломанный диалог: `Dialog.install` только кладёт `$Modal`, не вызывает `setCurrentApp`, а `modal.vue` опирается на глобальные `<at-button>`/`<at-input>`. Решение: в `modal.vue` зарегистрировать `AtButton`/`AtInput` локально (как Table делает с Checkbox/Pagination) и в `install` каждого сервиса вызывать `setCurrentApp(app)`, если текущего app нет. Покрыть тестом «install только Dialog».
+- (из 40-02-zh) Демо Collapse в en/zh: `:model-value="[0, 1]"` создаёт новый массив на каждый рендер страницы, демо сбрасывается после кликов в соседнем. Это проблема демо: перевести оба языка на `v-model` с данными (мелкая правка docs, можно здесь).
+- (из 40-02-zh) В `zh/menu.md` секция «每次只展开一个子菜单» продублирована (было и в 1.x) — удалить дубль.
 - (из 40-02-en) Баги компонентов, найденные при прогоне всех docs-страниц: (а) `rate.vue` — при `v-model` один клик эмитит `on-change` дважды (из `confirmValue` и из watcher `modelValue`), watcher также эмитит на внешнее изменение; (б) `textarea.vue` — watcher `store` эмитит `update:modelValue`/`change`, когда `modelValue` меняет родитель (расходится с Input/Select/Switch); (в) `Message.close(id)`/`Notification.close(id)` описаны в changelog как публичные, но `id` наружу не возвращается — либо вернуть `id` (например, свойством на функции закрытия), либо убрать `close(id)` из changelog, оставив функцию закрытия и `closeAll()`. Решить и починить здесь с тестами.
 - (из 40-02-en) Обход `[\v\f]` в `transforms.before` в `vite.docs.config.js` можно удалить после мержа 40-02-zh (символ `\v` убран из обоих `color.md`).
 - (из 40-02-en) В демо `table.md` атрибут `sort` на `<at-table>` — несуществующий prop, проваливается в DOM; убрать из обоих языков или не трогать.
