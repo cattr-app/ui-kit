@@ -4,8 +4,7 @@
       <div class="nav-left">
         <div class="logo">
           <router-link :to="{ name: lang === 'en' ? 'Home-en' : 'Home' }">
-            <img class="logo-img" src="../assets/logo-at@2x.png" preload="" />
-            <span>Cattr UIKIT</span>
+            <span>Cattr UI</span>
           </router-link>
         </div>
         <i class="icon icon-menu nav-icon" @click="toggleMenu"></i>
@@ -144,15 +143,7 @@ $header-height: 80px;
       height: $header-height;
       line-height: $header-height;
 
-      img {
-        position: absolute;
-        top: 50%;
-        margin-top: -15px;
-        width: 30px;
-        height: 30px;
-      }
       span {
-        margin-left: 40px;
         color: #3473e7;
         font-weight: bold;
         font-size: 16px;

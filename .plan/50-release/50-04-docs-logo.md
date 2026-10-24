@@ -1,7 +1,7 @@
 ---
 id: 50-04-docs-logo
 title: Логотип Cattr в шапке сайта документации
-status: todo
+status: done
 depends_on: [50-01]
 parallel: true
 model: haiku
@@ -23,3 +23,6 @@ touches: [docs/components/header.vue, docs/assets/**]
 ## Найдено по ходу
 
 ## Заметки агента
+- Логотип `logo-at@2x.png` заменён текстовым заголовком `Cattr UI` (`<span>` внутри ссылки на главную, отступ 40px под картинку убран; цвет и размер текста прежние).
+- Удалены `docs/assets/logo-at@2x.png`, `logo-at.svg`, `logo-at-large.svg`. `grep -rn logo-at docs` пусто.
+- Не тронуто: большой логотип на главной (`docs/views/index.vue`, `index-en.vue`, инлайн-SVG в `.section-banner .logo`) — вне scope шапки.
