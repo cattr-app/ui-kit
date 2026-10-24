@@ -1,7 +1,7 @@
 ---
 id: 30-w1-progress
 title: Progress → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: haiku
@@ -38,3 +38,8 @@ scripts/node.sh pnpm build
 - (из 10-02) Prop `percent` одновременно `required` и с `default` — ошибка `vue/no-required-prop-with-default`, решить и отразить в changelog.
 
 ## Заметки агента
+- `percent`: выбран вариант «убрать `required`», `default: 0` сохранён. Удалять `default` нельзя: без него отсутствующий `percent` дал бы `undefined%` в стиле полосы. Поведение не менялось, запись в CHANGELOG → «Progress».
+- `emits: ['on-status-success']` объявлено явно (после `props`, по `vue/order-in-components`). Имя события не менялось.
+- Вне задачи, не чинил: `currentStatus` инициализируется из `status` один раз (`data`), поэтому смена prop `status` после монтирования не отображается. Это поведение было и в Vue 2.
+- Вне задачи: `pnpm test` печатает `[Vue warn]: Property "style" was accessed during render` для `AtButton` в спеках других компонентов (не в progress).
+- Установка `pnpm install --frozen-lockfile` без изменений lockfile.

@@ -55,6 +55,11 @@
 - `v-model` открытия: было prop `value`, компонент эмитил только `toggle` (`v-model` работал в одну сторону); стало prop `modelValue` + событие `update:modelValue` при каждом открытии/закрытии (клик, hover, focus, клик снаружи), `toggle` остаётся.
   Что править: `v-model="open"` работает как есть; `:value="open"` → `:model-value="open"`, вместо `@toggle` для синхронизации можно использовать `v-model`.
 
+### Progress
+
+- Публичный API не изменился: имена props/событий и поведение те же. Prop `percent` больше не помечен `required` (при `default: 0` это давало предупреждение Vue в dev-режиме); поведение при отсутствии `percent` прежнее — `0`.
+- Событие `on-status-success` теперь объявлено в `emits`; слушатель `@on-status-success` работает как раньше. Что править: ничего.
+
 (заполняется задачами 30-*)
 
 ### Radio, RadioGroup, RadioButton

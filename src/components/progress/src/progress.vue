@@ -41,7 +41,6 @@ export default {
     percent: {
       type: Number,
       default: 0,
-      required: true,
       validator: val => val >= 0 && val <= 100,
     },
     strokeWidth: {
@@ -49,6 +48,7 @@ export default {
       default: 8,
     },
   },
+  emits: ['on-status-success'],
   data() {
     return {
       currentStatus: this.status,
