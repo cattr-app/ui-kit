@@ -118,6 +118,13 @@
 - `modelValue` принимает строку, число или массив; значения приводятся к строкам, эмитится всегда массив строк (как в 1.x). Исходный массив больше не мутируется (в 1.x элементы переписывались `toString()` на месте).
 - `AtCollapseItem` без `name` получает имя = индекс в DOM-порядке среди элементов своего `AtCollapse` (`'0'`, `'1'`, …), как в 1.x; индекс теперь пересчитывается при добавлении/удалении элементов. `AtCollapseItem` вне `AtCollapse` не раскрывается и не реагирует на клик (в 1.x падал на `$parent.toggle`).
 
+### Dropdown, DropdownMenu, DropdownItem
+
+- Было: `AtDropdown` падал при монтировании (`this.$on is not a function`), связь item → dropdown шла через `dispatch('AtDropdown', 'menu-item-click')`. Стало: provide/inject — `AtDropdownItem` на любой глубине внутри `AtDropdown` вызывает команду родителя; вне `AtDropdown` клик по item ничего не делает.
+- Событие `on-dropdown-command` сохранено (аргумент — `name` пункта), после него меню закрывается, как в 1.x. Клик по `disabled` пункту событие не эмитит и меню не закрывает. Props `trigger` (по умолчанию `hover`), `placement` (по умолчанию `bottom`), у item `name`/`disabled`/`divided` — без изменений.
+- Слот меню: было `<at-dropdown-menu slot="menu">` → стало `<template #menu><at-dropdown-menu>…</at-dropdown-menu></template>` (синтаксис слотов Vue 3, атрибут `slot` удалён). Что править: все `slot="menu"` у `at-dropdown`.
+- Открытие (общий mixin popover, см. Tooltip/Popover): было prop `value` (односторонний) → стало `modelValue` + `update:modelValue` при каждом открытии/закрытии (триггер, выбор пункта, клик снаружи), событие `toggle` (только по click-триггеру) сохранено. Что править: `:value="open"` → `v-model="open"` или `:model-value="open"`.
+
 ## Сервисы
 
 - `[TODO 20-03, 30-w3-*]` До завершения миграции сервисов `$Message`, `$Modal`, `$Notify`, `$Loading` существуют, но при вызове бросают `… is not migrated to Vue 3 yet`. Промежуточные сборки ветки `feat/vue-3` для потребителя непригодны до закрытия этапа 30.

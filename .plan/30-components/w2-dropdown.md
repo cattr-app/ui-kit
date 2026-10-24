@@ -1,7 +1,7 @@
 ---
 id: 30-w2-dropdown
 title: Dropdown, DropdownMenu, DropdownItem → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -38,6 +38,13 @@ scripts/node.sh pnpm build
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
+Записано: «Dropdown, DropdownMenu, DropdownItem» — provide/inject вместо dispatch, слот `slot="menu"` → `#menu`, `value` → `modelValue` + `update:modelValue`; `on-dropdown-command` без изменений.
+
 ## Найдено по ходу
 
 ## Заметки агента
+- `src/components/dropdown/src/context.js`: `DropdownContext`; `AtDropdown` отдаёт `reactive({ onItemClick })` через Options API `provide()` (нужен доступ к `this.show` из mixin popover), `AtDropdownItem` — `inject(null)` в `setup()`.
+- `doDestory` убран из шаблона; mixin popover и clickoutside не менялись. Свои хуки жизненного цикла не нужны — слушатели снимает `beforeUnmount` mixin.
+- Smoke-тест `test/components/dropdown.spec.js` (5 `it`): монтирование, открытие по click, команда + закрытие, disabled, клик снаружи.
+- Для 40-docs: в `docs/markdown/*/dropdown.md` все `<at-dropdown-menu slot="menu">` → `<template #menu>`; prop `trigger`/`placement` в таблице есть, `v-model`/`update:modelValue`/`toggle` не задокументированы.
+- Для select (не трогал): `select.vue` тоже держит `@after-leave="doDestory"` — в mixin это теперь no-op.

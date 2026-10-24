@@ -12,11 +12,10 @@
 </template>
 
 <script>
-import Emitter from '../../../mixins/emitter'
+import { DropdownContext } from './context'
 
 export default {
   name: 'AtDropdownItem',
-  mixins: [Emitter],
   props: {
     name: {
       type: [String, Number],
@@ -30,10 +29,13 @@ export default {
       default: false,
     },
   },
+  setup() {
+    return { dropdown: DropdownContext.inject(null) }
+  },
   methods: {
     handleClick() {
       if (this.disabled) return
-      this.dispatch('AtDropdown', 'menu-item-click', this.name)
+      this.dropdown?.onItemClick(this.name)
     },
   },
 }
