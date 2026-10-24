@@ -9,6 +9,9 @@
   "exports": {
     ".": "./dist/index.js",
     "./locale/*": "./dist/locale/*.js",
+    "./style.css": "./dist/css/at.css",
+    "./style.min.css": "./dist/css/at.min.css",
+    "./css/*": "./dist/css/*",
     "./src/*": "./src/*",
     "./package.json": "./package.json"
   },
@@ -20,7 +23,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && pnpm build:style && node scripts/copy-css.js",
     "build:package": "pnpm build",
     "build:style": "pnpm --filter cattr-ui-style build",
     "dev": "vite --config vite.docs.config.js --host",

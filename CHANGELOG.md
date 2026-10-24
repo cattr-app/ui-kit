@@ -9,7 +9,7 @@
 
 Последовательность действий во фронтенде (пути `src/` — исходники проекта-потребителя):
 
-1. **Обновить окружение:** `vue@^3.5`, сборщик с поддержкой ESM (Vite с `@vitejs/plugin-vue` или webpack 5), `sass` (для SCSS-исходников стилей), Node ≥ 24 для сборки. Убрать alias `at-ui` из конфига сборщика (см. «Требования к окружению»).
+1. **Обновить окружение:** `vue@^3.5`, сборщик с поддержкой ESM (Vite с `@vitejs/plugin-vue` или webpack 5), Node ≥ 24 для сборки. Sass нужен только для SCSS-исходников (своя тема): рекомендуется `sass-embedded` (можно `sass`); с готовым CSS (`@amazingcat/cattr-ui/style.css`) Sass не ставится вовсе. С pnpm ≥ 10 Sass требует записи в `pnpm-workspace.yaml`, иначе `pnpm install` падает с `ERR_PNPM_IGNORED_BUILDS` (`@parcel/watcher`): для `sass-embedded` — `ignoredOptionalDependencies: [sass-embedded-all-unknown, sass-embedded-unknown-all]`, для `sass` — `allowBuilds: { '@parcel/watcher': false }` или `ignoredOptionalDependencies: ['@parcel/watcher']` (см. «Стили»). Убрать alias `at-ui` из конфига сборщика (см. «Требования к окружению»).
 2. **Обновить пакет:** `pnpm add @amazingcat/cattr-ui@^2.0.0`. Заменить импорты: `@amazingcat/cattr-ui/dist/locale/<lang>.js` → `@amazingcat/cattr-ui/locale/<lang>`, `at-ui/src/...` → `@amazingcat/cattr-ui/src/...`, `import { Button } from '@amazingcat/cattr-ui'` → `import { AtButton } from '@amazingcat/cattr-ui'`, `CattrUI.locale(...)`/`CattrUI.i18n(...)` → опции `app.use` или именованные `locale`/`i18n` (см. «Подключение»).
 3. **Подключить плагин:** `Vue.use(CattrUI, opts)` → `createApp(App).use(CattrUI, opts)`. Сервисы `$Modal`/`$Message`/`$Notify`/`$Loading` вызывать только после `app.use(CattrUI)`.
 4. **v-model:** у всех `<at-*>` ручные `:value` + `@input` заменить на `:model-value` + `@update:model-value`; `v-model="x"` оставить как есть. У `<at-input>`/`<at-input-number>` `@input` больше не событие компонента (см. «v-model», Input, InputNumber).
@@ -18,7 +18,7 @@
 7. **Таблица:** во всех колонках с `render` сигнатура `(h, params)` → `({ item, column, index })`, `h` импортировать из `vue`, VNode переписать в формат Vue 3. `params.index` теперь индекс строки, а не колонки (см. Table).
 8. **Сервисы:** `$Notify(...)` возвращает функцию закрытия, а не экземпляр (`n.handleClose()` → `close()`, `n.id` → `close.id`); у `$Message(...)` у функции закрытия появился `id`. `$Modal`: OK больше не вызывает `on-cancel`, Escape/крестик/маска дают `'cancel'`, `callback` и промис работают вместе, диалоги идут очередью. `$Loading`: высота полосы теперь задаётся `config({ width })`, дефолт 2px (прежний вид — `LoadingBar.config({ width: 4 })`). Подробности — «Сервисы».
 9. **i18n-хук:** `app.use(CattrUI, { i18n: (key, values) => i18n.global.te(key) ? i18n.global.t(key, values) : undefined })` для vue-i18n 11 (`legacy: false`) либо добавить ключи `at.*` в сообщения vue-i18n.
-10. **Стили:** `$var: …; @import '~@amazingcat/cattr-ui/src/stylesheet/src/index.scss'` → `@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' with (…)`; переменные/миксины в своих `.scss` подключать через `@use … as *`. Переименовать свои классы переходов `-enter`/`-leave` → `-enter-from`/`-leave-from` (см. «Стили»).
+10. **Стили:** без своей темы — `import '@amazingcat/cattr-ui/style.css'` (готовый CSS, Sass не нужен). С темой — `$var: …; @import '~@amazingcat/cattr-ui/src/stylesheet/src/index.scss'` → `@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' with (…)` (нужен `sass-embedded` или `sass`, см. п.1); переменные/миксины в своих `.scss` подключать через `@use … as *`. Переименовать свои классы переходов `-enter`/`-leave` → `-enter-from`/`-leave-from` (см. «Стили»).
 11. **Поведенческие изменения событий:** `on-change` у Select/Rate/Tabs/Textarea/RadioGroup (`radio-group-change`) больше не срабатывает на программную смену значения, `on-select` у Menu — один раз на клик, у Modal — по одному событию на действие. Если на это опирались — перейти на `watch` своей переменной `v-model`.
 12. **Прогнать поиск по проекту** и разобрать каждое совпадение:
 
@@ -308,7 +308,24 @@ grep -rnE "\.[a-z-]+-(enter|leave)\b[^-]" src
 - Классы переходов Vue 3: было `.x-enter` / `.x-leave` (Vue 2) → стало `.x-enter-from` / `.x-leave-from` для начального/конечного состояния (`-enter-active`, `-leave-active`, `-enter-to`, `-leave-to` без изменений).
   Анимации библиотеки (`fade`, `slide-up`, `move-up`, `notification-fade` в `animation.scss`) построены на `@keyframes` в `-enter-active`/`-leave-active` и Vue 2-имён не использовали — в `src/stylesheet` правок не потребовалось: modal/alert/loading-bar (`fade`), select/dropdown/submenu/tooltip/popover (`slide-up`), message (`move-up`), notification (`notification-fade`) анимируются как раньше (проверено по CSS и именам переходов).
   Что править: если в проекте есть свои стили на `.at-*-enter`, `.at-*-leave` или на `.fade-enter`/`.slide-up-enter` (или своих `<transition name>`), переименовать в `-enter-from`/`-leave-from`; иначе стартовое состояние перехода не применится и элемент появится без анимации.
-- Готовый CSS (`src/stylesheet/css/at.css`, `at.min.css`) собирается в репозитории командой `pnpm build:style` и в npm-пакет не входит (каталог `css/` в `src/stylesheet/.gitignore`) — потребитель подключает SCSS-исходники `src/stylesheet/src/index.scss`. Автопрефиксы: было `last 2 versions, ie > 8` → стало `browserslist` пакета стилей `last 2 versions, not dead`. Селекторы и значения не изменились; убраны устаревшие префиксы `-webkit-box-*`, `-ms-flex*`, `-webkit-transform`/`-webkit-transition`/`-webkit-animation` и т.п. Карты исходников теперь внешние и актуальные (`at.css.map`, `at.min.css.map`), а не base64 внутри CSS.
+- Готовый CSS входит в пакет: `import '@amazingcat/cattr-ui/style.css'` (`dist/css/at.css`) или `@amazingcat/cattr-ui/style.min.css` (`dist/css/at.min.css`), шрифты иконок — `dist/css/fonts/*` (в CSS ссылки `./fonts/…`, сборщик подхватывает их сам; путь `@amazingcat/cattr-ui/css/*` открыт в `exports`). Карт исходников в пакете нет. Тема по умолчанию; для своей темы — SCSS-исходники `src/stylesheet/src/index.scss` (ниже).
+  Что править: если тема не переопределяется — заменить импорт `…/src/stylesheet/src/index.scss` на `@amazingcat/cattr-ui/style.css` и убрать `sass` из devDependencies. Проверено на Vite 8 без Sass: CSS собирается, шрифты `feather.*` копируются в `assets/`.
+- Sass для SCSS-исходников: рекомендуется `sass-embedded` (нативный Dart Sass, Vite подхватывает его сам, CLI тоже `sass`; библиотека собирается им же). `sass` по-прежнему работает. С pnpm ≥ 10 оба варианта упираются в `@parcel/watcher` (optional-зависимость `sass` с install-скриптом → `ERR_PNPM_IGNORED_BUILDS`): у `sass-embedded` `sass` приходит через запасные пакеты `sass-embedded-all-unknown`/`sass-embedded-unknown-all` (для платформ без нативного бинарника), и pnpm подставляет его как optional peer Vite.
+  Что править (`pnpm-workspace.yaml` проекта):
+
+  ```yaml
+  # sass-embedded
+  ignoredOptionalDependencies:
+    - sass-embedded-all-unknown
+    - sass-embedded-unknown-all
+  # или sass
+  allowBuilds:
+    '@parcel/watcher': false # либо ignoredOptionalDependencies: ['@parcel/watcher']
+  ```
+
+  После правки удалить `pnpm-lock.yaml` или переустановить с `--no-frozen-lockfile` (проверено pnpm 12.15, Vite 8.3.5, `sass-embedded`/`sass` 1.106.1).
+
+- Готовый CSS собирается командой `pnpm build:style` (`src/stylesheet/css/`) и копируется в `dist/css` командой `pnpm build`. Автопрефиксы: было `last 2 versions, ie > 8` → стало `browserslist` пакета стилей `last 2 versions, not dead`. Селекторы и значения не изменились; убраны устаревшие префиксы `-webkit-box-*`, `-ms-flex*`, `-webkit-transform`/`-webkit-transition`/`-webkit-animation` и т.п. Карты исходников (`at.css.map`, `at.min.css.map`) теперь внешние, а не base64 внутри CSS; создаются `pnpm build:style` и в пакет не входят.
   Что править: ничего, если не нужна поддержка IE / старых WebKit; иначе прогнать CSS через свой autoprefixer со своим `browserslist`.
 - Исходники стилей (`src/stylesheet/src/**`) переведены с `@import` на модули Sass (`@use`/`@forward`, `math.div`, `color.mix`, `string.*`, `meta.*`); сборка и docs идут без `DEPRECATION WARNING`. `index.scss` делает `@forward` переменных (`variables/default.scss`, `variables/timing-function.scss` — все с `!default`) и миксинов, затем `@use` `core/` и `components/`. CSS на выходе прежний (селекторы и значения совпадают).
   Было: переменные темы переопределялись глобально перед `@import`:
@@ -318,7 +335,7 @@ grep -rnE "\.[a-z-]+-(enter|leave)\b[^-]" src
   @import '~@amazingcat/cattr-ui/src/stylesheet/src/index.scss';
   ```
 
-  Стало: конфигурация модуля при загрузке (проверено `sass` 1.106.1):
+  Стало: конфигурация модуля при загрузке (проверено `sass` и `sass-embedded` 1.106.1):
 
   ```scss
   @use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' as cattr with (
@@ -336,7 +353,7 @@ grep -rnE "\.[a-z-]+-(enter|leave)\b[^-]" src
 
 ### Документация и разработка
 
-- Сборка: было webpack 3 (`build:component`, `build:locale`, `build:doc`, `prepublish`) → стало `pnpm build` (Vite library mode, ESM, `vue` external). Скрипты `build:component`, `build:locale`, `build:doc`, `prepublish` удалены; `build:package` оставлен алиасом `pnpm build` для CI. Стили: `pnpm build:style`. Требуется Node ≥ 24.
+- Сборка: было webpack 3 (`build:component`, `build:locale`, `build:doc`, `prepublish`) → стало `pnpm build` (Vite library mode, ESM, `vue` external; затем `pnpm build:style` и копирование готового CSS в `dist/css`). Скрипты `build:component`, `build:locale`, `build:doc`, `prepublish` удалены; `build:package` оставлен алиасом `pnpm build` для CI. Стили: `pnpm build:style`. Требуется Node ≥ 24.
 - Тесты: `pnpm test` (Vitest + `@vue/test-utils` 2 + happy-dom), `pnpm test:watch`.
 - Линтер: ESLint 10 flat config (`eslint.config.js`) + eslint-plugin-vue 10 + Prettier 3 (`.prettierrc`). Команды `pnpm lint`, `pnpm lint:fix`, `pnpm format`, `pnpm format:check`. `.eslintrc.js` и `eslint-config-o2team` удалены.
 - CI (GitHub Actions): на pull request и push в `main`/`feat/vue-3` — `install --frozen-lockfile`, `lint --max-warnings 0`, `format:check`, `test`, `build`, `build:docs`; на push в `main` — деплой документации на GitHub Pages; на создание release — публикация в npm.
