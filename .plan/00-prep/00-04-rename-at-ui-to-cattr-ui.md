@@ -49,5 +49,6 @@ scripts/node.sh pnpm --filter cattr-ui-style build
 Имя пакета в примерах; имя workspace-пакета стилей (внутреннее).
 
 ## Найдено по ходу
+- (из 00-02) `src/stylesheet/src/components/form.scss` и закомментированный `@import './form.scss'` в `index.scss` остались после удаления Form. Стили вне scope 00-04; решить в 50-01 (удалить, если `.at-form*` нигде не используется).
 
 ## Заметки агента

@@ -18,6 +18,7 @@ touches: [src/components/input-number/**]
 - файлы: input-number.vue 
 
 ## Специфика
+- Вызовы `this.dispatch('AtFormItem', 'on-form-item-*', …)` остались после удаления Form (00-02) и сейчас no-op. Удалить вместе с emitter: события `on-form-item-blur/change` наружу не эмитить.
 - v-model; сохранить фикс из коммита `9-input-number-does-not-emit-changes-on-edge-value` (эмит на граничных значениях) — есть ли тест? написать.
 
 ## Критерии приёмки

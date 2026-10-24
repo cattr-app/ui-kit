@@ -47,6 +47,7 @@ ls dist dist/locale
 ESM-only, `exports`, peer `vue ^3.5`, пути локалей, удаление UMD.
 
 ## Найдено по ходу
+- (из 00-02/00-03) `pnpm install --frozen-lockfile` на текущем lockfile падает: postinstall `phantomjs-prebuilt@2.1.16` требует `bzip2`, которого нет в `node:24-slim`. Уходит вместе с удалением старых devDependencies в этой задаче; отдельно чинить не нужно. До этого baseline-сборку проверять с `--ignore-scripts`.
 
 ## Заметки агента
 Ожидаемо: после этой задачи `src` не работает в рантайме Vue 3 (Vue.extend, $children и т.д.). Задача только про сборку.

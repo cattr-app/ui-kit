@@ -19,6 +19,7 @@ touches: [src/components/input/**]
 - файлы: input.vue 
 
 ## Специфика
+- Вызовы `this.dispatch('AtFormItem', 'on-form-item-*', …)` остались после удаления Form (00-02) и сейчас no-op. Удалить вместе с emitter: события `on-form-item-blur/change` наружу не эмитить.
 - v-model; `$slots.prepend/append` в шаблоне. У Input корень `div.at-input`, а `@keyup.enter.native` потребителей (modal, pagination) должен превратиться в `@keyup.enter` на внутреннем `<input>`: задать `inheritAttrs: false`, на `<input>` — `v-bind="$attrs"`, на корне — только `class/style` через `useAttrs` или прокинуть class вручную. Записать в changelog: listeners теперь идут на нативный input.
 
 ## Критерии приёмки
