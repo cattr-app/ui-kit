@@ -1,7 +1,7 @@
 ---
 id: 30-w1-switch
 title: Switch → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: haiku
@@ -36,4 +36,11 @@ scripts/node.sh pnpm build
 
 ## Найдено по ходу
 
+- Исходный компонент не эмитил `input` вообще (только `change`), поэтому `emitter`/`input` в коде не было; добавлен `update:modelValue` с `emits`.
+
 ## Заметки агента
+- `value` → `modelValue`, добавлен `emits: ['update:modelValue', 'change']`, `change` сохранён с тем же аргументом.
+- `watch: { modelValue }` синхронизирует внутренний `checkStatus`; клик без `v-model` по-прежнему переключает визуально (поведение 1.x сохранено, но расходится с prop, если родитель не обновляет modelValue).
+- Smoke-тест `test/components/switch.spec.js`: 4 `it` (класс по modelValue, клик → инверсия, синхронизация с prop, disabled не эмитит).
+- Changelog: запись «Switch» в «По компонентам» (prop `value` → `modelValue`, новое событие `update:modelValue`).
+- Коммит футер `Co-Authored-By: Claude Fable 5.1` взят из задачи как указано; фактическая модель агента — Haiku 5.5.

@@ -21,7 +21,7 @@
 export default {
   name: 'AtSwitch',
   props: {
-    value: {
+    modelValue: {
       type: Boolean,
       default: false,
     },
@@ -31,16 +31,23 @@ export default {
     },
     size: String,
   },
+  emits: ['update:modelValue', 'change'],
   data() {
     return {
-      checkStatus: this.value,
+      checkStatus: this.modelValue,
     }
+  },
+  watch: {
+    modelValue(val) {
+      this.checkStatus = val
+    },
   },
   methods: {
     toggleSwitch() {
       if (this.disabled) return
 
       this.checkStatus = !this.checkStatus
+      this.$emit('update:modelValue', this.checkStatus)
       this.$emit('change', this.checkStatus)
     },
   },
