@@ -70,6 +70,13 @@
   `@input` на `<at-input>` больше не событие компонента: он вешается на нативный `<input>` и получает `Event`, а не строку — использовать `@update:model-value` или `@change`.
 - Удалены внутренние вызовы `dispatch('AtFormItem', 'on-form-item-blur/change')` (Form удалён), наружу эти события не эмитились и не эмитятся.
 
+### Button, ButtonGroup
+
+- Клик: было `<at-button @click.native="fn">` (или `@click` на собственный `$emit('click')`) → стало `<at-button @click="fn">`. `AtButton` больше не эмитит свой `click`: слушатель потребителя падает на корневой `<button>` через `$attrs` и вызывается ровно один раз с нативным `MouseEvent`. Что править: убрать `.native` у всех `@click`/`@mouseenter`/… на `at-button`.
+- `disabled` — нативный атрибут, клик не доходит до слушателя (как в 1.x). `loading` клик **не** блокирует (как в 1.x) — если нужно, добавлять `:disabled="loading"`.
+- `size`/`gap` группы: было `$parent.size`/`$parent.gap` (работало только для прямого потомка `AtButtonGroup` и случайно подхватывало `size` любого другого родителя) → стало provide/inject из `AtButtonGroup`: кнопка получает `at-btn--<size>` и `margin-right: <gap>px` на любой глубине внутри группы, реактивно; вне группы — ничего. Что править: ничего, если кнопки лежат в `AtButtonGroup`.
+- Атрибут `style` потребителя сливается со стилем группы обычным fallthrough Vue 3 (без изменений для потребителя).
+
 ### Radio, RadioGroup, RadioButton
 
 - v-model: prop `modelValue` + `update:modelValue` вместо `value` + `input` (у `AtRadioGroup` и одиночного `AtRadio`). `v-model` в шаблонах работает как раньше.

@@ -1,7 +1,7 @@
 ---
 id: 30-w1-button
 title: Button, ButtonGroup → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -36,8 +36,14 @@ scripts/node.sh pnpm build
 
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
+Записано: «Button, ButtonGroup» — `@click.native` → `@click`, size/gap через provide/inject, loading не блокирует клик.
 
 ## Найдено по ходу
 - (из 20-01) `button.vue` `styleList` читает `this.style` (не prop) → `[Vue warn]: Property "style" was accessed during render` в `test/helpers/mount.spec.js`; в Vue 3 `style` — fallthrough attr (`this.$attrs.style`).
 
 ## Заметки агента
+- `ButtonGroupContext` (`button/src/context.js`): группа отдаёт `reactive({ size, gap })`, Button `inject(null)`; `$parent` убран.
+- В Vue 3 `$emit('click')` без `emits` дублировал вызов (fallthrough `onClick` на `<button>` + emit). Собственный эмит удалён, `emits: []`: `@click` потребителя вызывается один раз (покрыто тестом).
+- `styleList` больше не читает несуществующий `this.style` (Vue warn устранён); вне группы стиль `null` (раньше было `marginRight: "undefinedpx"`, браузер игнорировал).
+- `loading` клик не блокировал и в 1.x — поведение сохранено, отмечено в changelog. `beforeDestroy`/таймеров нет — `beforeUnmount` не нужен.
+- Smoke-тест `test/components/button.spec.js` (5 `it`), `pnpm test` без Vue warn.

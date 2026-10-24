@@ -5,6 +5,9 @@
 </template>
 
 <script>
+import { reactive, toRef } from 'vue'
+import { ButtonGroupContext } from './context'
+
 export default {
   name: 'AtButtonGroup',
   props: {
@@ -13,6 +16,14 @@ export default {
       type: Number,
       default: -1,
     },
+  },
+  setup(props) {
+    ButtonGroupContext.provide(
+      reactive({
+        size: toRef(props, 'size'),
+        gap: toRef(props, 'gap'),
+      }),
+    )
   },
 }
 </script>

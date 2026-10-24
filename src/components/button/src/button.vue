@@ -4,14 +4,13 @@
     :class="[
       type ? `at-btn--${type}` : '',
       size ? `at-btn--${size}` : '',
-      $parent && $parent.size ? `at-btn--${$parent.size}` : '',
+      group && group.size ? `at-btn--${group.size}` : '',
       hollow ? `at-btn--${type}--hollow` : '',
       circle && !$slots.default ? 'at-btn--circle' : '',
     ]"
     :style="styleList"
     :disabled="disabled"
     :type="nativeType"
-    @click="handleClick"
   >
     <i v-if="loading" class="at-btn__loading icon icon-loader"></i>
     <i v-if="icon" class="at-btn__icon icon" :class="icon"></i>
@@ -20,6 +19,8 @@
 </template>
 
 <script>
+import { ButtonGroupContext } from './context'
+
 export default {
   name: 'AtButton',
   props: {
@@ -50,22 +51,15 @@ export default {
       default: false,
     },
   },
-  computed: {
-    styleList() {
-      let userStyle = {}
-
-      if (this.style) {
-        userStyle = this.style
-      }
-
-      return Object.assign(userStyle, {
-        marginRight: `${this.$parent.gap}px`,
-      })
-    },
+  // No own events: consumer listeners (`@click`) fall through to the root <button> via $attrs.
+  emits: [],
+  setup() {
+    return { group: ButtonGroupContext.inject(null) }
   },
-  methods: {
-    handleClick(evt) {
-      this.$emit('click', evt)
+  computed: {
+    // The consumer's `style` attr is merged with this by Vue's fallthrough.
+    styleList() {
+      return this.group ? { marginRight: `${this.group.gap}px` } : null
     },
   },
 }
