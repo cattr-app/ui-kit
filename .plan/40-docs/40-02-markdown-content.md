@@ -39,5 +39,7 @@ scripts/node.sh pnpm build:docs
 нет (документация).
 
 ## Найдено по ходу
+- (из 00-04) `installation.md` и `introduction.md` (en/zh) ссылаются на UMD `dist/at.min.js` через CDN и на пакет стилей `cattr-ui-style`, который приватный. Переписать на ESM-импорт и `@amazingcat/cattr-ui/src/stylesheet/src/index.scss`.
+- (из 00-04) В `docs/components/header.vue` используются `docs/assets/logo-at*.svg|png` — логотипа Cattr в репозитории нет. Либо добавить логотип Cattr (взять из фронтенда), либо оставить текстовый заголовок.
 
 ## Заметки агента

@@ -60,5 +60,6 @@ scripts/node.sh pnpm build
 Команды lint/format.
 
 ## Найдено по ходу
+- (из 00-04) `src/stylesheet/.eslintrc.js` уже удалён; корневой `.eslintrc.js` extends `o2team` и `eslint-config-o2team` остаётся в devDependencies корня и `src/stylesheet/package.json` — удалить обе записи здесь.
 
 ## Заметки агента
