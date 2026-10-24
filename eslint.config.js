@@ -5,7 +5,7 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'src/stylesheet/css/**', '.plan/**'],
+    ignores: ['dist/**', 'dist-docs/**', 'node_modules/**', 'src/stylesheet/css/**', '.plan/**'],
   },
   js.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
@@ -24,7 +24,13 @@ export default [
     },
   },
   {
-    files: ['vite.config.js', 'vitest.config.js', 'eslint.config.js', 'scripts/**/*.js'],
+    files: [
+      'vite.config.js',
+      'vite.docs.config.js',
+      'vitest.config.js',
+      'eslint.config.js',
+      'scripts/**/*.js',
+    ],
     languageOptions: {
       globals: {
         ...globals.node,

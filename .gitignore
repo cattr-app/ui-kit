@@ -5,6 +5,7 @@ test/unit/coverage
 test/e2e/reports
 .vscode
 dist/
+dist-docs/
 .vite/
 .history
 .idea
