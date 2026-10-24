@@ -1,16 +1,8 @@
 import { nextTick } from 'vue'
 import Modal from './modal.vue'
+import { mountService } from '../../../utils/mount-service.js'
 
-// The Vue 2 constructor was dropped in 20-01 so that importing the library does not fail.
-// The service itself is migrated to createVNode/render in 20-03 / 30-w3-*.
-// eslint-disable-next-line no-unused-vars
-const createInstance = (component, options) => {
-  throw new Error('Dialog is not migrated to Vue 3 yet (plan 20-03)')
-}
-
-let currentModal
-let instance
-let modalQueue = []
+const modalProps = Object.keys(Modal.props)
 
 const defaults = {
   title: '',
@@ -18,86 +10,74 @@ const defaults = {
   type: '',
 }
 
-const defultCallback = action => {
-  if (currentModal) {
-    const callback = currentModal.callback
-    if (typeof callback === 'function') {
-      if (instance.showInput) {
-        callback(instance.inputValue, action)
-      } else {
-        callback(action)
-      }
-    }
+// Dialogs are shown one at a time: the next one opens after the current one has closed.
+let modalQueue = []
+let current = null
 
-    if (currentModal.resolve) {
-      const type = currentModal.options.type
-      if (type === 'confirm' || type === 'prompt') {
-        if (action === 'confirm') {
-          if (instance.showInput) {
-            currentModal.resolve({ value: instance.inputValue, action })
-          } else {
-            currentModal.resolve(action)
-          }
-        } else if (action === 'cancel' && currentModal.reject) {
-          currentModal.reject(action)
-        }
-      } else {
-        currentModal.resolve(action)
-      }
-    }
+const noop = () => {}
+
+/** Options → AtModal props; unknown keys (`callback`…) are dropped. */
+const toProps = options => {
+  const props = {}
+  for (const key of modalProps) {
+    if (options[key] !== undefined) props[key] = options[key]
   }
+  return props
 }
 
-const initInstance = () => {
-  instance = createInstance(Modal, {
-    el: document.createElement('div'),
-  })
+const settle = (item, action) => {
+  if (item.action) return
+  item.action = action
 
-  instance.callback = defultCallback
+  const { options, callback, resolve, reject, service } = item
+  const withInput = !!options.showInput
+  const value = withInput ? service.vm.currentInputValue : undefined
+
+  if (typeof callback === 'function') {
+    if (withInput) {
+      callback(value, action)
+    } else {
+      callback(action)
+    }
+  }
+
+  if (options.type === 'confirm' || options.type === 'prompt') {
+    if (action === 'confirm') {
+      resolve(withInput ? { value, action } : action)
+    } else {
+      reject(action)
+    }
+  } else {
+    resolve(action)
+  }
 }
 
 const showNextModal = () => {
-  /**
-   * TODO: 给每个框添加 fid ，避免不停的新建对话框
-   */
-  // if (!instance) {
-  //   initInstance()
-  // }
-  initInstance()
-  instance.action = ''
+  if (current || !modalQueue.length) return
 
-  if (!instance.visible && modalQueue.length) {
-    currentModal = modalQueue.shift()
+  const item = modalQueue.shift()
+  current = item
 
-    const options = currentModal.options
-    for (const prop in options) {
-      if (Object.prototype.hasOwnProperty.call(options, prop)) {
-        instance[prop] = options[prop]
-      }
-    }
-
-    if (typeof options.callback !== 'function') {
-      instance.callback = defultCallback
-    }
-
-    const oldCallback = instance.callback
-    instance.callback = (action, instance) => {
-      oldCallback(action, instance)
+  const service = mountService(Modal, {
+    ...toProps(item.options),
+    modelValue: false,
+    'onOn-confirm': () => settle(item, 'confirm'),
+    'onOn-cancel': () => settle(item, 'cancel'),
+    'onUpdate:modelValue': value => service.update({ modelValue: value }),
+    onAfterLeave: () => {
+      service.unmount()
+      if (current === item) current = null
       showNextModal()
-    }
-
-    // ['maskClosable', 'showCancelButton', 'showClose', 'showCancelButton'].forEach(prop => {
-    //   if (typeof instance[prop] === 'undefined') {
-    //     instance[prop] = true
-    //   }
-    // })
-
-    document.body.appendChild(instance.$el)
-
-    nextTick(() => {
-      instance.visible = true
-    })
+    },
+  })
+  if (!service) {
+    current = null
+    return
   }
+  item.service = service
+
+  // Opened after mount so the `fade` enter transition plays.
+  nextTick(() => service.update({ modelValue: true }))
 }
 
 const Dialog = (options, callback) => {
@@ -106,42 +86,45 @@ const Dialog = (options, callback) => {
     callback = options.callback
   }
 
-  if (typeof Promise !== 'undefined') {
-    return new Promise((resolve, reject) => {
-      modalQueue.push({
-        options: Object.assign({}, defaults, options),
-        callback,
-        resolve,
-        reject,
-      })
-
-      showNextModal()
+  const promise = new Promise((resolve, reject) => {
+    modalQueue.push({
+      options: Object.assign({}, defaults, options),
+      callback,
+      resolve,
+      reject,
     })
-  }
 
-  modalQueue.push({
-    options: Object.assign({}, defaults, options),
-    callback,
+    showNextModal()
   })
+  // Callback-style callers usually ignore the promise: no unhandled rejection on cancel.
+  if (typeof callback === 'function') promise.catch(noop)
 
-  showNextModal()
+  return promise
 }
 
+/** Hide the current dialog and drop the queued ones (their promises stay pending, as in 1.x). */
 Dialog.close = () => {
-  instance.visible = false
   modalQueue = []
-  currentModal = null
+  if (current) {
+    current.action = current.action || 'close'
+    current.service.update({ modelValue: false })
+  }
+}
+
+const normalizeArgs = (content, title, options) => {
+  if (typeof content === 'object' && content !== null) {
+    options = content
+    content = options.content
+    title = options.title || ''
+  }
+  return { content, title, options }
 }
 
 /**
  * Such like window.alert
  */
-Dialog.alert = (content, title, options) => {
-  if (typeof content === 'object') {
-    options = content
-    content = options.content
-    title = options.title || ''
-  }
+Dialog.alert = (...args) => {
+  const { content, title, options } = normalizeArgs(...args)
 
   return Dialog(
     Object.assign(
@@ -160,12 +143,8 @@ Dialog.alert = (content, title, options) => {
 /**
  * Such like window.confirm
  */
-Dialog.confirm = (content, title, options) => {
-  if (typeof content === 'object') {
-    options = content
-    content = options.content
-    title = options.title || ''
-  }
+Dialog.confirm = (...args) => {
+  const { content, title, options } = normalizeArgs(...args)
 
   return Dialog(
     Object.assign(
@@ -182,12 +161,8 @@ Dialog.confirm = (content, title, options) => {
 /**
  * Such like window.prompt
  */
-Dialog.prompt = (content, title, options) => {
-  if (typeof content === 'object') {
-    options = content
-    content = options.content
-    title = options.title || ''
-  }
+Dialog.prompt = (...args) => {
+  const { content, title, options } = normalizeArgs(...args)
 
   return Dialog(
     Object.assign(
@@ -207,13 +182,13 @@ Dialog.prompt = (content, title, options) => {
  */
 function createStatusDialog(type) {
   const statusTitles = {
-    info: '信息',
-    success: '成功',
-    warning: '警告',
-    error: '错误',
+    info: 'Info',
+    success: 'Success',
+    warning: 'Warning',
+    error: 'Error',
   }
   return (content, title, options) => {
-    if (typeof content === 'object') {
+    if (typeof content === 'object' && content !== null) {
       options = content
       content = options.content
       title = options.title || statusTitles[type]
@@ -239,5 +214,9 @@ Dialog.info = createStatusDialog('info')
 Dialog.success = createStatusDialog('success')
 Dialog.warning = createStatusDialog('warning')
 Dialog.error = createStatusDialog('error')
+
+Dialog.install = app => {
+  app.config.globalProperties.$Modal = Dialog
+}
 
 export default Dialog

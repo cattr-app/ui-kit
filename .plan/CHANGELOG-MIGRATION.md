@@ -204,6 +204,13 @@
   Было: `icon` показывался, только если `type` не из `success/error/warning/info` (иконка типа побеждала, без `type` иконки не было вовсе). Стало: `icon` имеет приоритет над иконкой типа и показывается и без `type` (как у `Message`). Тип по умолчанию по-прежнему пустой (без иконки), а не `info`, как написано в документации 1.x.
   `title`/`message` выводятся текстом (`{{ }}`, в 1.x `v-text`), HTML не интерпретируется — без изменений. Объект `options` не мутируется; в `onClose(vm)` приходит публичный экземпляр компонента.
 
+- `Dialog` (`$Modal`): методы и сигнатуры прежние — `$Modal.alert/confirm/prompt/info/success/warning/error(content, title, options)` или `(options)`, `$Modal.close()`, возвращают `Promise`.
+  `confirm`/`prompt`: resolve на OK (`'confirm'`; у `prompt` — `{ value, action: 'confirm' }`), reject `'cancel'` на отмену; `alert`/`info`/`success`/`warning`/`error`: resolve при любом закрытии (`'confirm'`/`'cancel'`). Импорт: `import { Dialog } from '@amazingcat/cattr-ui'`, отдельная установка `app.use(Dialog)` (кладёт `$Modal`).
+  Было: работало после импорта. Стало: сервис рендерится в контексте приложения — вызывать **после** `app.use(CattrUI)`, иначе `<at-button>`/`<at-input>` и тексты локали внутри диалога не отрендерятся.
+  Титулы статусных диалогов по умолчанию (объектная форма без `title`): были китайские `信息/成功/警告/错误` → стали английские `Info/Success/Warning/Error` (ключей `at.modal.info…` в локалях нет; для перевода передавать `title`). В строковой форме `$Modal.info('text')` заголовка по-прежнему нет.
+  Поведенческие исправления: 1) очередь — было: каждый вызов сразу открывал новый диалог поверх предыдущего, а промис/коллбек первого мог получить ответ второго; стало: диалоги показываются по одному, следующий — после анимации закрытия текущего. 2) Escape, крестик и клик по маске считаются `'cancel'` (было: промис и коллбек не вызывались вовсе и очередь «зависала»). 3) `callback` из `options` (или вторым аргументом `Dialog(options, cb)`) вызывается как `cb(action)`, для `prompt` — `cb(value, action)`, и **вместе** с промисом (было: при `options.callback` промис не разрешался, коллбек получал `(action, instance)`); при наличии `callback` отклонение промиса не даёт `unhandledrejection`. 4) `$Modal.close()` закрывает текущий и очищает очередь; промисы закрытых так диалогов, как и в 1.x, не разрешаются.
+  Опции передаются в `AtModal` как props (`title`, `content`, `type`, `okText`, `cancelText`, `maskClosable`, `showClose`, `showCancelButton`, `showConfirmButton`, `showInput`, `inputValue`, `inputPlaceholder`, `width`, `styles`…); неизвестные ключи игнорируются. Объект `options` не мутируется.
+
 (заполняется задачами 30-w3-modal, 30-w3-notification, 30-w3-loading-bar)
 
 ## Документация и разработка

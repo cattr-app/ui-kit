@@ -1,7 +1,7 @@
 ---
 id: 30-w3-modal
 title: Modal + сервис Dialog ($Modal) → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-03, 20-04]
 parallel: true
 model: opus
@@ -45,6 +45,16 @@ scripts/node.sh pnpm build
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
+Записано: «По компонентам» → Modal (on-confirm без лишнего on-cancel, Escape/`closeOnPressEsc`, новые props `showCancelButton`/`showConfirmButton`/`inputValue`/`inputPlaceholder`, событие `after-leave`); «Сервисы» → `Dialog` (`$Modal`): промис-семантика, вызов после `app.use`, английские титулы, исправления очереди/Escape/callback.
+
 ## Найдено по ходу
 
 ## Заметки агента
+
+- Сервис: `mountService(Modal, props)` на каждый диалог, `visible` через `update({ modelValue })`, действие — listener-props `onOn-confirm`/`onOn-cancel`, размонтирование по новому событию `after-leave` (не `destroy`, как в эталоне Message: Modal публичный компонент, а имя `destroy` вводило бы в заблуждение — событие на каждое закрытие).
+- В 1.x очередь фактически не работала (новый instance на каждый вызов, `!instance.visible` всегда true), Escape/маска не разрешали промис, `options.callback` отключал промис, OK эмитил ещё и `on-cancel`, слушатель keydown не снимался (`beforeDestory`). Всё исправлено, записано в changelog.
+- `Dialog.close()` оставлен 1:1: промис текущего диалога не разрешается (иначе ломается код, ожидающий «тихого» закрытия). Возможно, стоит пересмотреть на этапе 40/60.
+- Титулы `info/success/warning/error` — английские строки (ключей `at.modal.<type>` в локалях нет, локаль не трогал). Кандидат в 60-backlog: добавить ключи в локали.
+- Фокус prompt-поля через `$refs.input.$el.querySelector('input')`, Input не менялся.
+- Пометка `[TODO 20-03, 30-w3-*]` в «Сервисах» оставлена: notification/loading-bar в этом worktree ещё не закрыты.
+- docs/markdown/en/modal.md (этап 40): `value` → `modelValue`, `slot="header"` → `#header`, `@click.native` нет, но пример prompt содержит невалидный JS (`methods: { this.$Modal.prompt(...) }`).
