@@ -1,19 +1,19 @@
 <template>
   <transition name="fade">
     <div
+      v-show="isShow"
       class="at-alert"
       :class="[type ? `at-alert--${type}` : '', description ? 'at-alert--with-description' : '']"
-      v-show="isShow"
     >
-      <i class="icon at-alert__icon" :class="[iconClass]" v-if="showIcon"></i>
+      <i v-if="showIcon" class="icon at-alert__icon" :class="[iconClass]"></i>
       <div class="at-alert__content">
-        <p class="at-alert__message" v-if="message" v-text="message"></p>
-        <p class="at-alert__description" v-if="description" v-text="description"></p>
+        <p v-if="message" class="at-alert__message" v-text="message"></p>
+        <p v-if="description" class="at-alert__description" v-text="description"></p>
       </div>
       <i
+        v-show="closable || closeText"
         class="icon at-alert__close"
         :class="[closeText ? 'at-alert__close--custom' : 'icon-x']"
-        v-show="closable || closeText"
         @click="handleClose"
         v-text="closeText"
       ></i>

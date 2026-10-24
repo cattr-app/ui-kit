@@ -38,6 +38,9 @@ export default {
       this.setActive()
     },
   },
+  mounted() {
+    this.setActive()
+  },
   methods: {
     setActive() {
       const activeKey = this.getActiveKey()
@@ -97,9 +100,6 @@ export default {
     inputValueCheck(val) {
       return typeof val === 'number' ? `${val}` : val
     },
-  },
-  mounted() {
-    this.setActive()
   },
 }
 </script>

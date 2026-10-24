@@ -9,13 +9,13 @@ import Emitter from '../../../mixins/emitter'
 
 export default {
   name: 'AtRadioGroup',
+  mixins: [Emitter],
   props: {
     value: [String, Number],
     size: String,
     fill: String,
     textColor: String,
   },
-  mixins: [Emitter],
   watch: {
     value(value) {
       this.$emit('radio-group-change', value)

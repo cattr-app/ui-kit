@@ -40,6 +40,20 @@ export default {
       steps: [],
     }
   },
+  watch: {
+    current() {
+      this.updateStepsStatus()
+    },
+    steps(steps) {
+      steps.forEach((step, index) => {
+        step.index = index
+      })
+      this.updateStepsStatus()
+    },
+  },
+  mounted() {
+    this.updateStepsStatus()
+  },
   methods: {
     updateStepsStatus() {
       const current = this.current
@@ -66,20 +80,6 @@ export default {
         }
       })
     },
-  },
-  watch: {
-    current() {
-      this.updateStepsStatus()
-    },
-    steps(steps) {
-      steps.forEach((step, index) => {
-        step.index = index
-      })
-      this.updateStepsStatus()
-    },
-  },
-  mounted() {
-    this.updateStepsStatus()
   },
 }
 </script>

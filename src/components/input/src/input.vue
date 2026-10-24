@@ -15,9 +15,9 @@
   >
     <!-- S prepend element -->
     <div
+      v-if="$slots.prepend"
       class="at-input-group__prepend"
       :class="{ 'at-input-group--button': prependButton }"
-      v-if="$slots.prepend"
     >
       <slot name="prepend"></slot>
     </div>
@@ -44,14 +44,14 @@
     <!-- E input -->
 
     <!-- S icon -->
-    <i class="at-input__icon icon" :class="iconClass" v-if="icon"></i>
+    <i v-if="icon" class="at-input__icon icon" :class="iconClass"></i>
     <!-- E icon -->
 
     <!-- S append element -->
     <div
+      v-if="$slots.append"
       class="at-input-group__append"
       :class="{ 'at-input-group--button': appendButton }"
-      v-if="$slots.append"
     >
       <slot name="append"></slot>
     </div>
@@ -101,16 +101,16 @@ export default {
     max: Number,
     min: Number,
   },
+  data() {
+    return {
+      currentValue: this.value,
+    }
+  },
   computed: {
     iconClass() {
       const name = this.icon || this.status
       return name ? `icon-${name}` : ''
     },
-  },
-  data() {
-    return {
-      currentValue: this.value,
-    }
   },
   watch: {
     value(val) {

@@ -1,31 +1,31 @@
 <template>
   <li
+    ref="trigger"
     class="at-menu__submenu"
     :class="[
-      this.active ? 'at-menu__submenu--active' : '',
-      this.isOpen ? 'at-menu__submenu--opened' : '',
-      this.disabled ? 'at-menu__submenu--disabled' : '',
+      active ? 'at-menu__submenu--active' : '',
+      isOpen ? 'at-menu__submenu--opened' : '',
+      disabled ? 'at-menu__submenu--disabled' : '',
     ]"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
-    ref="trigger"
   >
-    <div class="at-menu__submenu-title" ref="reference" @click.stop="handleClick">
+    <div ref="reference" class="at-menu__submenu-title" @click.stop="handleClick">
       <slot name="title"></slot>
       <i class="icon icon-chevron-down at-menu__submenu-icon"></i>
     </div>
     <collapse-transition v-if="mode === 'inline'">
-      <ul class="at-menu" v-show="isOpen">
+      <ul v-show="isOpen" class="at-menu">
         <slot></slot>
       </ul>
     </collapse-transition>
-    <transition name="slide-up" v-else>
+    <transition v-else name="slide-up">
       <div
+        v-show="isOpen"
+        ref="popover"
         class="at-dropdown__popover"
         placement="placementValue"
         :style="dropStyle"
-        ref="popover"
-        v-show="isOpen"
       >
         <ul class="at-dropdown-menu">
           <slot></slot>
@@ -96,6 +96,17 @@ export default {
       }
     },
   },
+  mounted() {
+    this.$on('on-menu-item-select', name => {
+      if (this.mode !== 'inline') {
+        this.isOpen = false
+      }
+      this.dispatch('AtMenu', 'on-menu-item-select', name)
+    })
+    this.$on('on-update-active', status => {
+      this.active = status
+    })
+  },
   methods: {
     resetDropdownPosition() {
       const popover = this.$refs.popover
@@ -147,17 +158,6 @@ export default {
         this.isOpen = false
       }, 200)
     },
-  },
-  mounted() {
-    this.$on('on-menu-item-select', name => {
-      if (this.mode !== 'inline') {
-        this.isOpen = false
-      }
-      this.dispatch('AtMenu', 'on-menu-item-select', name)
-    })
-    this.$on('on-update-active', status => {
-      this.active = status
-    })
   },
 }
 </script>

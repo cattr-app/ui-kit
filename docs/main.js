@@ -14,8 +14,8 @@ import 'at-ui-style'
 Vue.use(VueI18n)
 Vue.use(AtUI)
 Vue.use(VueClipboard)
-Vue.component('demo-box', DemoBox)
-Vue.component('icon-list', IconList)
+Vue.component('DemoBox', DemoBox)
+Vue.component('IconList', IconList)
 
 const matchArr = window.location.href.match(/#\/(zh|en)/)
 const urlLang = matchArr && matchArr[1]
@@ -46,7 +46,6 @@ AtUI.i18n((key, value) => i18n.t(key, value))
 Vue.config.debug = process.env.NODE_ENV !== 'production'
 
 new Vue({
-  // eslint-disable-line
   el: '#app',
   router,
   i18n,

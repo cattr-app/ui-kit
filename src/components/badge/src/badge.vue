@@ -5,12 +5,12 @@
   >
     <slot></slot>
     <sup
+      v-show="show"
       class="at-badge__content"
       :class="{
         'at-badge--corner': $slots.default,
         'at-badge--dot': dot,
       }"
-      v-show="show"
       v-text="content"
     ></sup>
   </span>

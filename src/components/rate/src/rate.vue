@@ -8,7 +8,7 @@
       @mouseover="overRateHandle"
       @mouseleave="leaveRateHandle"
     >
-      <li class="at-rate__item" :class="clacClass(index)" v-for="index in count" :key="index">
+      <li v-for="index in count" :key="index" class="at-rate__item" :class="clacClass(index)">
         <i
           :class="['icon', 'at-rate__icon', icon]"
           @mousemove="moveStarHandle(index, $event)"
@@ -18,7 +18,7 @@
         </i>
       </li>
     </ul>
-    <div class="at-rate__text" v-if="showText">
+    <div v-if="showText" class="at-rate__text">
       <slot>{{ currentValue }}</slot>
     </div>
   </div>

@@ -13,22 +13,6 @@
   </div>
 </template>
 
-<style lang="scss">
-@import '../assets/style/docs.scss';
-</style>
-
-<style lang="scss" scoped>
-.wrapper {
-  background-color: #f8faff;
-}
-.page-header {
-  position: relative !important;
-}
-.footer {
-  box-shadow: 0 4px 30px 0 rgba(223, 225, 230, 0.8);
-}
-</style>
-
 <script>
 import MHeader from '../components/header'
 import MFooter from '../components/footer'
@@ -53,3 +37,19 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+@import '../assets/style/docs.scss';
+</style>
+
+<style lang="scss" scoped>
+.wrapper {
+  background-color: #f8faff;
+}
+.page-header {
+  position: relative !important;
+}
+.footer {
+  box-shadow: 0 4px 30px 0 rgba(223, 225, 230, 0.8);
+}
+</style>

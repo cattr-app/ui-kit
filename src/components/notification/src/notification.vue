@@ -1,6 +1,7 @@
 <template>
   <transition name="notification-fade" @after-leave="doDestory">
     <div
+      v-show="isShow"
       class="at-notification"
       :class="{
         [`at-notification--${type}`]: type,
@@ -8,17 +9,16 @@
         'at-notification--hover': !showClose,
       }"
       :style="{ top: top ? top + 'px' : 'auto' }"
-      v-show="isShow"
       @click="!showClose && handleClose()"
       @mouseleave="startTimer"
       @mouseenter="clearTimer"
     >
-      <i class="icon at-notification__icon" :class="iconClass" v-if="showIcon"></i>
+      <i v-if="showIcon" class="icon at-notification__icon" :class="iconClass"></i>
       <div class="at-notification__content">
-        <p class="at-notification__title" v-if="title" v-text="title"></p>
-        <p class="at-notification__message" v-if="message" v-text="message"></p>
+        <p v-if="title" class="at-notification__title" v-text="title"></p>
+        <p v-if="message" class="at-notification__message" v-text="message"></p>
       </div>
-      <i class="icon icon-x at-notification__close" v-show="showClose" @click="handleClose"></i>
+      <i v-show="showClose" class="icon icon-x at-notification__close" @click="handleClose"></i>
     </div>
   </transition>
 </template>
@@ -40,13 +40,6 @@ export default {
       closed: false,
     }
   },
-  watch: {
-    closed(val) {
-      if (val) {
-        this.isShow = false
-      }
-    },
-  },
   computed: {
     iconClass() {
       const classArr = {
@@ -60,6 +53,16 @@ export default {
     showIcon() {
       return this.type
     },
+  },
+  watch: {
+    closed(val) {
+      if (val) {
+        this.isShow = false
+      }
+    },
+  },
+  mounted() {
+    this.startTimer()
   },
   methods: {
     doDestory() {
@@ -84,9 +87,6 @@ export default {
     clearTimer() {
       clearTimeout(this.timer)
     },
-  },
-  mounted() {
-    this.startTimer()
   },
 }
 </script>

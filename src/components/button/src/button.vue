@@ -13,9 +13,9 @@
     :type="nativeType"
     @click="handleClick"
   >
-    <i class="at-btn__loading icon icon-loader" v-if="loading"></i>
-    <i class="at-btn__icon icon" :class="icon" v-if="icon"></i>
-    <span class="at-btn__text" v-if="$slots.default"><slot></slot></span>
+    <i v-if="loading" class="at-btn__loading icon icon-loader"></i>
+    <i v-if="icon" class="at-btn__icon icon" :class="icon"></i>
+    <span v-if="$slots.default" class="at-btn__text"><slot></slot></span>
   </button>
 </template>
 

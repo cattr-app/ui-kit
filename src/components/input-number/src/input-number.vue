@@ -87,18 +87,18 @@ export default {
       currentValue: this.value,
     }
   },
-  watch: {
-    currentValue(value) {
-      this.$emit('change', value)
-      this.$emit('input', value)
-    },
-  },
   computed: {
     upDisabled() {
       return this.currentValue + this.step > this.max
     },
     downDisabled() {
       return this.currentValue - this.step < this.min
+    },
+  },
+  watch: {
+    currentValue(value) {
+      this.$emit('change', value)
+      this.$emit('input', value)
     },
   },
   methods: {
@@ -141,13 +141,13 @@ export default {
 
       try {
         decimal1 = num.toString().split('.')[1].length
-      } catch (e) {
+      } catch {
         decimal1 = 0
       }
 
       try {
         decimal2 = stepNum.toString().split('.')[1].length
-      } catch (e) {
+      } catch {
         decimal2 = 0
       }
 

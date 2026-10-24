@@ -1,7 +1,7 @@
 <template>
   <div>
     <transition name="fade">
-      <div class="at-modal__mask" v-show="visible" @click="handleMaskClick"></div>
+      <div v-show="visible" class="at-modal__mask" @click="handleMaskClick"></div>
     </transition>
     <!-- / mask -->
     <div
@@ -14,8 +14,8 @@
       @click.self="handleWrapperClick"
     >
       <transition name="fade">
-        <div class="at-modal" :style="modalStyle" v-show="visible">
-          <div class="at-modal__header" v-if="showHead && ($slots.header || this.title)">
+        <div v-show="visible" class="at-modal" :style="modalStyle">
+          <div v-if="showHead && ($slots.header || title)" class="at-modal__header">
             <div class="at-modal__title">
               <slot name="header">
                 <p>{{ title }}</p>
@@ -25,24 +25,24 @@
           <div class="at-modal__body">
             <slot>
               <p>{{ content }}</p>
-              <div class="at-modal__input" v-if="showInput">
+              <div v-if="showInput" class="at-modal__input">
                 <at-input
+                  ref="input"
                   v-model="inputValue"
                   :placeholder="inputPlaceholder"
                   @keyup.enter.native="handleAction('confirm')"
-                  ref="input"
                 ></at-input>
               </div>
             </slot>
           </div>
-          <div class="at-modal__footer" v-if="showFooter">
+          <div v-if="showFooter" class="at-modal__footer">
             <slot name="footer">
               <at-button v-show="showCancelButton" @click.native="handleAction('cancel')">{{
                 localeCancelText
               }}</at-button>
               <at-button
-                type="primary"
                 v-show="showConfirmButton"
+                type="primary"
                 @click.native="handleAction('confirm')"
                 >{{ localeOKText }}</at-button
               >
@@ -173,6 +173,13 @@ export default {
       }
     },
   },
+  mounted() {
+    if (this.visible) {
+      this.wrapShow = true
+    }
+
+    document.addEventListener('keydown', this.handleKeyCode)
+  },
   methods: {
     doClose() {
       this.visible = false
@@ -183,12 +190,12 @@ export default {
         this.callback(this.action, this)
       }
     },
-    handleMaskClick(evt) {
+    handleMaskClick() {
       if (this.maskClosable) {
         this.doClose()
       }
     },
-    handleWrapperClick(evt) {
+    handleWrapperClick() {
       if (this.maskClosable) {
         this.doClose()
       }
@@ -211,13 +218,6 @@ export default {
         }
       }
     },
-  },
-  mounted() {
-    if (this.visible) {
-      this.wrapShow = true
-    }
-
-    document.addEventListener('keydown', this.handleKeyCode)
   },
   beforeDestory() {
     document.removeEventListener('keydown', this.handleKeyCode)

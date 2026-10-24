@@ -8,14 +8,14 @@
     }"
   >
     <div class="at-tabs__header">
-      <div class="at-tabs__extra" v-if="$slots.extra">
+      <div v-if="$slots.extra" class="at-tabs__extra">
         <slot name="extra"></slot>
       </div>
       <div class="at-tabs__nav">
         <!-- S prev btn -->
         <span
-          class="at-tabs__prev"
           v-if="scrollable"
+          class="at-tabs__prev"
           :class="{
             'at-tabs__prev--disabled': !prevable,
           }"
@@ -26,8 +26,8 @@
         <!-- E prev btn -->
         <!-- S next btn -->
         <span
-          class="at-tabs__next"
           v-if="scrollable"
+          class="at-tabs__next"
           :class="{
             'at-tabs__next--disabled': !nextable,
           }"
@@ -38,17 +38,17 @@
         <!-- E next btn -->
         <!-- S Tab nav -->
         <div class="at-tabs__nav-wrap">
-          <div class="at-tabs__nav-scroll" ref="navScroll">
-            <div class="at-tabs-nav" ref="nav" :style="navStyle">
+          <div ref="navScroll" class="at-tabs__nav-scroll">
+            <div ref="nav" class="at-tabs-nav" :style="navStyle">
               <div
+                v-for="(item, index) in navList"
+                :key="index"
                 class="at-tabs-nav__item"
                 :class="{
                   'at-tabs-nav__item--active': index === activeIndex,
                   'at-tabs-nav__item--disabled': item.disabled,
                   'at-tabs-nav__item--closable': item.closable,
                 }"
-                v-for="(item, index) in navList"
-                :key="index"
                 @click="setNavByIndex(index)"
               >
                 <!-- S icon -->
@@ -64,8 +64,8 @@
                 <!-- E icon -->
                 <!-- S close btn -->
                 <span
-                  class="at-tabs-nav__close"
                   v-if="item.closable"
+                  class="at-tabs-nav__close"
                   @click.stop="removeHandle(index)"
                 >
                   <i class="icon icon-x"></i>
@@ -122,17 +122,6 @@ export default {
       prevable: false,
     }
   },
-  watch: {
-    activeKey() {
-      this.$emit('on-change', {
-        index: this.activeIndex,
-        name: this.activeKey,
-      })
-      this.$nextTick(() => {
-        this.scrollToActiveTab()
-      })
-    },
-  },
   computed: {
     scrollable() {
       return this.prevable || this.nextable
@@ -155,6 +144,28 @@ export default {
         transform: `translate3d(${translateValue}, 0, 0)`,
       }
     },
+  },
+  watch: {
+    activeKey() {
+      this.$emit('on-change', {
+        index: this.activeIndex,
+        name: this.activeKey,
+      })
+      this.$nextTick(() => {
+        this.scrollToActiveTab()
+      })
+    },
+  },
+  mounted() {
+    window.addEventListener('resize', this.updateHandle, false)
+
+    this.updateNav()
+    setTimeout(() => {
+      this.scrollToActiveTab()
+    }, 0)
+  },
+  updated() {
+    this.updateHandle()
   },
   methods: {
     scrollPrev() {
@@ -321,17 +332,6 @@ export default {
         }
       }
     },
-  },
-  mounted() {
-    window.addEventListener('resize', this.updateHandle, false)
-
-    this.updateNav()
-    setTimeout(() => {
-      this.scrollToActiveTab()
-    }, 0)
-  },
-  updated() {
-    this.updateHandle()
   },
 }
 </script>

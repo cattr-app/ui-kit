@@ -2,9 +2,9 @@
   <div class="at-slider">
     <!-- S InputNumber -->
     <at-input-number
-      class="at-slider__input"
-      v-model="inputValue"
       v-show="false"
+      v-model="inputValue"
+      class="at-slider__input"
       :step="step"
       :disabled="disabled"
       :min="min"
@@ -15,12 +15,12 @@
 
     <!-- S slider track -->
     <div
+      ref="slider"
       class="at-slider__track"
       :class="{
         'at-slider--disabled': disabled,
       }"
       @click="onSliderClick"
-      ref="slider"
     >
       <div class="at-slider__bar" :style="{ width: currentPosition }"></div>
 
@@ -36,7 +36,7 @@
         @mouseleave="handleMouseLeave"
         @mousedown="handleMouseDown"
       >
-        <at-tooltip placement="top" trigger="click" content="Top value" ref="tooltip">
+        <at-tooltip ref="tooltip" placement="top" trigger="click" content="Top value">
           <div
             class="at-slider__dot"
             :class="{
@@ -99,6 +99,11 @@ export default {
       currentPosition: `${((this.value - this.min) * 100) / (this.max - this.min)}%`,
     }
   },
+  computed: {
+    sliderWidth() {
+      return parseInt(getStyle(this.$refs.slider, 'width'))
+    },
+  },
   watch: {
     inputValue(val) {
       this.$emit('input', Number(val))
@@ -118,10 +123,14 @@ export default {
       this.setPosition(((val - this.min) * 100) / (this.max - this.min))
     },
   },
-  computed: {
-    sliderWidth() {
-      return parseInt(getStyle(this.$refs.slider, 'width'))
-    },
+  created() {
+    if (typeof this.value !== 'number' || isNaN(this.value) || this.value < this.min) {
+      this.$emit('input', this.min)
+    } else if (this.value > this.max) {
+      this.$emit('input', this.max)
+    }
+
+    this.inputValue = this.inputValue || this.value
   },
   methods: {
     handleMouseEnter() {
@@ -150,11 +159,9 @@ export default {
     },
     onDragging(evt) {
       if (this.isDrag) {
-        let diff = 0
-
         this.$refs.tooltip.showPopover()
         this.currentX = evt.clientX
-        diff = ((this.currentX - this.startX) * 100) / this.sliderWidth
+        const diff = ((this.currentX - this.startX) * 100) / this.sliderWidth
         this.newPos = this.startPos + diff
         this.setPosition(this.newPos)
       }
@@ -201,15 +208,6 @@ export default {
         this.setPosition(((this.value - this.min) * 100) / (this.max - this.min))
       }
     },
-  },
-  created() {
-    if (typeof this.value !== 'number' || isNaN(this.value) || this.value < this.min) {
-      this.$emit('input', this.min)
-    } else if (this.value > this.max) {
-      this.$emit('input', this.max)
-    }
-
-    this.inputValue = this.inputValue || this.value
   },
 }
 </script>

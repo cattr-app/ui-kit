@@ -6,11 +6,11 @@
       'at-card--no-hover': noHover,
     }"
   >
-    <div class="at-card__head" v-if="!(!$slots.title && !$slots.extra)">
-      <div class="at-card__title" v-if="$slots.title">
+    <div v-if="!(!$slots.title && !$slots.extra)" class="at-card__head">
+      <div v-if="$slots.title" class="at-card__title">
         <slot name="title"></slot>
       </div>
-      <div class="at-card__extra" v-if="$slots.extra">
+      <div v-if="$slots.extra" class="at-card__extra">
         <slot name="extra"></slot>
       </div>
     </div>

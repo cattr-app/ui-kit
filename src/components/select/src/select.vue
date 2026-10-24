@@ -1,44 +1,44 @@
 <template>
   <div
+    v-clickoutside="handleClose"
     :class="[
       'at-select',
       {
-        'at-select--visible': this.visible,
-        'at-select--disabled': this.disabled,
-        'at-select--multiple': this.multiple,
-        'at-select--single': !this.multiple,
-        'at-select--show-clear': this.showCloseIcon,
-        [`at-select--${this.size}`]: !!this.size,
+        'at-select--visible': visible,
+        'at-select--disabled': disabled,
+        'at-select--multiple': multiple,
+        'at-select--single': !multiple,
+        'at-select--show-clear': showCloseIcon,
+        [`at-select--${size}`]: !!size,
       },
     ]"
-    v-clickoutside="handleClose"
   >
     <!-- S Selection -->
-    <div class="at-select__selection" ref="trigger" @click="toggleMenu">
-      <span class="at-tag" v-for="(item, index) in selectedMultiple">
+    <div ref="trigger" class="at-select__selection" @click="toggleMenu">
+      <span v-for="(item, index) in selectedMultiple" :key="index" class="at-tag">
         <span class="at-tag__text">{{ item.label }}</span>
         <i class="icon icon-x at-tag__close" @click.stop="removeTag(index)"></i>
       </span>
-      <span class="at-select__placeholder" v-show="showPlaceholder && !filterable">{{
+      <span v-show="showPlaceholder && !filterable" class="at-select__placeholder">{{
         localePlaceholder
       }}</span>
-      <span class="at-select__selected" v-show="!showPlaceholder && !multiple && !filterable">{{
+      <span v-show="!showPlaceholder && !multiple && !filterable" class="at-select__selected">{{
         selectedSingle
       }}</span>
       <input
+        v-if="filterable"
+        ref="input"
+        v-model="query"
         type="text"
         class="at-select__input"
         :placeholder="showPlaceholder ? localePlaceholder : ''"
-        v-if="filterable"
-        v-model="query"
         @blur="handleBlur"
         @keydown.delete="handleInputDelete"
-        ref="input"
       />
       <i class="icon icon-chevron-down at-select__arrow"></i>
       <i
-        class="icon icon-x at-select__clear"
         v-show="showCloseIcon"
+        class="icon icon-x at-select__clear"
         @click.stop="clearSingleSelect"
       ></i>
     </div>
@@ -47,15 +47,15 @@
     <!-- S Dropdown -->
     <transition name="slide-up" @after-leave="doDestory">
       <div
-        class="at-select__dropdown"
-        :class="[placement ? `at-select__dropdown--${placement}` : 'at-select__dropdown--bottom']"
         v-show="visible"
         ref="popover"
+        class="at-select__dropdown"
+        :class="[placement ? `at-select__dropdown--${placement}` : 'at-select__dropdown--bottom']"
       >
         <ul v-show="notFound" class="at-select__not-found">
           <li>{{ localeNotFoundText }}</li>
         </ul>
-        <ul v-show="!notFound" class="at-select__list" ref="options">
+        <ul v-show="!notFound" ref="options" class="at-select__list">
           <slot></slot>
         </ul>
       </div>
@@ -73,8 +73,13 @@ import { findComponentsDownward } from '../../../utils/util'
 
 export default {
   name: 'AtSelect',
-  mixins: [Emitter, PopoverMixin, Locale],
   directives: { Clickoutside },
+  mixins: [Emitter, PopoverMixin, Locale],
+  provide() {
+    return {
+      select: this,
+    }
+  },
   props: {
     value: {
       type: [String, Number, Array],
@@ -131,11 +136,6 @@ export default {
       query: '',
       notFound: false,
       model: this.value,
-    }
-  },
-  provide() {
-    return {
-      select: this,
     }
   },
   computed: {
@@ -216,6 +216,43 @@ export default {
 
       this.broadcast('Dropdown', 'on-update-popper')
     },
+  },
+  mounted() {
+    this.modelToQuery()
+    this.updateOptions()
+
+    document.addEventListener('keydown', this.handleKeydown)
+
+    this.$on('on-select-selected', value => {
+      if (this.model === value) {
+        this.hideMenu()
+      } else if (this.multiple) {
+        const index = this.model.indexOf(value)
+
+        if (index > -1) {
+          this.removeTag(index)
+        } else {
+          this.model.push(value)
+          this.broadcast('Dropdown', 'on-update-popper')
+        }
+
+        if (this.filterable) {
+          this.query = ''
+          this.$refs.input.focus()
+        }
+      } else {
+        this.model = value
+
+        if (this.filterable) {
+          const options = findComponentsDownward(this, 'AtOption')
+          options.forEach(option => {
+            if (option.value === value) {
+              this.query = typeof option.label === 'undefined' ? option.searchLabel : option.label
+            }
+          })
+        }
+      }
+    })
   },
   methods: {
     toggleMenu() {
@@ -503,43 +540,6 @@ export default {
     broadcastQuery(val) {
       this.broadcast('AtOption', 'on-query-change', val)
     },
-  },
-  mounted() {
-    this.modelToQuery()
-    this.updateOptions()
-
-    document.addEventListener('keydown', this.handleKeydown)
-
-    this.$on('on-select-selected', value => {
-      if (this.model === value) {
-        this.hideMenu()
-      } else if (this.multiple) {
-        const index = this.model.indexOf(value)
-
-        if (index > -1) {
-          this.removeTag(index)
-        } else {
-          this.model.push(value)
-          this.broadcast('Dropdown', 'on-update-popper')
-        }
-
-        if (this.filterable) {
-          this.query = ''
-          this.$refs.input.focus()
-        }
-      } else {
-        this.model = value
-
-        if (this.filterable) {
-          const options = findComponentsDownward(this, 'AtOption')
-          options.forEach(option => {
-            if (option.value === value) {
-              this.query = typeof option.label === 'undefined' ? option.searchLabel : option.label
-            }
-          })
-        }
-      }
-    })
   },
   beforeDestory() {
     document.removeEventListener('keydown', this.handleKeydown)

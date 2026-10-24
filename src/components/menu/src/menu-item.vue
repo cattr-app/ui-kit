@@ -1,13 +1,10 @@
 <template>
   <li
     class="at-menu__item"
-    :class="[
-      this.active ? 'at-menu__item--active' : '',
-      this.disabled ? 'at-menu__item--disabled' : '',
-    ]"
+    :class="[active ? 'at-menu__item--active' : '', disabled ? 'at-menu__item--disabled' : '']"
     @click="handleClick"
   >
-    <router-link v-if="Object.keys(to).length" class="at-menu__item-link" ref="link" :to="to">
+    <router-link v-if="Object.keys(to).length" ref="link" class="at-menu__item-link" :to="to">
       <slot></slot>
     </router-link>
     <div v-else class="at-menu__item-link">
@@ -47,21 +44,6 @@ export default {
       active: false,
     }
   },
-  methods: {
-    handleClick(evt) {
-      evt.preventDefault()
-      if (this.disabled) return
-      const parents = findComponentsUpward(this, 'AtSubmenu')
-
-      if (parents && parents.length) {
-        parents.forEach(parent => {
-          parent.$emit('on-menu-item-select', this)
-        })
-      } else {
-        this.dispatch('AtMenu', 'on-menu-item-select', this)
-      }
-    },
-  },
   mounted() {
     this.$on('on-update-active', name => {
       this.$nextTick(() => {
@@ -82,6 +64,21 @@ export default {
         }
       })
     })
+  },
+  methods: {
+    handleClick(evt) {
+      evt.preventDefault()
+      if (this.disabled) return
+      const parents = findComponentsUpward(this, 'AtSubmenu')
+
+      if (parents && parents.length) {
+        parents.forEach(parent => {
+          parent.$emit('on-menu-item-select', this)
+        })
+      } else {
+        this.dispatch('AtMenu', 'on-menu-item-select', this)
+      }
+    },
   },
 }
 </script>

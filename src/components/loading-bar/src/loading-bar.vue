@@ -1,12 +1,12 @@
 <template>
   <transition name="fade">
     <div
+      v-show="show"
       class="at-loading-bar"
       :class="{
         [`at-loading-bar--${status}`]: status,
       }"
       :style="barStyle"
-      v-show="show"
     >
       <div class="at-loading-bar__inner" :style="{ width: percent + '%' }"></div>
     </div>

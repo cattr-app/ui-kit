@@ -11,9 +11,9 @@
       <span class="at-checkbox__inner"></span>
       <input
         v-if="isGroup"
+        v-model="model"
         type="checkbox"
         class="at-checkbox__original"
-        v-model="model"
         :name="name"
         :value="label"
         :disabled="disabled"
@@ -71,9 +71,22 @@ export default {
     }
   },
   watch: {
-    value(value) {
+    value() {
       this.updateModel()
     },
+  },
+  mounted() {
+    this.parent = findComponentUpward(this, 'AtCheckboxGroup')
+    if (this.parent) {
+      this.isGroup = true
+      this.parent.updateModel()
+    } else {
+      this.updateModel()
+    }
+
+    if (this.checked) {
+      this.currentValue = this.checked
+    }
   },
   methods: {
     updateModel() {
@@ -94,19 +107,6 @@ export default {
         this.$emit('on-change', value)
       }
     },
-  },
-  mounted() {
-    this.parent = findComponentUpward(this, 'AtCheckboxGroup')
-    if (this.parent) {
-      this.isGroup = true
-      this.parent.updateModel()
-    } else {
-      this.updateModel()
-    }
-
-    if (this.checked) {
-      this.currentValue = this.checked
-    }
   },
 }
 </script>

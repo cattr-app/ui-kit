@@ -79,7 +79,7 @@ Message.close = (id, customCloseFunc) => {
 }
 
 Message.closeAll = () => {
-  instances.forEach((elem, idx) => {
+  instances.forEach(elem => {
     elem.close()
   })
 }

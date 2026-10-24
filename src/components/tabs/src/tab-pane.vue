@@ -1,5 +1,5 @@
 <template>
-  <div class="at-tabs__pane" v-show="show">
+  <div v-show="show" class="at-tabs__pane">
     <slot></slot>
   </div>
 </template>

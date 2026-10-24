@@ -7,11 +7,11 @@
     ]"
   >
     <!-- S 环形进度条 -->
-    <div class="at-progress-circle" v-if="type === 'circle'"></div>
+    <div v-if="type === 'circle'" class="at-progress-circle"></div>
     <!-- E 环形进度条 -->
 
     <!-- S 条状进度条 -->
-    <div class="at-progress-bar" v-else>
+    <div v-else class="at-progress-bar">
       <div class="at-progress-bar__wraper" :style="barStyle">
         <div class="at-progress-bar__inner" :style="{ width: percent + '%' }"></div>
       </div>
@@ -69,6 +69,9 @@ export default {
       this.handleChange(val | 0)
     },
   },
+  mounted() {
+    this.handleChange(this.percent)
+  },
   methods: {
     handleChange(val) {
       if (val === 100) {
@@ -78,9 +81,6 @@ export default {
         this.currentStatus = this.status
       }
     },
-  },
-  mounted() {
-    this.handleChange(this.percent)
   },
 }
 </script>

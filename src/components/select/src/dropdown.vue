@@ -9,13 +9,13 @@ import PopoverMixin from '../../../mixins/popover'
 
 export default {
   name: 'Dropdown',
+  mixins: [PopoverMixin],
   props: {
     placement: {
       type: String,
       default: 'bottom',
     },
   },
-  mixins: [PopoverMixin],
   data() {
     return {
       popper: null,
@@ -31,15 +31,15 @@ export default {
       return style
     },
   },
+  created() {
+    this.$on('on-update-popper', this.update)
+  },
   methods: {
     update() {
       if (this.$parent.$options.name === 'AtSelect') {
         this.width = this.$parent.$el.style.width | 0
       }
     },
-  },
-  created() {
-    this.$on('on-update-popper', this.update)
   },
 }
 </script>

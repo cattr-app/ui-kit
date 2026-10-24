@@ -4,7 +4,7 @@
     :class="{
       'at-timeline__item--last': isLastItem,
       'at-timeline__item--pending': isPendingItem,
-      'at-timeline__item--custom': !!this.$slots.dot,
+      'at-timeline__item--custom': !!$slots.dot,
       [`at-timeline__item--${status}`]: status,
     }"
   >
@@ -48,6 +48,9 @@ export default {
       return status
     },
   },
+  mounted() {
+    this.checkForLast()
+  },
   methods: {
     checkForLast() {
       const children = this.$parent.$children
@@ -61,9 +64,6 @@ export default {
         this.isPendingItem = index === lastItemIndex + 1
       }
     },
-  },
-  mounted() {
-    this.checkForLast()
   },
 }
 </script>

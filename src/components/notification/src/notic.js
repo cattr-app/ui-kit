@@ -49,7 +49,7 @@ Notification.close = function (id, onClose) {
   const len = instances.length
   let index
   let removedHeight
-  let i = 0
+  let i
 
   for (i = 0; i < len; i++) {
     if (id === instances[i].id) {

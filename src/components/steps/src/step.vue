@@ -26,7 +26,7 @@
     </div>
     <div class="at-step__main">
       <div class="at-step__title">{{ title }}</div>
-      <div class="at-step__description" v-if="description">{{ description }}</div>
+      <div v-if="description" class="at-step__description">{{ description }}</div>
     </div>
   </div>
 </template>

@@ -7,11 +7,11 @@
   >
     <transition name="move-up" @after-leave="doDestory">
       <div
+        v-show="visible"
         class="at-message"
         :class="{
           [`at-message--${type}`]: type,
         }"
-        v-show="visible"
       >
         <i class="icon at-message__icon" :class="iconClass"></i>
         <span class="at-message__content">{{ message }}</span>
@@ -55,6 +55,9 @@ export default {
       }
     },
   },
+  mounted() {
+    this.startTimer()
+  },
   methods: {
     doDestory() {
       this.$destroy(true)
@@ -76,9 +79,6 @@ export default {
     clearTimer() {
       this.timer && clearTimeout(this.timer)
     },
-  },
-  mounted() {
-    this.startTimer()
   },
 }
 </script>

@@ -1,9 +1,9 @@
 <template>
-  <div class="at-dropdown" v-clickoutside="handleClose" ref="trigger">
+  <div ref="trigger" v-clickoutside="handleClose" class="at-dropdown">
     <div class="at-dropdown__trigger"><slot></slot></div>
 
     <transition name="slide-up" @after-leave="doDestory">
-      <div class="at-dropdown__popover" ref="popover" v-show="show">
+      <div v-show="show" ref="popover" class="at-dropdown__popover">
         <slot name="menu"></slot>
       </div>
     </transition>

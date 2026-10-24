@@ -1,5 +1,7 @@
 <template>
   <li
+    v-show="!hidden"
+    ref="option"
     class="at-select__option"
     :class="[
       disabled ? 'at-select__option--disabled' : '',
@@ -8,8 +10,6 @@
     ]"
     @click.stop="doSelect"
     @mouseout.stop="blur"
-    v-show="!hidden"
-    ref="option"
   >
     <slot>{{ showLabel }}</slot>
   </li>
@@ -49,19 +49,6 @@ export default {
       return this.label ? this.label : this.value
     },
   },
-  methods: {
-    doSelect() {
-      if (this.disabled) return false
-      this.dispatch('AtSelect', 'on-select-selected', this.value)
-    },
-    blur() {
-      this.isFocus = false
-    },
-    queryChange(val) {
-      const parsedQuery = val.replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1')
-      this.hidden = !new RegExp(parsedQuery, 'i').test(this.searchLabel)
-    },
-  },
   mounted() {
     this.select.optionInstances.push(this)
     this.select.options.push({
@@ -83,6 +70,19 @@ export default {
         this.select.onOptionDestroy(idx)
       }
     })
+  },
+  methods: {
+    doSelect() {
+      if (this.disabled) return false
+      this.dispatch('AtSelect', 'on-select-selected', this.value)
+    },
+    blur() {
+      this.isFocus = false
+    },
+    queryChange(val) {
+      const parsedQuery = val.replace(/(\^|\(|\)|\[|\]|\$|\*|\+|\.|\?|\\|\{|\}|\|)/g, '\\$1')
+      this.hidden = !new RegExp(parsedQuery, 'i').test(this.searchLabel)
+    },
   },
 }
 </script>

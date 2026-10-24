@@ -26,9 +26,12 @@ export default {
     }
   },
   watch: {
-    value(value) {
+    value() {
       this.updateModel()
     },
+  },
+  mounted() {
+    this.updateModel()
   },
   methods: {
     updateModel() {
@@ -48,9 +51,6 @@ export default {
       this.$emit('input', data)
       this.$emit('on-change', data)
     },
-  },
-  mounted() {
-    this.updateModel()
   },
 }
 </script>

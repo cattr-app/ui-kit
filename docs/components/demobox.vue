@@ -4,15 +4,15 @@
       <slot name="demo"></slot>
     </div>
     <collapse-transition>
-      <div class="at-component__code" v-show="isShow">
+      <div v-show="isShow" class="at-component__code">
         <slot name="source-code"></slot>
         <span
-          class="btn-copy"
           v-clipboard="
             $slots['source-code'][0] &&
             $slots['source-code'][0].elm &&
             $slots['source-code'][0].elm.innerText
           "
+          class="btn-copy"
           @success="handleCopySuccess"
           ><i class="icon icon-clipboard"></i
         ></span>
@@ -45,7 +45,7 @@ export default {
     },
   },
   methods: {
-    handleCopySuccess(evt) {
+    handleCopySuccess() {
       this.$Message.success(`Code copied.`)
     },
   },

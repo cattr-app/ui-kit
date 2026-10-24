@@ -10,9 +10,9 @@
         }"
       ></span>
       <input
+        v-model="store"
         type="radio"
         class="at-radio__original"
-        v-model="store"
         :name="name"
         :value="label"
         :disabled="disabled"
@@ -31,6 +31,7 @@ import Emitter from '../../../mixins/emitter'
 
 export default {
   name: 'AtRadio',
+  mixins: [Emitter],
   props: {
     value: [String, Number],
     name: String,
@@ -40,7 +41,6 @@ export default {
     },
     disabled: Boolean,
   },
-  mixins: [Emitter],
   data() {
     return {
       store: this.value,

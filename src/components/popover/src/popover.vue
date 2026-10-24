@@ -1,18 +1,18 @@
 <template>
-  <div class="at-popover" v-clickoutside="handleClose" ref="parent">
-    <span class="at-popover__trigger" ref="trigger">
+  <div ref="parent" v-clickoutside="handleClose" class="at-popover">
+    <span ref="trigger" class="at-popover__trigger">
       <slot></slot>
     </span>
 
     <transition :name="transition" @after-leave="doDestory">
       <div
-        class="at-popover__popper"
-        :class="[placement ? 'at-popover--' + placement : 'at-popover--top']"
         v-if="show"
         ref="popover"
+        class="at-popover__popper"
+        :class="[placement ? 'at-popover--' + placement : 'at-popover--top']"
       >
         <div class="at-popover__arrow"></div>
-        <div class="at-popover__title" v-if="title">
+        <div v-if="title" class="at-popover__title">
           <slot name="title"><div v-html="title"></div></slot>
         </div>
         <div class="at-popover__content">
@@ -29,8 +29,8 @@ import PopoverMixin from '../../../mixins/popover'
 
 export default {
   name: 'AtPopover',
-  mixins: [PopoverMixin],
   directives: { Clickoutside },
+  mixins: [PopoverMixin],
   props: {
     trigger: {
       type: String,

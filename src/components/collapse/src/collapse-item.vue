@@ -8,11 +8,11 @@
   >
     <div class="at-collapse__header" @click="toggle">
       <i class="icon at-collapse__icon icon-chevron-right"></i>
-      <slot name="title" v-if="$slots.title"></slot>
+      <slot v-if="$slots.title" name="title"></slot>
       <div v-else>{{ title }}</div>
     </div>
     <collapse-transition>
-      <div class="at-collapse__body" v-show="isActive">
+      <div v-show="isActive" class="at-collapse__body">
         <div class="at-collapse__content">
           <slot></slot>
         </div>

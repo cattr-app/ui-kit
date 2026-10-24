@@ -4,11 +4,11 @@ import NavConfig from './nav.config.yml'
 
 Vue.use(Router)
 
-function regeisterRoute(navConfig) {
+function regeisterRoute() {
   const routes = []
   const parentRoutes = {}
 
-  Object.keys(NavConfig).forEach((lang, idx) => {
+  Object.keys(NavConfig).forEach(lang => {
     const pageNavs = NavConfig[lang]
 
     for (const pageName in pageNavs) {
@@ -51,7 +51,7 @@ function regeisterRoute(navConfig) {
   }
 
   for (const key in parentRoutes) {
-    if (parentRoutes.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(parentRoutes, key)) {
       routes.push(parentRoutes[key])
     }
   }
@@ -137,7 +137,7 @@ routes.forEach(page => {
 const router = new Router({
   routes,
   root: process.env.serverConfig.portalPrefix,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to) {
     if (to.hash) {
       return {
         selector: to.hash,

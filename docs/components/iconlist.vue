@@ -2,8 +2,9 @@
   <ul class="at-icon-list row">
     <li
       v-for="name in icons"
-      class="at-icon-list__item col-sm-6 col-md-4 col-lg-3 flex flex-middle flex-center"
+      :key="name"
       v-clipboard="name"
+      class="at-icon-list__item col-sm-6 col-md-4 col-lg-3 flex flex-middle flex-center"
       @success="handleCopySuccess"
     >
       <div class="">

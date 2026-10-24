@@ -64,6 +64,17 @@ export default {
       this.updateActiveName()
     },
   },
+  mounted() {
+    this.updateActiveName()
+    this.$on('on-menu-item-select', item => {
+      this.currentActiveName = item.name
+      this.$emit('on-select', item.name)
+
+      if (this.router) {
+        this.routeToMenuItem(item)
+      }
+    })
+  },
   methods: {
     updateActiveName() {
       if (typeof this.currentActiveName === 'undefined') {
@@ -83,17 +94,6 @@ export default {
       const route = item.to || {}
       item.replace ? this.$router.replace(route) : this.$router.push(route)
     },
-  },
-  mounted() {
-    this.updateActiveName()
-    this.$on('on-menu-item-select', item => {
-      this.currentActiveName = item.name
-      this.$emit('on-select', item.name)
-
-      if (this.router) {
-        this.routeToMenuItem(item)
-      }
-    })
   },
 }
 </script>

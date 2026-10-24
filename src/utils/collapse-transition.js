@@ -2,7 +2,6 @@
  * https://github.com/ElemeFE/element/blob/dev/src/transitions/collapse-transition.js
  */
 
-/* eslint-disable */
 import { addClass, removeClass } from './util'
 
 const Transition = {
@@ -80,5 +79,3 @@ export default {
     return h('transition', data, children)
   },
 }
-
-/* eslint-enable */

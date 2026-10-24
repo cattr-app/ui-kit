@@ -12,7 +12,7 @@ export default {
 
     document.addEventListener('click', el._handler)
   },
-  unbind(el, binding) {
+  unbind(el) {
     document.removeEventListener('click', el._handler)
   },
 }

@@ -6,8 +6,9 @@
     }"
   >
     <textarea
-      class="at-textarea__original"
+      ref="textarea"
       v-model="store"
+      class="at-textarea__original"
       :name="name"
       :placeholder="placeholder"
       :disabled="disabled"
@@ -20,7 +21,6 @@
       @input="handleInput"
       @focus="handleFocus"
       @blur="handleBlur"
-      ref="textarea"
     ></textarea>
   </div>
 </template>
@@ -81,6 +81,9 @@ export default {
       this.$emit('change', value)
     },
   },
+  mounted() {
+    this.resizeTextarea()
+  },
   methods: {
     handleFocus(evt) {
       this.$emit('focus', evt)
@@ -96,9 +99,6 @@ export default {
 
       this.calculateStyle = calcTextareaHeight(this.$refs.textarea, this.minRows, this.maxRows)
     },
-  },
-  mounted() {
-    this.resizeTextarea()
   },
 }
 </script>

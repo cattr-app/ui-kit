@@ -4,9 +4,9 @@
     :class="[size ? `at-radio-button--${size}` : '', { 'at-radio--checked': store === label }]"
   >
     <input
+      v-model="store"
       type="radio"
       class="at-radio-button__original"
-      v-model="store"
       :value="label"
       :name="name"
       :disabled="disabled"

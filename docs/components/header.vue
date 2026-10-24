@@ -1,5 +1,5 @@
 <template>
-  <header class="page-header" :class="[collapse ? 'collapse' : '']" id="J-page-header">
+  <header id="J-page-header" class="page-header" :class="[collapse ? 'collapse' : '']">
     <div class="nav-container">
       <div class="nav-left">
         <div class="logo">

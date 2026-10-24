@@ -2,7 +2,7 @@
   <transition name="fade">
     <span class="at-tag" :class="[colorClass]" :style="colorStyle">
       <span class="at-tag__text"><slot></slot></span>
-      <i class="icon icon-x at-tag__close" v-if="closable" @click="closeAction"></i>
+      <i v-if="closable" class="icon icon-x at-tag__close" @click="closeAction"></i>
     </span>
   </transition>
 </template>
