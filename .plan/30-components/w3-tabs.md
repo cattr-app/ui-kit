@@ -1,7 +1,7 @@
 ---
 id: 30-w3-tabs
 title: Tabs, TabPane → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -36,7 +36,14 @@ scripts/node.sh pnpm build
 
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
+Записано: «Tabs, TabPane» (двусторонний v-model, `on-change` без эмита при монтировании, кто удаляет панель, имя по индексу строкой).
 
 ## Найдено по ходу
 
 ## Заметки агента
+- `TabsContext` (`src/components/tabs/src/context.js`); TabPane регистрируется `useChild(ctx, reactive({ name, label, icon, disabled, closable }))`, `navList` = computed по `children`; `updateNav`/`getTabs`/`switchTabsWithNoAnimated` удалены, видимость панели при `animated=false` — computed в TabPane.
+- В 1.x `value` не отслеживался и `input` не эмитился — v-model был односторонним; теперь двусторонний (как Collapse). `on-change` больше не эмитится при монтировании.
+- `on-tab-remove`: панель по-прежнему удаляет потребитель; Tabs только переносит выбор на соседнюю незаблокированную вкладку (`on-change.index` — в списке без удалённой).
+- `sort()` вызывается в `updated()` Tabs (перестановка keyed `v-for`); `window resize` и `setTimeout` снимаются в `beforeUnmount`. ResizeObserver в 1.x не было, не добавлялся.
+- Pane без `name` → `'0'`, `'1'`… (строка, в 1.x число). Prop `name` остался `String`, хотя docs пишут «String / Number» — для этапа 40.
+- Docs (этап 40): demo «Add & close» использует несуществующий prop `unclosable` и `slot="extra"`; описание default `name` («first is 1») неверно — 0-based.

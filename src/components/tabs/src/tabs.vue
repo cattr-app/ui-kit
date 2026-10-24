@@ -85,10 +85,14 @@
 </template>
 
 <script>
+import { computed, reactive, ref, toRef, watch } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { TabsContext } from './context'
+
 export default {
   name: 'AtTabs',
   props: {
-    value: {
+    modelValue: {
       type: String,
     },
     type: {
@@ -110,35 +114,92 @@ export default {
       default: true,
     },
   },
+  emits: ['update:modelValue', 'on-change', 'on-tab-remove'],
+  setup(props, { emit }) {
+    const { children, register, unregister, sort } = useChildren()
+    const currentValue = ref(props.modelValue)
+
+    watch(
+      () => props.modelValue,
+      value => {
+        currentValue.value = value
+      },
+    )
+
+    // Panes in DOM order: `reactive({ name, label, icon, disabled, closable })` from each AtTabPane.
+    const navList = computed(() => children.map(child => child.exposed))
+    const activeKey = computed(() => currentValue.value || navList.value[0]?.name)
+    const activeIndex = computed(() =>
+      Math.max(
+        0,
+        navList.value.findIndex(item => item.name === activeKey.value),
+      ),
+    )
+
+    function select(name, index) {
+      if (name === activeKey.value) return
+      currentValue.value = name
+      emit('update:modelValue', name)
+      emit('on-change', { index, name })
+    }
+
+    function setNavByIndex(index) {
+      const item = navList.value[index]
+      if (!item || item.disabled) return
+      select(item.name, index)
+    }
+
+    // The pane itself is removed by the consumer in `on-tab-remove`; Tabs only moves the selection.
+    function removeHandle(index) {
+      const list = navList.value
+      const tab = list[index]
+      if (!tab || tab.disabled) return
+
+      emit('on-tab-remove', { index, name: tab.name })
+
+      if (tab.name !== activeKey.value) return
+
+      const rest = list.filter((item, i) => i !== index)
+      const next =
+        list.slice(index + 1).find(item => !item.disabled) ||
+        list
+          .slice(0, index)
+          .reverse()
+          .find(item => !item.disabled)
+
+      if (next) select(next.name, rest.indexOf(next))
+    }
+
+    TabsContext.provide(
+      reactive({
+        activeKey,
+        animated: toRef(props, 'animated'),
+        closable: toRef(props, 'closable'),
+        children,
+        register,
+        unregister,
+      }),
+    )
+
+    return { navList, activeKey, activeIndex, sort, setNavByIndex, removeHandle }
+  },
   data() {
     return {
-      navList: [],
-      activeKey: this.value,
       navOffset: 0,
       navStyle: {
         transform: '',
       },
       nextable: false,
       prevable: false,
+      scrollTimer: null,
     }
   },
   computed: {
     scrollable() {
       return this.prevable || this.nextable
     },
-    activeIndex() {
-      const navList = this.navList
-      for (let i = 0, len = navList.length; i < len; i++) {
-        const item = navList[i]
-        if (item.name === this.activeKey) {
-          return i
-        }
-      }
-      return 0
-    },
     tabsBodyTranslateStyle() {
-      const activeIndex = this.activeIndex
-      const translateValue = this.animated ? `${-activeIndex * 100}%` : 0
+      const translateValue = this.animated ? `${-this.activeIndex * 100}%` : 0
 
       return {
         transform: `translate3d(${translateValue}, 0, 0)`,
@@ -147,10 +208,6 @@ export default {
   },
   watch: {
     activeKey() {
-      this.$emit('on-change', {
-        index: this.activeIndex,
-        name: this.activeKey,
-      })
       this.$nextTick(() => {
         this.scrollToActiveTab()
       })
@@ -159,13 +216,20 @@ export default {
   mounted() {
     window.addEventListener('resize', this.updateHandle, false)
 
-    this.updateNav()
-    setTimeout(() => {
+    this.updateHandle()
+    this.scrollTimer = setTimeout(() => {
+      this.scrollTimer = null
       this.scrollToActiveTab()
     }, 0)
   },
   updated() {
+    // Keyed `v-for` reorders panes without remounting them: keep nav in DOM order.
+    this.sort()
     this.updateHandle()
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateHandle, false)
+    clearTimeout(this.scrollTimer)
   },
   methods: {
     scrollPrev() {
@@ -197,10 +261,12 @@ export default {
       this.setOffset(newOffset)
     },
     scrollToActiveTab() {
-      if (!this.scrollable) return
+      if (!this.scrollable || !this.$el) return
 
       const activeTab = this.$el.querySelector('.at-tabs-nav__item--active')
       const navScroll = this.$refs.navScroll
+
+      if (!activeTab || !navScroll) return
 
       const activeTabBounds = activeTab.getBoundingClientRect()
       const navScrollBounds = navScroll.getBoundingClientRect()
@@ -223,90 +289,6 @@ export default {
     setOffset(value) {
       this.navOffset = Math.abs(value)
       this.navStyle.transform = `translate3d(-${this.navOffset}px, 0, 0)`
-    },
-    getTabs() {
-      return this.$children.filter(item => item.$options.name === 'AtTabPane')
-    },
-    removeHandle(index) {
-      const tabs = this.getTabs()
-      const tab = tabs[index]
-      let activeKey = ''
-
-      if (tab.disabled) return
-
-      this.navList.splice(index, 1)
-
-      this.$emit('on-tab-remove', {
-        index,
-        name: tab.currentName,
-      })
-
-      this.$nextTick(() => {
-        this.updateNav()
-      })
-
-      if (tab.currentName === this.activeKey) {
-        const newTabs = this.getTabs()
-
-        if (newTabs.length) {
-          const nextAbleTabs = tabs.filter((item, itemIndex) => !item.disabled && itemIndex > index)
-
-          const prevAbleTabs = tabs.filter((item, itemIndex) => !item.disabled && itemIndex < index)
-
-          if (nextAbleTabs.length) {
-            activeKey = nextAbleTabs[0].currentName
-          } else if (prevAbleTabs.length) {
-            activeKey = prevAbleTabs[prevAbleTabs.length - 1].currentName
-          } else {
-            activeKey = newTabs[0].currentName
-          }
-        }
-
-        this.activeKey = activeKey
-      }
-    },
-    updateNav() {
-      this.navList = []
-
-      this.getTabs().forEach((item, index) => {
-        this.navList.push({
-          label: item.label,
-          name: item.currentName || index,
-          disabled: item.disabled,
-          icon: item.icon,
-          closable: item.isClosable,
-        })
-
-        if (!item.currentName) {
-          item.currentName = index
-        }
-
-        if (index === 0 && !this.activeKey) {
-          this.activeKey = item.currentName || index
-        }
-
-        if (!this.animated) {
-          this.switchTabsWithNoAnimated()
-        }
-      })
-    },
-    setNavByIndex(index) {
-      const currentName = this.navList[index]
-
-      if (!currentName.disabled) {
-        this.activeKey = currentName.name
-
-        if (!this.animated) {
-          this.switchTabsWithNoAnimated()
-        }
-      }
-    },
-    switchTabsWithNoAnimated() {
-      const tabs = this.getTabs()
-
-      tabs.forEach(item => {
-        item.show = item.currentName === this.activeKey
-      })
     },
     updateHandle() {
       if (!this.$refs.nav || !this.$refs.navScroll) {
