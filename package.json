@@ -56,9 +56,6 @@
   "peerDependencies": {
     "vue": "^3.5.0"
   },
-  "dependencies": {
-    "deepmerge": "^4.3.1"
-  },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@vitejs/plugin-vue": "^6.0.10",

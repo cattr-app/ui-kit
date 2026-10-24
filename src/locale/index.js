@@ -1,40 +1,22 @@
 /**
  * Simplified version
  * https://github.com/ElemeFE/element/blob/dev/src/locale/index.js
+ *
+ * No dependency on the global Vue / vue-i18n: an external translator is plugged in
+ * through `i18n(fn)`, where `fn(key, values)` returns a string, or `null`/`undefined`
+ * to fall back to the built-in language pack.
  */
-import Vue from 'vue'
-import deepmerge from 'deepmerge'
 import defaultLang from './lang/en-US'
 
 let lang = defaultLang
-let merged = false
-let i18nHandler = function (...args) {
-  const vuei18n = Object.getPrototypeOf(this || Vue).$t
+let i18nHandler = null
 
-  if (typeof vuei18n === 'function' && !!Vue.locale) {
-    if (!merged) {
-      merged = true
-      Vue.locale(
-        Vue.config.lang,
-        deepmerge(lang, Vue.locale(Vue.config.lang) || {}, { clone: true }),
-      )
-    }
-    return vuei18n.apply(this, args)
-  }
-}
-
-export const t = function (...args) {
-  let value = i18nHandler.apply(this, args)
-  if (value !== null && typeof value !== 'undefined') {
-    return value
-  }
-
-  const array = args[0].split('.')
+const lookup = key => {
+  const path = key.split('.')
   let current = lang
 
-  for (let i = 0, len = array.length; i < len; i++) {
-    const property = array[i]
-    value = current[property]
+  for (let i = 0, len = path.length; i < len; i++) {
+    const value = current[path[i]]
 
     if (i === len - 1) {
       return value
@@ -48,12 +30,26 @@ export const t = function (...args) {
   return ''
 }
 
+export const t = function (key, values) {
+  if (typeof i18nHandler === 'function') {
+    const value = i18nHandler(key, values)
+    if (value !== null && typeof value !== 'undefined') {
+      return value
+    }
+  }
+
+  return lookup(key)
+}
+
 export const use = function (l) {
   lang = l || lang
 }
 
+/** `fn(key, values)`; `undefined` keeps the current handler, `null` removes it. */
 export const i18n = function (fn) {
-  i18nHandler = fn || i18nHandler
+  if (typeof fn === 'function' || fn === null) {
+    i18nHandler = fn
+  }
 }
 
 export default { use, t, i18n }
