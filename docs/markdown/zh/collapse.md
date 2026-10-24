@@ -9,7 +9,7 @@
 
 :::demo
 ```html
-<at-collapse :model-value="[0, 1]">
+<at-collapse v-model="basicActive">
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title" :disabled="item.disabled">
@@ -27,7 +27,7 @@
 
 :::demo
 ```html
-<at-collapse accordion :model-value="0">
+<at-collapse v-model="accordionActive" accordion>
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -45,7 +45,7 @@
 
 :::demo
 ```html
-<at-collapse model-value="0" @on-change="changeHandle">
+<at-collapse v-model="nestingActive" @on-change="changeHandle">
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -92,7 +92,7 @@
 
 :::demo
 ```html
-<at-collapse simple accordion :model-value="0">
+<at-collapse v-model="simpleActive" simple accordion>
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -143,6 +143,10 @@
           { title: '标题2', content: '内容2' },
           { title: '标题3', content: '内容3', disabled: true }
         ],
+        basicActive: ['0', '1'],
+        accordionActive: '0',
+        nestingActive: '0',
+        simpleActive: '0',
         value: 'collapse1'
       }
     },

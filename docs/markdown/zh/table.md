@@ -444,7 +444,7 @@
 
 :::demo
 ```html
-<at-table :columns="columns3" :data="data2" sort></at-table>
+<at-table :columns="columns3" :data="data2"></at-table>
 
 <script>
   import { h } from 'vue'
@@ -521,9 +521,9 @@
 
 :::demo
 ```html
-<at-table :columns="columns3" :data="data2" size="large" sort></at-table>
+<at-table :columns="columns3" :data="data2" size="large"></at-table>
 
-<at-table style="margin-top: 24px;" :columns="columns4" :data="data2" size="small" sort></at-table>
+<at-table style="margin-top: 24px;" :columns="columns4" :data="data2" size="small"></at-table>
 
 <script>
   import { h } from 'vue'

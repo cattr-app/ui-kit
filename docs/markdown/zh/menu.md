@@ -235,47 +235,6 @@
 ```
 :::
 
-## 每次只展开一个子菜单
-
-设置属性 `inline-collapsed`，可开启 `手风琴模式`，即每次只能有一个子菜单被打开。同时 `AtSubmenu` 组件可使用参数 `opened` 配置子菜单默认展开
-
-:::demo
-```html
-<at-menu active-name="1-1" inline-collapsed>
-  <at-submenu opened>
-    <template #title><i class="icon icon-home"></i>导航菜单一</template>
-    <at-menu-item-group title="分组一">
-      <at-menu-item name="1-1">子菜单一</at-menu-item>
-      <at-menu-item name="1-2">子菜单二</at-menu-item>
-    </at-menu-item-group>
-    <at-menu-item-group title="分组二">
-      <at-menu-item name="1-3">子菜单三</at-menu-item>
-      <at-menu-item name="1-4">子菜单四</at-menu-item>
-    </at-menu-item-group>
-  </at-submenu>
-  <at-submenu>
-    <template #title><i class="icon icon-life-buoy"></i>导航菜单二</template>
-    <at-menu-item name="2-1">子菜单一</at-menu-item>
-    <at-menu-item name="2-2">子菜单二</at-menu-item>
-    <at-menu-item name="2-3">子菜单三</at-menu-item>
-    <at-menu-item name="2-4">子菜单四</at-menu-item>
-  </at-submenu>
-  <at-submenu>
-    <template #title><i class="icon icon-life-buoy"></i>导航菜单三</template>
-    <at-menu-item name="3-1">子菜单一</at-menu-item>
-    <at-menu-item name="3-2">子菜单二</at-menu-item>
-    <at-menu-item name="3-3">子菜单三</at-menu-item>
-    <at-menu-item name="3-4">子菜单四</at-menu-item>
-  </at-submenu>
-  <at-submenu>
-    <template #title><i class="icon icon-life-buoy"></i>导航菜单四</template>
-    <at-menu-item name="4-1">子菜单一</at-menu-item>
-    <at-menu-item name="4-2">子菜单二</at-menu-item>
-  </at-submenu>
-</at-menu>
-```
-:::
-
 ## 添加路由链接
 
 除了可以使用 `name` 配置菜单值，也可以通过 `to` 属性配置 `vue-router` 的路由，添加 `replace` 属性可设置不给 `history` 添加新记录

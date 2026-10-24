@@ -9,7 +9,7 @@ You can expand multiple items.
 
 :::demo
 ```html
-<at-collapse :model-value="[0, 1]">
+<at-collapse v-model="basicActive">
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title" :disabled="item.disabled">
@@ -27,7 +27,7 @@ In accordion mode, only one item can be expanded at once.
 
 :::demo
 ```html
-<at-collapse accordion :model-value="0">
+<at-collapse v-model="accordionActive" accordion>
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -45,7 +45,7 @@ Collapse is nested inside the Collapse.
 
 :::demo
 ```html
-<at-collapse model-value="0" @on-change="changeHandle">
+<at-collapse v-model="nestingActive" @on-change="changeHandle">
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -91,7 +91,7 @@ Set `simple` property to use a simple collapse.
 
 :::demo
 ```html
-<at-collapse simple accordion :model-value="0">
+<at-collapse v-model="simpleActive" simple accordion>
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -142,6 +142,10 @@ Set `simple` property to use a simple collapse.
           { title: 'title 2', content: 'content 2' },
           { title: 'title 3', content: 'content 3', disabled: true }
         ],
+        basicActive: ['0', '1'],
+        accordionActive: '0',
+        nestingActive: '0',
+        simpleActive: '0',
         value: 'collapse1'
       }
     },
