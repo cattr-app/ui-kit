@@ -19,6 +19,7 @@ touches: [src/components/dropdown/**, src/components/dropdown-menu/index.js, src
 - файлы: dropdown-item.vue dropdown-menu.vue dropdown.vue 
 
 ## Специфика
+- (из 20-04) Сейчас AtDropdown падает при монтировании с `this.$on is not a function` — после замены на provide/inject smoke-тест на монтирование обязателен первым.
 - `dropdown.vue`: `$on('menu-item-click')` + `dispatch` из item → provide `{ onItemClick }`; `v-clickoutside` (20-04); mixin popover; transition.
 
 ## Критерии приёмки

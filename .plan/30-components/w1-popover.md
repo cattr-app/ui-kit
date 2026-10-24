@@ -15,6 +15,7 @@ touches: [src/components/popover/**]
 - файлы: popover.vue 
 
 ## Специфика
+- (из 20-04) В `popover.vue` остался мёртвый `watch.value` — удалить. Метод `doDestory` из mixin пустой, вызов `@after-leave="doDestory"` в шаблоне убрать; слушатели mixin снимает сам в `beforeUnmount`.
 - mixin popover + `v-clickoutside` (20-04). `modelValue`.
 
 ## Критерии приёмки

@@ -32,6 +32,8 @@ touches: [src/components/select/**, src/components/option/index.js, src/componen
 - файлы: dropdown.vue option-group.vue option.vue select.vue 
 
 ## Специфика
+- **Решение (ревью 20-04):** Select НЕ подключает `mixins/popover` — его prop `modelValue: Boolean` (открыт/закрыт) конфликтует с `modelValue` выбора. Оставить у Select собственное состояние `visible`, prop `placement` объявить локально, позиционирование дропдауна — как сейчас через `select/src/dropdown.vue`. Из mixin ничего не наследовать; `trigger` prop, если нужен, тоже локально.
+- `select/src/dropdown.vue` без `ref="trigger"` получает `console.error` из mixin popover в `mounted` — после отказа от mixin это исчезнет само.
 - Самый связанный компонент: `provide('select', this)` уже есть, `option.vue` делает `inject: ['select']` — расширить этот канал и убрать `broadcast('AtOption','on-query-change')`, `$on('on-select-selected')`, `$on('on-select-close')`, `findComponentsDownward(this,'AtOption')` (обход опций для notFound/hidden): опции регистрируются в select через `useChildren`, фильтрация — реактивным `query` из inject.
 - `select/src/dropdown.vue`: `$parent.$options.name === 'AtSelect'`, `$on('on-update-popper')` → inject/props.
 - `keyCode` → `event.key` (`Escape`, `ArrowDown`, `ArrowUp`, `Enter`).

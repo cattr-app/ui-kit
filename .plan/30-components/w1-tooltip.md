@@ -15,6 +15,7 @@ touches: [src/components/tooltip/**]
 - файлы: tooltip.vue 
 
 ## Специфика
+- (из 20-04) `v-model` через mixin уже работает в обе стороны (`modelValue`/`update:modelValue`); проверить шаблон на остатки `value`, убрать `@after-leave="doDestory"`, если есть.
 - Использует mixin popover (20-04): `modelValue` вместо `value`. Один корень обязателен — позиционирование popover считается от `$refs.trigger` внутри корня.
 
 ## Критерии приёмки
