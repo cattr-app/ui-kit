@@ -35,5 +35,7 @@ scripts/node.sh pnpm build:docs
 Проверить, что в `CHANGELOG-MIGRATION.md` не осталось пометок `[TODO …]`.
 
 ## Найдено по ходу
+- (из 30-w2-steps/collapse) `useChild` регистрирует ребёнка в `onMounted`, поэтому первый кадр рендерится с `index = -1` (у Steps — номер «0» и без ширины, у CollapseItem без `name` раскрытие после mount). Возможное улучшение `useChildren`: регистрировать в `setup` с `el = null` и пересортировывать в `onMounted`. Решить, нужно ли; при SSR это заметно.
+- (из 30-w1-slider) `<at-input-number>` внутри Slider стоит под `v-show="false"` — мёртвая разметка; решить, удалить ли её вместе с `inputValue`.
 
 ## Заметки агента

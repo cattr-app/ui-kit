@@ -20,6 +20,7 @@ touches: [src/components/table/**]
 - файлы: render.js table.vue 
 
 ## Специфика
+- (из 30-w2-checkbox) `<at-checkbox v-model="isSelectAll" @click.native.prevent="handleSelectAll">` → убрать `.native` (корень чекбокса один, `@click.prevent` упадёт на него через `$attrs`); `v-model` + `@on-change="changeRowSelection"` совместимы без правок. Локально зарегистрировать `AtCheckbox`/`AtPagination` в `components`, чтобы Table работал при импорте по отдельности.
 - Колонка `render`: сейчас `render: (h, params) => VNode` через functional `Cell` (`render.js`). Vue 3: `Cell` = функциональный компонент `(props) => props.render(props.params)`; публичная сигнатура становится `render: ({ item, column, index }) => VNode`, где потребитель импортирует `h` из vue сам. **Записать в changelog с примером было/стало.**
 - `<template v-for>` с `:key` на `<tr>` → key на `<template>`; внутри `v-for` по колонкам переменная `index` затеняет внешний `index` — переименовать.
 - `.native` ×2 на at-checkbox (выделение строк) → обычные listeners/`@change`.
