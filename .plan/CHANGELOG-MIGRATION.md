@@ -223,7 +223,7 @@
   Было: Vue 2 `extend`/`mount`, параметры через `data`. Стало: `mountService` + props `percent`, `status`, `show`, `width` у `AtLoadingBar`.
   Новое: `LoadingBar.destroy()` — немедленно убирает полосу и останавливает таймеры (например, при смене маршрута или в тестах). `config({ width })` применяется и к уже показанной полосе (в 1.x — только к следующей).
   Исправлено: `start()` сразу после `finish()`/`error()` больше не удаляется отложенным скрытием предыдущего запуска. Что править: ничего.
-  Известное: CSS `.at-loading-bar { height: 4px !important }` перебивает высоту из `config({ width })`, как и в 1.x.
+  Исправлено: `config({ width })` меняет высоту полосы.
 
 - `Notification` (`$Notify`): вызов `Notification({ title, message, type, icon, duration, showClose, onClose })`, `Notification('text')` (строка = `message`), `Notification.info/success/warning/error(...)` — как раньше.
   Импорт для `<script setup>`: `import { Notification } from '@amazingcat/cattr-ui'`; отдельная установка `app.use(Notification)` (кладёт `$Notify` в `globalProperties`). Вызывать после `app.use(CattrUI)` или `app.use(Notification)` (см. `Message`).

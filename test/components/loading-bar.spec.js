@@ -64,6 +64,22 @@ describe('LoadingBar', () => {
     LoadingBar.config({ width: 2 })
   })
 
+  it('config({ width }) sets the inline height of the bar, also for the shown bar', async () => {
+    LoadingBar.config({ width: 6 })
+    LoadingBar.start()
+    await nextTick()
+    expect(bars()[0].style.height).toBe('6px')
+    LoadingBar.config({ width: 2 })
+    await nextTick()
+    expect(bars()[0].style.height).toBe('2px')
+  })
+
+  it('without config() the inline height is the default 2px', async () => {
+    LoadingBar.start()
+    await nextTick()
+    expect(bars()[0].style.height).toBe('2px')
+  })
+
   it('destroy() removes the bar, the next start() creates it again', async () => {
     LoadingBar.start()
     await nextTick()
