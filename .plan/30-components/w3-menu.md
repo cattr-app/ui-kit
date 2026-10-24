@@ -1,7 +1,7 @@
 ---
 id: 30-w3-menu
 title: Menu, MenuItem, MenuItemGroup, Submenu → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -44,6 +44,14 @@ scripts/node.sh pnpm build
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
 
+Записано: «По компонентам» → Menu, MenuItem, MenuItemGroup, Submenu (слот `#title`, одиночный `on-select` для вложенных подменю, удалён inert mixin popover у Submenu, lazy `router-link`).
+
 ## Найдено по ходу
 
 ## Заметки агента
+- `MenuContext` (`menu/src/context.js`): `reactive({ mode, theme, inlineCollapsed, activeName, children, register, unregister, select })`; `children` — только top-level submenu (`exposed.close()`) для `inline-collapsed`. `SubmenuContext` у каждого submenu: items и вложенные submenu регистрируются через `useChild` с `exposed = reactive({ active })`, `active` submenu = `children.some(c => c.exposed.active)` (рекурсивно). Submenu вызывает `useChild` дважды (родительский submenu либо menu) — useChildren это допускает.
+- Отклонение от брифа: у Menu нет `open-names`/`accordion`/`on-open-change` и в 1.x не было — API не расширял; аналог accordion — `inline-collapsed`, раскрытие по клику только в `inline` (vertical/horizontal — hover с таймером 200 мс, снимается в `beforeUnmount`). `opened` — только начальное значение, как в 1.x.
+- Исправлено попутно: `on-select` эмитился N раз при N уровнях вложенности подменю; теперь один. Mixin popover у Submenu не использовался (свои hover-обработчики, `trigger` не задан) — удалён вместе с props.
+- `router-link` резолвится через `<component :is="'router-link'">` внутри `v-if`, иначе компилятор хоистит `resolveComponent` и Vue warn в каждом тесте/приложении без vue-router. Подсветка по `router-link-active` — 1:1 с 1.x (перепроверка в `nextTick` при смене activeName), на смену `$route` не реагирует.
+- vue-router нет в devDependencies — props `router`/`to`/`replace` тестами не покрыты (проверить в 40-* на docs-сайте).
+- Документация `docs/markdown/en/menu.md` использует `slot="title"` — обновить в 40-*.

@@ -9,12 +9,16 @@
 </template>
 
 <script>
-import Emitter from '../../../mixins/emitter'
-import { findComponentsDownward } from '../../../utils/util'
+import { getCurrentInstance, reactive, ref, toRef, watch } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { MenuContext } from './context'
+
+function normalize(name) {
+  return typeof name === 'undefined' ? -1 : name
+}
 
 export default {
   name: 'AtMenu',
-  mixins: [Emitter],
   props: {
     mode: {
       type: String,
@@ -40,10 +44,41 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      currentActiveName: this.activeName,
+  emits: ['on-select'],
+  setup(props, { emit }) {
+    const { children, register, unregister } = useChildren()
+    const currentActiveName = ref(normalize(props.activeName))
+    const { proxy } = getCurrentInstance()
+
+    watch(
+      () => props.activeName,
+      value => {
+        currentActiveName.value = normalize(value)
+      },
+    )
+
+    function select(item) {
+      currentActiveName.value = normalize(item.name)
+      emit('on-select', item.name)
+
+      if (props.router) {
+        const route = item.to || {}
+        item.replace ? proxy.$router.replace(route) : proxy.$router.push(route)
+      }
     }
+
+    MenuContext.provide(
+      reactive({
+        mode: toRef(props, 'mode'),
+        theme: toRef(props, 'theme'),
+        inlineCollapsed: toRef(props, 'inlineCollapsed'),
+        activeName: currentActiveName,
+        children,
+        register,
+        unregister,
+        select,
+      }),
+    )
   },
   computed: {
     ulStyle() {
@@ -54,45 +89,6 @@ export default {
       }
 
       return style
-    },
-  },
-  watch: {
-    activeName(val) {
-      this.currentActiveName = val
-    },
-    currentActiveName() {
-      this.updateActiveName()
-    },
-  },
-  mounted() {
-    this.updateActiveName()
-    this.$on('on-menu-item-select', item => {
-      this.currentActiveName = item.name
-      this.$emit('on-select', item.name)
-
-      if (this.router) {
-        this.routeToMenuItem(item)
-      }
-    })
-  },
-  methods: {
-    updateActiveName() {
-      if (typeof this.currentActiveName === 'undefined') {
-        this.currentActiveName = -1
-      }
-
-      const submenus = findComponentsDownward(this, 'AtSubmenu')
-
-      if (submenus && submenus.length) {
-        submenus.forEach(submenu => {
-          submenu.$emit('on-update-active', false)
-        })
-      }
-      this.broadcast('AtMenuItem', 'on-update-active', this.currentActiveName)
-    },
-    routeToMenuItem(item) {
-      const route = item.to || {}
-      item.replace ? this.$router.replace(route) : this.$router.push(route)
     },
   },
 }

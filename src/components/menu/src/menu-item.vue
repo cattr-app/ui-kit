@@ -4,9 +4,16 @@
     :class="[active ? 'at-menu__item--active' : '', disabled ? 'at-menu__item--disabled' : '']"
     @click="handleClick"
   >
-    <router-link v-if="Object.keys(to).length" ref="link" class="at-menu__item-link" :to="to">
+    <!-- resolved only in this branch: no "Failed to resolve component" warning without vue-router -->
+    <component
+      :is="'router-link'"
+      v-if="Object.keys(to).length"
+      ref="link"
+      class="at-menu__item-link"
+      :to="to"
+    >
       <slot></slot>
-    </router-link>
+    </component>
     <div v-else class="at-menu__item-link">
       <slot></slot>
     </div>
@@ -14,12 +21,12 @@
 </template>
 
 <script>
-import Emitter from '../../../mixins/emitter'
-import { findComponentsUpward } from '../../../utils/util'
+import { computed, reactive, ref } from 'vue'
+import { useChild } from '../../../composables/useChildren'
+import { MenuContext, SubmenuContext } from './context'
 
 export default {
   name: 'AtMenuItem',
-  mixins: [Emitter],
   props: {
     name: {
       type: [String, Number],
@@ -39,44 +46,39 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {
-      active: false,
-    }
+  emits: [],
+  setup(props) {
+    const menu = MenuContext.inject(null)
+    const submenu = SubmenuContext.inject(null)
+    // `router-link-active` on the link, re-checked whenever the menu's active name changes (as in 1.x)
+    const routerActive = ref(false)
+    const active = computed(() => !!menu && (menu.activeName === props.name || routerActive.value))
+
+    // the enclosing submenu is highlighted while this item is active
+    useChild(submenu, reactive({ active }))
+
+    return { menu, submenu, routerActive, active }
+  },
+  watch: {
+    'menu.activeName'() {
+      this.$nextTick(this.updateRouterActive)
+    },
   },
   mounted() {
-    this.$on('on-update-active', name => {
-      this.$nextTick(() => {
-        if (
-          this.name === name ||
-          (this.$refs.link && this.$refs.link.$el.classList.contains('router-link-active'))
-        ) {
-          this.active = true
-
-          const parents = findComponentsUpward(this, 'AtSubmenu')
-          if (parents && parents.length) {
-            parents.forEach(parent => {
-              parent.$emit('on-update-active', true)
-            })
-          }
-        } else {
-          this.active = false
-        }
-      })
-    })
+    this.$nextTick(this.updateRouterActive)
   },
   methods: {
+    updateRouterActive() {
+      const el = this.$refs.link && this.$refs.link.$el
+      this.routerActive = !!(el && el.classList && el.classList.contains('router-link-active'))
+    },
     handleClick(evt) {
       evt.preventDefault()
       if (this.disabled) return
-      const parents = findComponentsUpward(this, 'AtSubmenu')
 
-      if (parents && parents.length) {
-        parents.forEach(parent => {
-          parent.$emit('on-menu-item-select', this)
-        })
-      } else {
-        this.dispatch('AtMenu', 'on-menu-item-select', this)
+      if (this.submenu) this.submenu.select()
+      if (this.menu) {
+        this.menu.select({ name: this.name, to: this.to, replace: this.replace })
       }
     },
   },

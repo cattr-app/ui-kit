@@ -163,6 +163,14 @@
 - `AtCheckbox` и `AtPagination` зарегистрированы локально — Table работает при `app.use(AtTable)` без глобальной регистрации остальных компонентов.
 - События объявлены в `emits`: `rowClick` (нативный `MouseEvent` клика по строке), `on-select-all`, `on-selection-change`, `on-sort-change`, `on-page-change`, `on-page-size-change`. Имена без изменений. Что править: ничего.
 
+### Menu, MenuItem, MenuItemGroup, Submenu
+
+- Props и события без изменений: `AtMenu` — `mode`, `theme`, `active-name`, `inline-collapsed`, `width`, `router`, событие `on-select(name)`; `AtSubmenu` — `disabled`, `opened` (только начальное состояние, как в 1.x); `AtMenuItem` — `name`, `to`, `replace`, `disabled`; `AtMenuItemGroup` — `title`. Новых событий (`update:*`, `on-open-change`) не добавлено.
+- Слот заголовка подменю: `<template slot="title">` → `<template #title>` (синтаксис слотов Vue 3).
+- Было: при клике по пункту внутри вложенных подменю `on-select` эмитился по разу на каждый уровень вложенности (2 раза для `submenu > submenu > item`). Стало: ровно один раз на клик. Что править: убрать дедупликацию, если она была.
+- `AtSubmenu` больше не подключает mixin popover: недокументированные и ни на что не влиявшие props `trigger`, `title`, `content`, `header`, `placement`, `value` удалены. Атрибут `title` на `<at-submenu>` теперь попадает на корневой `<li>` как HTML-атрибут (нативная подсказка). Убран мусорный атрибут `placement="placementValue"` на `div.at-dropdown__popover`.
+- `AtMenuItem` резолвит `router-link` (vue-router 4) только при непустом `to`: меню без `to` работает без vue-router и без предупреждения `Failed to resolve component: router-link`. Подсветка по `router-link-active` по-прежнему перепроверяется при смене `active-name`. `AtSubmenu`/`AtMenuItem` вне `AtMenu` больше не падают (в 1.x — `parentMenu` = `null`).
+
 ## Сервисы
 
 - `[TODO 20-03, 30-w3-*]` До завершения миграции сервисов `$Message`, `$Modal`, `$Notify`, `$Loading` существуют, но при вызове бросают `… is not migrated to Vue 3 yet`. Промежуточные сборки ветки `feat/vue-3` для потребителя непригодны до закрытия этапа 30.
