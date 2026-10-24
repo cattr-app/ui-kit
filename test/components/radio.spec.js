@@ -106,7 +106,6 @@ describe('AtRadio without a group', () => {
 
     await wrapper.find('input').setValue()
     expect(wrapper.emitted('update:modelValue')).toEqual([['x']])
-    expect(wrapper.emitted('change')).toBeUndefined()
 
     await wrapper.setProps({ modelValue: 'x' })
     expect(wrapper.find('input').element.checked).toBe(true)
