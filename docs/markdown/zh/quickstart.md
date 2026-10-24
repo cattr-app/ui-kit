@@ -27,7 +27,7 @@
 ```js
 import { createApp } from 'vue'
 import CattrUI from '@amazingcat/cattr-ui'
-import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'    // 引入组件样式（scss）
+import '@amazingcat/cattr-ui/style.css'    // 引入组件样式（编译好的 CSS，无需 Sass）
 import App from './App.vue'
 
 const app = createApp(App)
@@ -161,7 +161,7 @@ app.mount('#app')
 
 ## 自定义主题
 
-`Cattr UI` 的样式随组件库一起发布，位于 `@amazingcat/cattr-ui/src/stylesheet/src`，各个组件的样式变量都存放在 `@amazingcat/cattr-ui/src/stylesheet/src/variables/default.scss` 文件中。用户可根据实际需要，自定义组件的样式。
+`Cattr UI` 的样式随组件库一起发布：编译好的默认主题 `@amazingcat/cattr-ui/style.css`，以及位于 `@amazingcat/cattr-ui/src/stylesheet/src` 的 SCSS 源码。各个组件的样式变量都存放在 `@amazingcat/cattr-ui/src/stylesheet/src/variables/default.scss` 文件中。用户可根据实际需要，自定义组件的样式：用 SCSS 源码代替 `style.css` 引入。此时项目需要安装 Sass：`sass-embedded`（推荐）或 `sass`，pnpm 的相关配置见 [安装](#/zh/docs/installation)。
 
 样式基于 Sass 模块系统（`@use` / `@forward`）编写。`default.scss` 中的所有变量都带有 `!default`，并由入口文件转发，因此主题在加载样式时配置：新建自己的 SCSS 入口文件，并用它代替 `index.scss` 引入。
 

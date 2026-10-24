@@ -1,7 +1,7 @@
 ---
 id: 50-05
 title: sass-embedded вместо sass; собранный CSS в пакете
-status: in-progress
+status: done
 depends_on: [50-03]
 parallel: true
 model: opus
@@ -43,5 +43,12 @@ scripts/node.sh pnpm lint --max-warnings 0 && scripts/node.sh pnpm format:check 
 «Стили»: готовый CSS в пакете; `sass-embedded`.
 
 ## Найдено по ходу
+- Факт «`sass-embedded` ставится без build-скриптов» верен только без Vite: запасные пакеты `sass-embedded-all-unknown`/`-unknown-all` (для платформ без бинарника) зависят от `sass`, pnpm (12.9 и 12.15) кладёт его в граф и линкует как optional peer Vite → `@parcel/watcher` → `ERR_PNPM_IGNORED_BUILDS`. Нужен `ignoredOptionalDependencies` на эти два пакета (и в библиотеке, и у потребителя).
 
 ## Заметки агента
+- Отклонение: `pnpm-workspace.yaml` не «только packages» — добавлен `ignoredOptionalDependencies: [sass-embedded-all-unknown, sass-embedded-unknown-all]` (см. «Найдено по ходу»); `allowBuilds`/`parcel` в файле нет. Lockfile пришлось перегенерировать с нуля (`--no-frozen-lockfile` и `--fix-lockfile` сохраняли `sass` как peer Vite): дрейф только патчей `@babel/*` 8.0.8, `@types/node` 26.6.5, `caniuse-lite` 1.0.30001819. `pnpm install --frozen-lockfile` чистый, `sass`/`@parcel/watcher` в `node_modules` нет.
+- CSS в dist: `build` = `vite build && pnpm build:style && node scripts/copy-css.js`; скрипт копирует `at.css`, `at.min.css` (без `sourceMappingURL`-комментария) и `fonts/` в `dist/css`, `.map` не копируются. `vite.config.js` не менялся: отдельный `vite build` после `pnpm build` по-прежнему очистит `dist/` (стили — только через `pnpm build`). CI `Build library` (`pnpm build`) теперь собирает и стили, `ci.yml` не трогался.
+- `dist/css`: `at.css` 163 412 B, `at.min.css` 123 396 B, `fonts/` 8 файлов (feather.* + неиспользуемые aticon.*); exports `./style.css`, `./style.min.css`, `./css/*`. `pnpm pack`: 207 файлов, 10 в `package/dist/css/**`, `.map` нет, tgz 529 kB.
+- Потребитель (контейнер, tarball через `file:`, pnpm 12.15, vite 8.3.5, plugin-vue 6.0.10): A — `style.css` без Sass: install без ошибок, sass/parcel в `node_modules` нет, `vite build` ок, CSS 117 kB, `.at-btn` ×116, 1 `@font-face`, `feather.{eot,ttf,woff,svg}` в `assets/`; `style.min.css` — так же. B — `sass-embedded` + `@use … with ($brand-blue-500: #ff5722)`: без настройки `ERR_PNPM_IGNORED_BUILDS` (@parcel/watcher), с `ignoredOptionalDependencies` — ок, `#ff5722` ×48, `.my-link{color:#ff5722}`. `sass` + `ignoredOptionalDependencies: ['@parcel/watcher']` тоже ставится и компилирует.
+- Документация: README «Подключение» (style.css по умолчанию, тема через `@use … with`, sass-embedded + настройка pnpm), en/zh installation/quickstart, CHANGELOG (чеклист п.1/п.10, «Стили», «Документация и разработка»).
+- Прогон: install --frozen-lockfile, lint --max-warnings 0, format:check, test 42/213, build, build:docs — зелёные.

@@ -26,7 +26,7 @@ Install the plugin in the entry file of the project. All components are register
 ```js
 import { createApp } from 'vue'
 import CattrUI from '@amazingcat/cattr-ui'
-import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'   // Import styles (SCSS, requires `sass`)
+import '@amazingcat/cattr-ui/style.css'   // Import styles (compiled CSS, no Sass needed)
 import App from './App.vue'
 
 const app = createApp(App)
@@ -154,7 +154,7 @@ app.use(LoadingBar)     // adds $Loading
 
 ## Customize Theme
 
-The styles of `Cattr UI` are included in the package (`@amazingcat/cattr-ui/src/stylesheet`). The variables for each component are stored in the file `src/stylesheet/src/variables/default.scss`. User can customize the style of components according to actual needs.
+The styles of `Cattr UI` are included in the package: compiled with the default theme (`@amazingcat/cattr-ui/style.css`) and as SCSS sources (`@amazingcat/cattr-ui/src/stylesheet`). The variables for each component are stored in the file `src/stylesheet/src/variables/default.scss`. User can customize the style of components according to actual needs: import the SCSS sources instead of `style.css`. This requires Sass in the project: `sass-embedded` (recommended) or `sass`, see [Installation](#/en/docs/installation) for the pnpm setting.
 
 The stylesheet is written with Sass modules (`@use` / `@forward`). Every variable in `default.scss` is declared with `!default` and forwarded by the entry point, so a theme is configured when the stylesheet is loaded: create your own SCSS entry and import it instead of `index.scss`.
 

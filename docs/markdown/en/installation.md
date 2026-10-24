@@ -12,7 +12,7 @@ npm install vue @amazingcat/cattr-ui
 pnpm add vue @amazingcat/cattr-ui
 ```
 
-UMD builds for the `<script>` tag (`dist/at.min.js`, the global `at`) are no longer provided, and the styles are shipped inside the package (`@amazingcat/cattr-ui/src/stylesheet`), so a separate style package is not needed.
+UMD builds for the `<script>` tag (`dist/at.min.js`, the global `at`) are no longer provided. The styles are shipped inside the package, both compiled (`@amazingcat/cattr-ui/style.css`) and as SCSS sources (`@amazingcat/cattr-ui/src/stylesheet`), so a separate style package is not needed.
 
 ## Example
 
@@ -22,7 +22,7 @@ A minimal application, e.g. created with `npm create vite@latest` (template `vue
 // main.js
 import { createApp } from 'vue'
 import CattrUI from '@amazingcat/cattr-ui'
-import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'
+import '@amazingcat/cattr-ui/style.css'
 import App from './App.vue'
 
 createApp(App).use(CattrUI).mount('#app')
@@ -45,4 +45,14 @@ export default {
 </script>
 ```
 
-The styles are written in SCSS, so the project needs the `sass` package (`npm install -D sass`).
+`style.css` is the compiled stylesheet with the default theme (a minified `style.min.css` is available too); the icon fonts are picked up by the bundler from the package. No Sass is needed for it.
+
+To customize the theme, load the SCSS sources instead (see [Customize Theme](#/en/docs/quickstart)). They require Sass: `npm install -D sass-embedded` (recommended, `sass` works as well). With pnpm 10 or newer, add this to the `pnpm-workspace.yaml` of the project, otherwise `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS` because of `@parcel/watcher`:
+
+```yaml
+ignoredOptionalDependencies:
+  - sass-embedded-all-unknown
+  - sass-embedded-unknown-all
+```
+
+With `sass` use `allowBuilds: { '@parcel/watcher': false }` instead.
