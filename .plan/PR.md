@@ -8,7 +8,8 @@
 - Сборка: Vite library mode, `dist/index.js` (127.4 kB, gzip 30.5 kB) + 6 локалей `dist/locale/*.js`; UMD удалён. Стили — SCSS на модулях Sass (`@use … with`), тема настраивается без `@import`.
 - Инструменты: ESLint 10 flat config + eslint-plugin-vue 10, Prettier 3, Vitest 5 — 42 файла, 213 тестов; `pnpm lint --max-warnings 0` — 0 ошибок / 0 предупреждений.
 - Документация: сайт на Vite + vue-router 5 + vue-i18n 11, деплой на GitHub Pages; CI на GitHub Actions (lint, format, test, build, build:docs).
-- Миграция выполнена по плану из 49 задач (`.plan/`), каждое ломающее изменение описано в `CHANGELOG.md` в формате «Было → Стало → Что править».
+- Миграция выполнена по плану из 51 задачи (`.plan/`), каждое ломающее изменение описано в `CHANGELOG.md` в формате «Было → Стало → Что править».
+- В пакете есть готовый CSS (`@amazingcat/cattr-ui/style.css`, шрифты в `dist/css/fonts`), библиотека собирает стили через `sass-embedded`; CI прогоняет тесты с покрытием (строки 82.9%, пороги 80/70/78/80), пишет summary, выгружает отчёт артефактом и комментирует PR.
 - Пакет проверен во внешнем Vite-проекте, установленном из tarball: `vite build`, импорт `@amazingcat/cattr-ui` и `/locale/de` в Node, SSR-рендер `<at-button>`/`<at-select>`, тема через `@use … with`.
 
 ## Ломающие изменения
