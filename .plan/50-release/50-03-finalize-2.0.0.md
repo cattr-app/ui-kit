@@ -1,17 +1,17 @@
 ---
 id: 50-03
-title: Финализация changelog, версия 2.0.0, подготовка к публикации
+title: Финализация changelog, версия 2.0.0, проверка состава пакета
 status: todo
 depends_on: [50-02]
 parallel: false
 touches: [CHANGELOG.md, .plan/CHANGELOG-MIGRATION.md, package.json, docs/markdown/*/changelog.md]
 ---
 ## Цель
-Готовый к релизу пакет и документ миграции для команды фронтенда. **Публикация в npm и создание GitHub Release — вручную человеком**, агент не публикует.
+Версия 2.0.0, итоговый `CHANGELOG.md` для команды фронтенда, проверенный состав пакета и его работоспособность во внешнем Vite-проекте. Дальнейшие шаги вне плана и выполняются вручную после проверок.
 
 ## Шаги
 1. `.plan/CHANGELOG-MIGRATION.md` → перенести в корень как `CHANGELOG.md` (раздел `## 2.0.0`), убрать пометки `[TODO]`, отсортировать: Требования → Подключение → v-model → Компоненты (по алфавиту) → Сервисы → Удалено. Каждая запись с примером «было/стало». Добавить в начало чеклист миграции проекта из 8–12 пунктов (последовательность действий во фронтенде).
-2. `package.json`: `version: 2.0.0`, проверить `files`, `exports`, `peerDependencies`, `publishConfig.access: public`, `repository`.
+2. `package.json`: `version: 2.0.0`, проверить `files`, `exports`, `peerDependencies`, `repository`.
 3. `scripts/node.sh pnpm pack` → распаковать во временную папку в контейнере, проверить состав: `dist/index.js`, `dist/locale/*.js`, `src/**` (включая `stylesheet/src`), `README.md`, `CHANGELOG.md`, `LICENSE`; нет `test`, `docs`, `.plan`. Удалить архив.
 4. Проверка потребления: в контейнере создать временный Vite-проект (`pnpm create vite tmp --template vue`), установить tarball, `app.use(CattrUI)`, отрендерить `<at-button>` и `<at-select>` в `vitest`-тесте или просто `vite build` без ошибок. Временную папку удалить.
 5. Решить судьбу `.plan/`: предложение — перенести в `docs/migration/` как историю или удалить отдельным коммитом после мержа `feat/vue-3` в `main`. Записать решение в заметки, не выполнять без подтверждения человека.

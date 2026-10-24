@@ -12,11 +12,11 @@ touches: [package.json, pnpm-lock.yaml, eslint.config.js, .prettierrc, .prettier
 
 ## Факты
 - Сейчас ESLint 4 + `eslint-config-o2team` + `eslint-plugin-html`, `.eslintrc.js`. Prettier нет.
-- Конфиг prettier задан заказчиком (ниже), включает `prettier-plugin-tailwindcss` — ставить как devDependency, даже если tailwind в репозитории нет (единый конфиг с проектом).
+- Конфиг prettier задан заказчиком (ниже). Плагины не подключать: tailwind в репозитории нет.
 - Правила Vue 3 (`flat/recommended`) на ещё не мигрированном коде дадут ошибки `no-deprecated-*` — это нормальная **инвентаризация**, их закрывают задачи 20-*/30-*. Отключать их нельзя.
 
 ## Шаги
-1. Зависимости (devDependencies, актуальные версии через `npm view`): `eslint`, `@eslint/js`, `eslint-plugin-vue`, `vue-eslint-parser`, `globals`, `eslint-config-prettier`, `prettier`, `prettier-plugin-tailwindcss`. Если `prettier-plugin-tailwindcss` требует peer `tailwindcss` — добавить `tailwindcss` в devDependencies, не убирать плагин.
+1. Зависимости (devDependencies, актуальные версии через `npm view`): `eslint`, `@eslint/js`, `eslint-plugin-vue`, `vue-eslint-parser`, `globals`, `eslint-config-prettier`, `prettier`.
 2. `.prettierrc` ровно такого содержания:
    ```json
    {
@@ -28,8 +28,7 @@ touches: [package.json, pnpm-lock.yaml, eslint.config.js, .prettierrc, .prettier
      "endOfLine": "lf",
      "printWidth": 100,
      "bracketSpacing": true,
-     "arrowParens": "avoid",
-     "plugins": ["prettier-plugin-tailwindcss"]
+     "arrowParens": "avoid"
    }
    ```
    `.prettierignore`: `dist`, `node_modules`, `pnpm-lock.yaml`, `src/stylesheet/css`, `docs/markdown/**` (markdown с демо форматировать нельзя — ломает блоки `:::demo`), `.plan/**`.

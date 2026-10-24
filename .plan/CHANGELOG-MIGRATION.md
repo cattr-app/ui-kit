@@ -7,7 +7,7 @@
 ## Требования к окружению
 
 - `[TODO 10-01]` Peer dependency: `vue ^3.5`. Vue 2.x больше не поддерживается.
-- `[TODO 10-01]` Пакет публикуется как ESM (`"type": "module"`, поле `exports`). UMD-сборки `dist/at.js`/`dist/at.min.js` удалены.
+- `[TODO 10-01]` Пакет поставляется как ESM (`"type": "module"`, поле `exports`). UMD-сборки `dist/at.js`/`dist/at.min.js` удалены.
   Импорт отдельных компонентов: `import { AtButton } from '@amazingcat/cattr-ui'` (tree-shaking через `sideEffects`) или `@amazingcat/cattr-ui/src/components/button`.
 - `[TODO 10-01]` Локали: `@amazingcat/cattr-ui/locale/<lang>` (ESM) вместо `dist/locale/<lang>.js` (UMD).
 - `[TODO 00-03]` Внутренние импорты вида `at-ui/src/...` удалены. Alias `at-ui` в конфиге потребителя больше не нужен.
