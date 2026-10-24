@@ -1,7 +1,7 @@
 ---
 id: 30-w3-notification
 title: Notification ($Notify) → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-03, 20-04]
 parallel: true
 model: opus
@@ -35,7 +35,13 @@ scripts/node.sh pnpm build
 
 ## Changelog
 Записать в CHANGELOG-MIGRATION.md → «По компонентам», если изменилось что-то кроме `modelValue`.
+Записано в «Сервисы» → `Notification` (`$Notify`): возврат функции закрытия вместо `vm`, новый `closeAll()`, `close(id)` теперь прячет, приоритет `icon` над иконкой типа.
 
 ## Найдено по ходу
 
 ## Заметки агента
+- Сервис переписан 1:1 по Message: props вместо `data: options`, `mountService`, стек `instances[]` с `update({ top })` (GAP 16 как в 1.x), `close(id)` прячет, `closeAll` по копии, `install`.
+- Отклонение от 1.x: вызов возвращает функцию закрытия (было `vm`); `closeAll()` в 1.x не было — добавлен. Записано в changelog.
+- `v-html` в notification нет (было `v-text`) — выводится `{{ }}`, eslint-disable не нужен.
+- `icon` теперь приоритетнее иконки типа и работает без `type` (в 1.x был фактически мёртвым). Тип по умолчанию оставлен `''`; документация 1.x пишет `info` и `duration` «in seconds» — поправить на этапе 40.
+- Пометка `[TODO 20-03, 30-w3-*]` в «Сервисах» оставлена: `$Modal`/`$Loading` ещё не описаны.

@@ -141,6 +141,13 @@
   Исправлено: `start()` сразу после `finish()`/`error()` больше не удаляется отложенным скрытием предыдущего запуска. Что править: ничего.
   Известное: CSS `.at-loading-bar { height: 4px !important }` перебивает высоту из `config({ width })`, как и в 1.x.
 
+- `Notification` (`$Notify`): вызов `Notification({ title, message, type, icon, duration, showClose, onClose })`, `Notification('text')` (строка = `message`), `Notification.info/success/warning/error(...)` — как раньше.
+  Импорт для `<script setup>`: `import { Notification } from '@amazingcat/cattr-ui'`; отдельная установка `app.use(Notification)` (кладёт `$Notify` в `globalProperties`). Вызывать после `app.use(CattrUI)` (см. `Message`).
+  Было: вызов возвращал экземпляр компонента (`vm`, с `vm.id`, `vm.handleClose()`). Стало: возвращает функцию закрытия, как `Message`. Что править: `const n = this.$Notify(...); n.handleClose()` → `const close = this.$Notify(...); close()`.
+  Добавлено: `Notification.closeAll()` (в 1.x не было). `Notification.close(id)` теперь и прячет уведомление, а не только убирает его из стека и сдвигает остальные.
+  Было: `icon` показывался, только если `type` не из `success/error/warning/info` (иконка типа побеждала, без `type` иконки не было вовсе). Стало: `icon` имеет приоритет над иконкой типа и показывается и без `type` (как у `Message`). Тип по умолчанию по-прежнему пустой (без иконки), а не `info`, как написано в документации 1.x.
+  `title`/`message` выводятся текстом (`{{ }}`, в 1.x `v-text`), HTML не интерпретируется — без изменений. Объект `options` не мутируется; в `onClose(vm)` приходит публичный экземпляр компонента.
+
 (заполняется задачами 30-w3-modal, 30-w3-notification, 30-w3-loading-bar)
 
 ## Документация и разработка
