@@ -1,7 +1,7 @@
 ---
 id: 30-w2-steps
 title: Steps, Step → Vue 3
-status: todo
+status: done
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
 model: opus
@@ -39,3 +39,8 @@ scripts/node.sh pnpm build
 ## Найдено по ходу
 
 ## Заметки агента
+- `StepsContext` (`steps/src/context.js`): `reactive({ current, status, size, direction, children, register, unregister })` + `useChildren`; Step — `useChild(ctx)`, exposed = proxy. `useChildren.js` не менялся.
+- `index`, `internalStatus`, `nextError` в Step стали computed (из `index`/`current`/`status`) вместо мутаций из `Steps.updateStepsStatus`; `watch`/`data.steps` в Steps удалены. Логика 1.x сохранена, включая `next-error` только при `status="error"` на текущем шаге без собственного `status`.
+- `index` = -1 до `onMounted`: первый рендер без ширины и с номером «0», после регистрации — корректно (тест ждёт `nextTick`). Ширина не ставится, пока `children.length === 0`.
+- `AtStep` без `AtSteps` больше не падает (было обращение к `$parent.steps`): статус только из своего `status`, без ширины.
+- Публичное API (props/events/slots) не изменилось — запись в changelog не нужна. Smoke-тест: `test/components/steps.spec.js` (5 `it`).

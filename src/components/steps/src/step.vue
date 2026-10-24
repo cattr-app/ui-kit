@@ -32,6 +32,9 @@
 </template>
 
 <script>
+import { useChild } from '../../../composables/useChildren'
+import { StepsContext } from './context'
+
 export default {
   name: 'AtStep',
   props: {
@@ -43,26 +46,43 @@ export default {
       validator: val => ['wait', 'process', 'finish', 'error'].indexOf(val) > -1,
     },
   },
-  data() {
-    return {
-      index: -1,
-      internalStatus: '',
-      nextError: false,
-    }
+  emits: [],
+  setup() {
+    const steps = StepsContext.inject(null)
+    const { index } = useChild(steps)
+    return { steps, index }
   },
   computed: {
     stepStyle() {
       const style = {}
-      if (this.$parent.direction !== 'vertical') {
+      if (this.steps && this.steps.direction !== 'vertical' && this.stepsTotal > 0) {
         style.width = `${(1 / this.stepsTotal) * 100}%`
       }
       return style
     },
     stepsTotal() {
-      return this.$parent.steps.length
+      return this.steps ? this.steps.children.length : 0
+    },
+    internalStatus() {
+      if (!this.steps || this.index < 0) return ''
+      const { current, status } = this.steps
+      if (this.index === current) return status === 'error' ? 'error' : 'process'
+      return this.index < current ? 'finish' : 'wait'
     },
     finalStatus() {
       return this.status || this.internalStatus
+    },
+    nextError() {
+      // 1.x: the step before the current one is marked when Steps has `status="error"`
+      // and the current step does not override it with its own `status`.
+      if (!this.steps || this.index < 0) return false
+      const next = this.steps.children[this.index + 1]
+      return (
+        !!next &&
+        this.index + 1 === this.steps.current &&
+        this.steps.status === 'error' &&
+        next.exposed.finalStatus === 'error'
+      )
     },
     isLastStep() {
       return this.index === this.stepsTotal - 1
@@ -91,17 +111,6 @@ export default {
 
       return className
     },
-  },
-  beforeCreate() {
-    this.$parent.steps.push(this)
-  },
-  beforeDestroy() {
-    const steps = this.$parent.steps
-    const index = steps.indexOf(this)
-
-    if (index >= 0) {
-      steps.splice(index, 1)
-    }
   },
 }
 </script>

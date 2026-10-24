@@ -11,6 +11,10 @@
 </template>
 
 <script>
+import { reactive, toRef } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { StepsContext } from './context'
+
 export default {
   name: 'AtSteps',
   props: {
@@ -35,51 +39,21 @@ export default {
       validator: val => ['horizontal', 'vertical'].indexOf(val) > -1,
     },
   },
-  data() {
-    return {
-      steps: [],
-    }
-  },
-  watch: {
-    current() {
-      this.updateStepsStatus()
-    },
-    steps(steps) {
-      steps.forEach((step, index) => {
-        step.index = index
-      })
-      this.updateStepsStatus()
-    },
-  },
-  mounted() {
-    this.updateStepsStatus()
-  },
-  methods: {
-    updateStepsStatus() {
-      const current = this.current
-      const status = this.status
+  emits: [],
+  setup(props) {
+    const { children, register, unregister } = useChildren()
 
-      this.steps.forEach((child, index) => {
-        const prevChild = this.steps[index - 1]
-
-        if (index === current) {
-          if (status === 'error') {
-            child.internalStatus = 'error'
-            prevChild && (prevChild.nextError = true)
-          } else {
-            child.internalStatus = 'process'
-          }
-        } else if (index < current) {
-          child.internalStatus = 'finish'
-        } else {
-          child.internalStatus = 'wait'
-        }
-
-        if (child.finalStatus !== 'error' && prevChild) {
-          prevChild.nextError = false
-        }
-      })
-    },
+    StepsContext.provide(
+      reactive({
+        current: toRef(props, 'current'),
+        status: toRef(props, 'status'),
+        size: toRef(props, 'size'),
+        direction: toRef(props, 'direction'),
+        children,
+        register,
+        unregister,
+      }),
+    )
   },
 }
 </script>
