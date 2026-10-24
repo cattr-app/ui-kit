@@ -65,6 +65,8 @@ CATTR_UI_DOCKER_ARGS="-p 7200:7200" scripts/node.sh pnpm dev   # dev-серве�
 scripts/node.sh npm view <pkg> version                           # проверить актуальную версию
 ```
 
+Baseline-сборка до 10-01 (проверено 2026-10-24): `scripts/node.sh pnpm install --frozen-lockfile --ignore-scripts`, затем `CATTR_UI_DOCKER_ARGS="-e NODE_OPTIONS=--openssl-legacy-provider" scripts/node.sh pnpm build:package`.
+
 Кэш: `~/.cache/cattr-ui-node` — `corepack/` (бинарь pnpm), `pnpm-store/` (content-addressable store скачанных пакетов, общий для всех worktree; `node_modules` хардлинкуются из него), `pnpm-cache/` (метаданные registry), `npm/`. Образ `node:24-slim`. Контейнер удаляется по выходу. pnpm 12 читает настройки только из переменных с префиксом `pnpm_config_*` (не `npm_config_*`) — учтено в скрипте.
 Одновременные запуски из разных worktree безопасны: pnpm store рассчитан на параллельный доступ.
 
