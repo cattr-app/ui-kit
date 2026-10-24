@@ -6,6 +6,6 @@ test/e2e/reports
 .vscode
 dist/
 .vite/
-test
 .history
 .idea
+coverage/

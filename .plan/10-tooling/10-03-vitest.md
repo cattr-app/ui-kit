@@ -1,7 +1,7 @@
 ---
 id: 10-03
 title: Vitest + @vue/test-utils, smoke-инфраструктура
-status: todo
+status: done
 depends_on: [10-02]
 parallel: false
 model: opus
@@ -39,3 +39,9 @@ scripts/node.sh pnpm lint
 ## Найдено по ходу
 
 ## Заметки агента
+- Версии: vitest 5.0.5, @vue/test-utils 2.5.1, happy-dom 21.0.4 (vitest 5 peer `happy-dom: '*'`). Coverage-пакет не ставился; `coverage/` в `.gitignore` есть.
+- `vitest.config.js`: `mergeConfig` с `vite.config.js`, из которого деструктуризацией выброшен `build` (lib/externals). Сборка `pnpm build` не изменилась, test/** в dist не попадает.
+- `import('src/index.js')` сейчас падает при вычислении модуля: `Vue.extend` на `undefined` в `notification/src/notic.js` (и аналогично в остальных сервисах с `import Vue from 'vue'`).
+- Поэтому `test/helpers/mount.js` импортирует плагин лениво: `mount` асинхронный, в 30-* писать `const wrapper = await mount(Comp, opts)`. `test/helpers/mount.spec.js` проверяет только экспорт, helper не вызывает.
+- Для 20-01/20-03: после того как `src/index.js` станет импортируемым, первый же вызов helper проверит `app.use(CattrUI)`; статический импорт можно вернуть, `await` в тестах при этом не ломается.
+- `pnpm lint`: 95 проблем (89 errors) — как до задачи, в test/** и vitest.config.js 0. `vitest.config.js` добавлен в блок node globals eslint.
