@@ -64,6 +64,16 @@
 
 (заполняется задачами 30-*)
 
+### Pagination
+
+- События `page-change` (номер страницы) и `pagesize-change` (размер страницы) сохранены, объявлены в `emits`.
+- Новое: при смене страницы изнутри (клик, prev/next, jump, quickjump, стрелки) эмитится `update:current`, при смене размера через sizer — `update:pageSize`. Было: prop `current`/`page-size` только читался, синхронизация вручную через `@page-change`. Стало: работают `v-model:current="page"` и `v-model:page-size="size"`; `:current` + `@page-change` работают как раньше.
+- Было: quickjump/simple-ввод по Enter не ограничивал номер сверху — в поле оставалось введённое число (например `999`), если страница не менялась. Стало: номер приводится к `[1, totalPage]`, в поле показывается приведённое значение; событие эмитится только если страница реально изменилась (как в 1.x).
+- Клавиатура: `keyCode` → `event.key`. Фильтр ввода в поля номера пропускает цифры, `Backspace`, `ArrowLeft`/`ArrowRight` (теперь также цифры NumPad; `Shift`+цифра — нет). В simple-режиме `ArrowDown` — предыдущая страница, `ArrowUp` — следующая (как в 1.x).
+- Prop `total` больше не помечен `required` (при `default: 0` это давало предупреждение Vue); поведение без `total` прежнее — одна страница.
+- Корень — один `<ul class="at-pagination">` (убраны корневые комментарии, делавшие корень фрагментом): `class`/`style`/атрибуты потребителя попадают на него.
+  Что править: ничего; при желании заменить `:current` + `@page-change` на `v-model:current`.
+
 ### Input
 
 - v-model: prop `modelValue` + событие `update:modelValue` вместо `value` + `input`. `v-model` работает как раньше; `:value`/`@input` → `:model-value`/`@update:model-value`. Событие `change` (значение строкой на каждый ввод), `focus`, `blur` (нативный `Event`) — без изменений.

@@ -1,5 +1,4 @@
 <template>
-  <!-- S 极简分页 -->
   <ul
     v-if="simple"
     class="at-pagination at-pagination--simple"
@@ -40,8 +39,6 @@
       <i class="icon icon-chevron-right"></i>
     </li>
   </ul>
-  <!-- E 极简分页 -->
-  <!-- S 基础分页 -->
   <ul
     v-else
     class="at-pagination"
@@ -66,8 +63,8 @@
     </li>
     <template v-if="totalPage < 9">
       <li
-        v-for="(num, index) in pageRange"
-        :key="index"
+        v-for="num in pageRange"
+        :key="num"
         class="at-pagination__item"
         :class="{
           'at-pagination__item--active': currentPage === num,
@@ -165,7 +162,6 @@
       <span>{{ t('at.pagination.pageText') }}</span>
     </div>
   </ul>
-  <!-- E 基础分页 -->
 </template>
 
 <script>
@@ -181,7 +177,6 @@ export default {
     },
     total: {
       type: Number,
-      required: true,
       default: 0,
     },
     pageSize: {
@@ -214,6 +209,7 @@ export default {
       },
     },
   },
+  emits: ['page-change', 'pagesize-change', 'update:current', 'update:pageSize'],
   data() {
     return {
       currentPage: this.current,
@@ -256,14 +252,18 @@ export default {
     },
   },
   methods: {
+    clampPage(page) {
+      const num = page | 0
+      if (num < 1) return 1
+      return num > this.totalPage ? this.totalPage : num
+    },
     changePage(page) {
-      let num = (page || this.jumpPageNum || 1) | 0
-      num = num > this.totalPage ? this.totalPage : num
-      num = num < 1 ? 1 : num
+      const num = this.clampPage(page || this.jumpPageNum || 1)
 
+      this.jumpPageNum = num
       if (this.currentPage !== num) {
-        this.jumpPageNum = num
         this.currentPage = num
+        this.$emit('update:current', num)
         this.$emit('page-change', num)
       }
     },
@@ -286,32 +286,27 @@ export default {
       page > this.totalPage ? this.changePage(this.totalPage) : this.changePage(page)
     },
     handleKeydown(evt) {
-      const key = evt.keyCode
-
-      // 按键 0~9，空格，左右方向键
-      if (!((key >= 48 && key <= 57) || key === 8 || key === 37 || key === 39)) {
+      // digits 0-9, Backspace, Left/Right arrows
+      const allowed =
+        /^[0-9]$/.test(evt.key) || ['Backspace', 'ArrowLeft', 'ArrowRight'].includes(evt.key)
+      if (!allowed) {
         evt.preventDefault()
       }
     },
     handleKeyup(evt) {
-      const key = evt.keyCode
-      const numVal = evt.target.value | 0
-
-      if (key === 40) {
-        // Up Arrow
+      if (evt.key === 'ArrowDown') {
         this.handlePrev()
-      } else if (key === 38) {
-        // Down Arrow
+      } else if (evt.key === 'ArrowUp') {
         this.handleNext()
-      } else if (key === 13) {
-        // Return
-        const page = numVal <= 0 ? 1 : numVal
+      } else if (evt.key === 'Enter') {
+        const page = this.clampPage(evt.target.value)
         evt.target.value = page
         this.changePage(page)
       }
     },
     changeSize(size) {
       this.currentPageSize = size
+      this.$emit('update:pageSize', size)
       this.changePage(1)
       this.$emit('pagesize-change', size)
     },
