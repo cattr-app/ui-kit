@@ -239,8 +239,8 @@ importers:
         specifier: ^2.6.1
         version: 2.7.1
       sass:
-        specifier: ^1.105.1
-        version: 1.105.1
+        specifier: ^1.106.1
+        version: 1.106.1
 
 packages:
 
@@ -2083,11 +2083,6 @@ packages:
 
   safe-regex@1.1.0:
     resolution: {integrity: sha512-aJXcif4xnaNUzvUuC5gcb46oTS7zvg4jpMTnuqtrEPlR3vFr4pxtdTwaF1Qs3Enjn9HK+ZlwQui+a7z0SywIzg==}
-
-  sass@1.105.1:
-    resolution: {integrity: sha512-1CnAWPyrrnVQzXGB/DUep1vYCKCm1CIBr+YxjjiW6wk9qtzemnGP4qicH56T2F9S4Hjtv/Ne3jDz8JqfdDU4oA==}
-    engines: {node: '>=20.19.0'}
-    hasBin: true
 
   sass@1.106.1:
     resolution: {integrity: sha512-kD+Gi66vycZcbJt+42NC4z4PXNMcCajVrJPhqoKKXy5cOBMmJQt052CxIBcRjwYXeImHYOpu/ydWWGZQIenl7A==}
@@ -4389,14 +4384,6 @@ snapshots:
   safe-regex@1.1.0:
     dependencies:
       ret: 0.1.15
-
-  sass@1.105.1:
-    dependencies:
-      chokidar: 5.0.0
-      immutable: 5.1.9
-      source-map-js: 1.2.2
-    optionalDependencies:
-      '@parcel/watcher': 2.6.0
 
   sass@1.106.1:
     dependencies:

@@ -1,4 +1,7 @@
+# @parcel/watcher (optional dep of sass, used only by `sass --watch`) ships prebuilt
+# binaries in @parcel/watcher-<platform>; its install script only runs node-gyp when
+# npm_config_build_from_source=true, so it is denied explicitly (no "ignored build" warning).
 allowBuilds:
-  '@parcel/watcher': true
+  '@parcel/watcher': false
 packages:
   - src/stylesheet
