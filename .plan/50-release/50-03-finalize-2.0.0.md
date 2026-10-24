@@ -1,7 +1,7 @@
 ---
 id: 50-03
 title: Финализация changelog, версия 2.0.0, проверка состава пакета
-status: todo
+status: done
 depends_on: [50-02]
 parallel: false
 model: opus
@@ -35,3 +35,9 @@ scripts/node.sh sh -c "pnpm pack --pack-destination /tmp && tar tzf /tmp/amazing
 ## Найдено по ходу
 
 ## Заметки агента
+- `CHANGELOG.md` в корне: чеклист из 12 шагов с командами grep (проверены на образце), разделы в порядке задачи, компоненты по алфавиту; добавлен подраздел Badge/Breadcrumb/Card/Tag (сверено с кодом), исправлены: имя пакета в «Удалено» (`@cattr/ui-kit` → `@amazingcat/cattr-ui`), неполный список v-model (добавлены Dropdown, Popover, Tooltip, RadioButton), ссылки на id задач плана и промежуточные сборки, заявление о визуальной проверке анимаций. `[TODO]` нет, `grep -c "Было"` = 33. `.plan/CHANGELOG-MIGRATION.md` удалён, ссылки в README и `.plan/README.md` (правила 2, 7, структура) → `CHANGELOG.md`; в файлах задач оставлены как история.
+- Состав пакета: `pnpm pack` с исходным `files: [dist, src]` тащил `src/stylesheet/node_modules/*` (симлинки workspace), `scripts/clean.mjs`, `postcss.config.mjs`, `CONTRIBUTING.md`, dot-файлы, и **не** включал `CHANGELOG.md` (npm не добавляет его автоматически). Стало `files: [dist, src, "!src/stylesheet/*", src/stylesheet/package.json, src/stylesheet/src, CHANGELOG.md]` — pnpm pack отрицание понимает: 200 файлов (dist/index.js + 6 локалей, src/** с 57 файлами `stylesheet/src` включая шрифты, `stylesheet/package.json`, README, CHANGELOG, LICENSE); нет test/docs/.plan/node_modules/`stylesheet/css` (проверено и при собранном css)/`stylesheet/scripts`.
+- Потребитель (контейнер, `/tmp`, tarball через `file:`; vue 3.5.44, vite 8.3.5, plugin-vue 6.0.10, sass 1.106.1): `vite build` прошёл (CSS 151.6 kB со шрифтами feather, JS 172.8 kB), `@use '…/index.scss' as cattr with ($brand-blue-500: #ff5722)` через резолвер Vite работает; `node import('@amazingcat/cattr-ui')` — 52 экспорта, default `{install, version}`, `version` = 2.0.0; `locale/de` — object; SSR `renderToString` `<at-button>`/`<at-select>` после `app.use(CattrUI, { locale: de })` — ок; `sass --load-path=node_modules` с `with (…)` — ок. Для pnpm 12 потребителю нужен `allowBuilds: { '@parcel/watcher': false }` (иначе `ERR_PNPM_IGNORED_BUILDS` от sass). Временный проект жил только в контейнере.
+- `src/stylesheet/package.json` в пакете с `"main": "css/at.css"`, а `css/` не публикуется — на SCSS-импорты не влияет, но `import '@amazingcat/cattr-ui/src/stylesheet'` (каталог) не сработает; готовый CSS из пакета больше не доступен (записано в CHANGELOG «Стили»).
+- `.plan/` не трогался. Варианты для человека: (а) перенести в `docs/migration/` как историю миграции (поправить `.prettierignore`/ссылки), (б) удалить отдельным коммитом `chore(plan): remove migration plan` после мержа `feat/vue-3` в `main` (история остаётся в git). `.plan/PR.md` готов.
+- Прогон: install --frozen-lockfile ок, lint --max-warnings 0 ок, format:check ок, test 42 файла / 213 тестов, build (dist/index.js 127.37 kB, gzip 30.51 kB), build:docs ок.
