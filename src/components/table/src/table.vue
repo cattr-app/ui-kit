@@ -25,7 +25,10 @@
             <tr>
               <!-- S Checkbox -->
               <th v-if="optional" class="at-table__cell at-table__column-selection">
-                <at-checkbox v-model="isSelectAll" @click.native="handleSelectAll"></at-checkbox>
+                <at-checkbox
+                  :model-value="isSelectAll"
+                  @click.prevent="handleSelectAll"
+                ></at-checkbox>
               </th>
               <!-- E Checkbox -->
               <!-- S Column th -->
@@ -81,8 +84,8 @@
               <!-- S Checkbox -->
               <th v-if="optional" class="at-table__cell at-table__column-selection">
                 <at-checkbox
-                  v-model="isSelectAll"
-                  @click.native.prevent="handleSelectAll"
+                  :model-value="isSelectAll"
+                  @click.prevent="handleSelectAll"
                 ></at-checkbox>
               </th>
               <!-- E Checkbox -->
@@ -122,11 +125,11 @@
           </thead>
 
           <tbody v-if="sortData.length" ref="body" class="at-table__tbody">
-            <template v-for="(item, index) in sortData" :key="index">
+            <template v-for="(item, rowIndex) in sortData" :key="item.index">
               <tr @click="$emit('rowClick', $event)">
                 <td v-if="optional" class="at-table__cell at-table__column-selection">
                   <at-checkbox
-                    v-model="objData[index].isChecked"
+                    v-model="objData[item.index].isChecked"
                     @on-change="changeRowSelection"
                   ></at-checkbox>
                 </td>
@@ -139,7 +142,7 @@
                     <Cell
                       :item="item"
                       :column="column"
-                      :index="columnIndex"
+                      :index="rowIndex"
                       :render="column.render"
                     ></Cell>
                   </template>
@@ -188,11 +191,15 @@
 <script>
 import Locale from '../../../mixins/locale'
 import { getStyle, deepCopy } from '../../../utils/util'
+import AtCheckbox from '../../checkbox'
+import AtPagination from '../../pagination'
 import Cell from './render'
 
 export default {
   name: 'AtTable',
   components: {
+    AtCheckbox,
+    AtPagination,
     Cell,
   },
   mixins: [Locale],
@@ -249,6 +256,14 @@ export default {
       type: [Number, String],
     },
   },
+  emits: [
+    'rowClick',
+    'on-select-all',
+    'on-selection-change',
+    'on-sort-change',
+    'on-page-change',
+    'on-page-size-change',
+  ],
   data() {
     return {
       objData: this.makeObjData(), // use for checkbox to select all
@@ -268,9 +283,6 @@ export default {
 
       if (this.height) {
         styles.height = `${this.height}px`
-      }
-      if (this.width) {
-        styles.width = `${this.width}px`
       }
 
       return styles
@@ -320,8 +332,12 @@ export default {
     pageCurSize() {
       this.sortData = this.makeDataWithPaginate()
     },
-    data() {
-      this.sortData = this.makeDataWithSortAndPage()
+    data: {
+      deep: true,
+      handler() {
+        this.objData = this.makeObjData()
+        this.sortData = this.makeDataWithSortAndPage()
+      },
     },
   },
   created() {
@@ -330,6 +346,9 @@ export default {
   mounted() {
     this.calculateBodyHeight()
     window.addEventListener('resize', this.handleResize)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
     calculateBodyHeight() {
@@ -524,9 +543,6 @@ export default {
       width = width === '0' ? '' : width
       return width
     },
-  },
-  beforeDestory() {
-    window.removeEventListener('resize', this.handleResize)
   },
 }
 </script>

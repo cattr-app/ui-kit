@@ -1,20 +1,20 @@
-export default {
-  name: 'Cell',
-  functional: true,
-  props: {
-    item: Object,
-    column: Object,
-    index: Number,
-    render: Function,
-  },
-  render: (h, ctx) => {
-    const params = {
-      item: ctx.props.item,
-      index: ctx.props.index,
-    }
-    if (ctx.props.column) {
-      params.column = ctx.props.column
-    }
-    return ctx.props.render(h, params)
-  },
+/**
+ * Functional cell renderer for columns with a `render` function.
+ * The column's render receives `{ item, column, index }` (index = row index) and returns a VNode;
+ * `h` is imported from 'vue' by the consumer.
+ */
+const Cell = props =>
+  props.render({
+    item: props.item,
+    column: props.column,
+    index: props.index,
+  })
+
+Cell.props = {
+  item: Object,
+  column: Object,
+  index: Number,
+  render: Function,
 }
+
+export default Cell
