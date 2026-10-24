@@ -2,7 +2,7 @@
 id: 50-01
 title: Удаление Vue 2 остатков, полный зелёный lint/test/build
 status: todo
-depends_on: [40-02]
+depends_on: [40-02-en, 40-02-zh, 40-03]
 parallel: false
 model: opus
 touches: [src/**, test/**, package.json, pnpm-lock.yaml, pnpm-workspace.yaml]
