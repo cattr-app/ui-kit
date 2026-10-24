@@ -4,6 +4,7 @@ title: Замена emitter-mixin и findComponent* на provide/inject; эта�
 status: todo
 depends_on: [20-01]
 parallel: true
+model: opus
 touches: [src/utils/context.js, src/composables/**, src/components/radio/**, src/components/radio-group/index.js, src/components/radio-button/index.js, test/**, .plan/30-components/README.md]
 ---
 ## Цель

@@ -4,6 +4,7 @@ title: ESLint 10 flat config + eslint-plugin-vue 10 + Prettier 3, адаптац
 status: todo
 depends_on: [10-01]
 parallel: false
+model: opus
 touches: [package.json, pnpm-lock.yaml, eslint.config.js, .prettierrc, .prettierignore, .editorconfig, .eslintrc.js, src/**, docs/**]
 ---
 ## Цель

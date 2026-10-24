@@ -4,6 +4,7 @@ title: Slider → Vue 3
 status: todo
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
+model: opus
 touches: [src/components/slider/**]
 ---
 ## Цель

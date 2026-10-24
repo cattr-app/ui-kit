@@ -4,6 +4,7 @@ title: Vitest + @vue/test-utils, smoke-инфраструктура
 status: todo
 depends_on: [10-02]
 parallel: false
+model: opus
 touches: [package.json, pnpm-lock.yaml, vitest.config.js, test/**, .gitignore]
 ---
 ## Цель

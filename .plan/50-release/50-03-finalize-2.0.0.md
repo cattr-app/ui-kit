@@ -4,6 +4,7 @@ title: Финализация changelog, версия 2.0.0, проверка с
 status: todo
 depends_on: [50-02]
 parallel: false
+model: opus
 touches: [CHANGELOG.md, .plan/CHANGELOG-MIGRATION.md, package.json, docs/markdown/*/changelog.md]
 ---
 ## Цель

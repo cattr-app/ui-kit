@@ -4,6 +4,7 @@ title: Select, Option, OptionGroup (+ внутренний dropdown.vue) → Vue
 status: todo
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
+model: opus
 touches: [src/components/select/**, src/components/option/index.js, src/components/option-group/index.js]
 ---
 ## Цель

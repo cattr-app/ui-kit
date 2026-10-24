@@ -4,6 +4,7 @@ title: Удалить Form/FormItem и их документацию
 status: todo
 depends_on: [00-01]
 parallel: true
+model: haiku
 touches: [src/components/form/**, docs/markdown/en/form.md, docs/markdown/zh/form.md, docs/router/nav.config.yml]
 ---
 ## Цель

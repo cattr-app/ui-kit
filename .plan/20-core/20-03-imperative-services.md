@@ -4,6 +4,7 @@ title: Инфраструктура императивных сервисов (c
 status: todo
 depends_on: [20-01]
 parallel: true
+model: opus
 touches: [src/utils/mount-service.js, src/components/message/**, test/**]
 ---
 ## Цель

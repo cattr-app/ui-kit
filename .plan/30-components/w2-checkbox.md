@@ -4,6 +4,7 @@ title: Checkbox, CheckboxGroup → Vue 3
 status: todo
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
+model: opus
 touches: [src/components/checkbox/**, src/components/checkbox-group/index.js]
 ---
 ## Цель

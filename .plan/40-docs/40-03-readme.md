@@ -4,6 +4,7 @@ title: README под 2.0
 status: todo
 depends_on: [40-01]
 parallel: true
+model: haiku
 touches: [README.md, src/locale/README.md]
 ---
 ## Цель

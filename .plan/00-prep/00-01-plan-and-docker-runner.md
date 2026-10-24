@@ -4,6 +4,7 @@ title: Скрипт запуска node в docker с общим кэшем, ка
 status: done
 depends_on: []
 parallel: false
+model: opus
 touches: [scripts/node.sh, .plan/**]
 ---
 ## Цель

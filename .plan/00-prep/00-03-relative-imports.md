@@ -4,6 +4,7 @@ title: Заменить alias-импорты at-ui/src/... на относите
 status: todo
 depends_on: [00-01]
 parallel: true
+model: haiku
 touches: [src/components/**, src/mixins/**, docs/**]
 ---
 ## Цель

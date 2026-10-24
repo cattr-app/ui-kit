@@ -4,6 +4,7 @@ title: Переименовать идентификаторы at-ui → cattr-u
 status: todo
 depends_on: [00-03]
 parallel: false
+model: haiku
 touches: [src/stylesheet/package.json, src/stylesheet/CONTRIBUTING.md, src/stylesheet/src/index.scss, src/stylesheet/src/variables/default.scss, src/locale/README.md, package.json, README.md, docs/**]
 ---
 ## Цель

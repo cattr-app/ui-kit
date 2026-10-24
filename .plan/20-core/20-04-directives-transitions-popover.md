@@ -4,6 +4,7 @@ title: Директива clickoutside, CollapseTransition, mixin popover под
 status: todo
 depends_on: [20-01]
 parallel: true
+model: opus
 touches: [src/directives/clickoutside.js, src/utils/collapse-transition.js, src/mixins/popover.js, src/utils/NodeList.js, test/**]
 ---
 ## Цель

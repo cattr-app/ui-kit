@@ -4,6 +4,7 @@ title: Dropdown, DropdownMenu, DropdownItem → Vue 3
 status: todo
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
+model: opus
 touches: [src/components/dropdown/**, src/components/dropdown-menu/index.js, src/components/dropdown-item/index.js]
 ---
 ## Цель

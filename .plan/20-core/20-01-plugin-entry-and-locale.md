@@ -4,6 +4,7 @@ title: Точка входа плагина (app.use), globalProperties, лок�
 status: todo
 depends_on: [10-03]
 parallel: false
+model: opus
 touches: [src/index.js, src/locale/index.js, src/mixins/locale.js, src/components/*/index.js, test/**]
 ---
 ## Цель

@@ -4,6 +4,7 @@ title: Сайт документации на Vite: vue-router 5, vue-i18n 11, u
 status: todo
 depends_on: [10-03]
 parallel: false
+model: opus
 touches: [docs/**, vite.docs.config.js, package.json, pnpm-lock.yaml]
 ---
 ## Цель

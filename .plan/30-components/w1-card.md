@@ -4,6 +4,7 @@ title: Card → Vue 3
 status: todo
 depends_on: [20-01, 20-02, 20-04]
 parallel: true
+model: haiku
 touches: [src/components/card/**]
 ---
 ## Цель

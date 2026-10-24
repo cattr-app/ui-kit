@@ -4,6 +4,7 @@ title: Обновить примеры в markdown под Vue 3 API
 status: todo
 depends_on: [40-01, 30-w4-table]
 parallel: false
+model: haiku
 touches: [docs/markdown/en/**, docs/markdown/zh/**]
 ---
 ## Цель

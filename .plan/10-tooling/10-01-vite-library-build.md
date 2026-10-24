@@ -4,6 +4,7 @@ title: Сборка библиотеки на Vite, Vue 3 в зависимос�
 status: todo
 depends_on: [00-02, 00-03, 00-04]
 parallel: false
+model: opus
 touches: [package.json, pnpm-lock.yaml, pnpm-workspace.yaml, vite.config.js, build/**, .babelrc, src/index.js]
 ---
 ## Цель
