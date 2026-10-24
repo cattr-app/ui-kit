@@ -24,8 +24,9 @@ touches: [src/index.js, src/locale/index.js, src/mixins/locale.js, src/component
 2. `src/components/*/index.js`: единый шаблон `X.install = app => { app.component(X.name, X) }`. Сделать скриптом (`sed`), проверить реэкспорты.
 3. `src/locale/index.js`: удалить `import Vue`, `Vue.locale`, `merged`. Оставить: `lang`, `i18nHandler` (по умолчанию `null`), `t(key, values)`: если `i18nHandler` задан — вернуть его результат, если он не `undefined/null`; иначе путь по `lang`. Поддержать подстановку `{name}` из `values` в дефолтной ветке (сейчас не поддерживается — проверить, нужна ли компонентам; `grep -rn "t('at\." src/components`).
 4. `src/mixins/locale.js` оставить как mixin (mixins в Vue 3 работают) **и** добавить `src/composables/useLocale.js` → `{ t }` для будущих `<script setup>`.
-5. Тест `test/core/install.spec.js`: `createApp({}).use(CattrUI, { i18n: (k) => 'X' })` → `app.component('AtButton')` определён, `app.config.globalProperties.$Message` функция; `t('at.select.placeholder')` без хука возвращает строку из `en-US`.
-6. Changelog: снять `[TODO 20-01]` ×3 в разделе «Подключение».
+5. Тест `test/helpers/mount.spec.js`: helper `mount` из `test/helpers/mount.js` (статический импорт плагина) монтирует компонент с шаблоном `<at-button>Hi</at-button>` и находит `.at-btn` — это первая проверка, что `app.use(CattrUI)` работает на Vue 3.
+6. Тест `test/core/install.spec.js`: `createApp({}).use(CattrUI, { i18n: (k) => 'X' })` → `app.component('AtButton')` определён, `app.config.globalProperties.$Message` функция; `t('at.select.placeholder')` без хука возвращает строку из `en-US`.
+7. Changelog: снять `[TODO 20-01]` ×3 в разделе «Подключение».
 
 ## Критерии приёмки
 - `grep -rn "Vue.prototype\|window.Vue\|import Vue from 'vue'" src` пусто (кроме файлов сервисов, которые чинит 20-03 — перечислить в заметках, если остались).

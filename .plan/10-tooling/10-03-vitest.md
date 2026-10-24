@@ -39,6 +39,7 @@ scripts/node.sh pnpm lint
 ## Найдено по ходу
 
 ## Заметки агента
+- (ревью при мерже) Асинхронный `mount` с ленивым импортом плагина заменён на синхронный со статическим импортом; `test/helpers/mount.spec.js` удалён. До 20-01 helper никем не импортируется, поэтому падение `src/index.js` на Vue 2 коде тесты не задевает. Sanity-спек для helper добавляет 20-01.
 - Версии: vitest 5.0.5, @vue/test-utils 2.5.1, happy-dom 21.0.4 (vitest 5 peer `happy-dom: '*'`). Coverage-пакет не ставился; `coverage/` в `.gitignore` есть.
 - `vitest.config.js`: `mergeConfig` с `vite.config.js`, из которого деструктуризацией выброшен `build` (lib/externals). Сборка `pnpm build` не изменилась, test/** в dist не попадает.
 - `import('src/index.js')` сейчас падает при вычислении модуля: `Vue.extend` на `undefined` в `notification/src/notic.js` (и аналогично в остальных сервисах с `import Vue from 'vue'`).
