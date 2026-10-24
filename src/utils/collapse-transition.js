@@ -1,13 +1,15 @@
 /**
+ * Collapse (height) transition, a functional wrapper around <Transition>.
  * https://github.com/ElemeFE/element/blob/dev/src/transitions/collapse-transition.js
+ *
+ *   <collapse-transition><div v-show="open">...</div></collapse-transition>
  */
-
+import { h, Transition } from 'vue'
 import { addClass, removeClass } from './util'
 
-const Transition = {
-  beforeEnter(el) {
+const hooks = {
+  onBeforeEnter(el) {
     addClass(el, 'collapse-transition')
-    if (!el.dataset) el.dataset = {}
 
     el.dataset.oldPaddingTop = el.style.paddingTop
     el.dataset.oldPaddingBottom = el.style.paddingBottom
@@ -17,30 +19,27 @@ const Transition = {
     el.style.paddingBottom = 0
   },
 
-  enter(el) {
+  onEnter(el) {
     el.dataset.oldOverflow = el.style.overflow
     if (el.scrollHeight !== 0) {
       el.style.height = el.scrollHeight + 'px'
-      el.style.paddingTop = el.dataset.oldPaddingTop
-      el.style.paddingBottom = el.dataset.oldPaddingBottom
     } else {
       el.style.height = ''
-      el.style.paddingTop = el.dataset.oldPaddingTop
-      el.style.paddingBottom = el.dataset.oldPaddingBottom
     }
+    el.style.paddingTop = el.dataset.oldPaddingTop
+    el.style.paddingBottom = el.dataset.oldPaddingBottom
 
     el.style.overflow = 'hidden'
   },
 
-  afterEnter(el) {
+  onAfterEnter(el) {
     // for safari: remove class then reset height is necessary
     removeClass(el, 'collapse-transition')
     el.style.height = ''
     el.style.overflow = el.dataset.oldOverflow
   },
 
-  beforeLeave(el) {
-    if (!el.dataset) el.dataset = {}
+  onBeforeLeave(el) {
     el.dataset.oldPaddingTop = el.style.paddingTop
     el.dataset.oldPaddingBottom = el.style.paddingBottom
     el.dataset.oldOverflow = el.style.overflow
@@ -49,9 +48,9 @@ const Transition = {
     el.style.overflow = 'hidden'
   },
 
-  leave(el) {
+  onLeave(el) {
     if (el.scrollHeight !== 0) {
-      // for safari: add class after set height, or it will jump to zero height suddenly, weired
+      // for safari: add class after set height, or it will jump to zero height suddenly
       addClass(el, 'collapse-transition')
       el.style.height = 0
       el.style.paddingTop = 0
@@ -59,7 +58,7 @@ const Transition = {
     }
   },
 
-  afterLeave(el) {
+  onAfterLeave(el) {
     removeClass(el, 'collapse-transition')
     el.style.height = ''
     el.style.overflow = el.dataset.oldOverflow
@@ -68,14 +67,8 @@ const Transition = {
   },
 }
 
-export default {
-  name: 'CollapseTransition',
-  functional: true,
-  render(h, { children }) {
-    const data = {
-      on: Transition,
-    }
+const CollapseTransition = (props, { slots }) => h(Transition, hooks, slots.default)
 
-    return h('transition', data, children)
-  },
-}
+CollapseTransition.displayName = 'CollapseTransition'
+
+export default CollapseTransition
