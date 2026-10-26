@@ -5,7 +5,15 @@ import globals from 'globals'
 
 export default [
   {
-    ignores: ['dist/**', 'dist-docs/**', 'coverage/**', 'node_modules/**', 'src/stylesheet/css/**'],
+    ignores: [
+      'dist/**',
+      'dist-docs/**',
+      'coverage/**',
+      'node_modules/**',
+      'src/stylesheet/css/**',
+      'test-results/**',
+      'playwright-report/**',
+    ],
   },
   js.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
@@ -29,6 +37,7 @@ export default [
       'vite.docs.config.js',
       'vitest.config.js',
       'eslint.config.js',
+      'playwright.config.js',
       'scripts/**/*.js',
     ],
     languageOptions: {
