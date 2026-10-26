@@ -71,6 +71,41 @@ describe('AtSlider', () => {
     expect(wrapper.emitted('update:modelValue').at(-1)).toEqual([100])
   })
 
+  it('supports a fractional step', async () => {
+    const wrapper = mount(AtSlider, { props: { modelValue: 0, min: 0, max: 1, step: 0.1 } })
+    const track = wrapper.find('.at-slider__track')
+    // 100px track starting at x = 0
+    track.element.getBoundingClientRect = () => ({ left: 0, width: 100, top: 0, height: 4 })
+
+    await track.trigger('click', { clientX: 32 })
+    await track.trigger('click', { clientX: 66 })
+    await track.trigger('click', { clientX: 100 })
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[0.3], [0.7], [1]])
+    expect(wrapper.find('.at-slider__bar').element.style.width).toBe('100%')
+  })
+
+  it('snaps to a fractional min with an integer step', async () => {
+    const wrapper = mount(AtSlider, { props: { modelValue: 0.5, min: 0.5, max: 10.5, step: 1 } })
+    const track = wrapper.find('.at-slider__track')
+    track.element.getBoundingClientRect = () => ({ left: 0, width: 100, top: 0, height: 4 })
+
+    await track.trigger('click', { clientX: 32 }) // 3.7 → nearest grid point 3.5
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[3.5]])
+  })
+
+  it('keeps integer values for an integer step', async () => {
+    const wrapper = mount(AtSlider, { props: { modelValue: 0, min: 0, max: 10, step: 1 } })
+    const track = wrapper.find('.at-slider__track')
+    track.element.getBoundingClientRect = () => ({ left: 0, width: 100, top: 0, height: 4 })
+
+    await track.trigger('click', { clientX: 32 })
+    await track.trigger('click', { clientX: 66 })
+
+    expect(wrapper.emitted('update:modelValue')).toEqual([[3], [7]])
+  })
+
   it('drags the dot via window listeners and removes them on unmount', async () => {
     const remove = vi.spyOn(window, 'removeEventListener')
     const wrapper = mount(AtSlider, { props: { modelValue: 20 } })

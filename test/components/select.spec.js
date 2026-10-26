@@ -158,6 +158,37 @@ describe('AtSelect + AtOption', () => {
     expect(isOpen()).toBe(true)
   })
 
+  it('hides the clear icon and does not clear when disabled', async () => {
+    await mountSelect('clearable disabled', '1')
+    const clear = wrapper.find('.at-select__clear')
+
+    expect(clear.element.style.display).toBe('none')
+    expect(wrapper.find('.at-select').classes()).not.toContain('at-select--show-clear')
+
+    await clear.trigger('click')
+    expect(wrapper.vm.value).toBe('1')
+    expect(select().emitted('update:modelValue')).toBeUndefined()
+    expect(select().emitted('on-change')).toBeUndefined()
+  })
+
+  it('disables the filter input when disabled', async () => {
+    await mountSelect('filterable disabled', '1')
+    const input = wrapper.find('.at-select__input')
+
+    expect(input.element.disabled).toBe(true)
+  })
+
+  it('renders a numeric 0 label in the list and the caption', async () => {
+    await mountSelect(
+      '',
+      'zero',
+      '<at-option value="zero" :label="0" /><at-option value="one" :label="1" />',
+    )
+
+    expect(options().map(o => o.text())).toEqual(['0', '1'])
+    expect(wrapper.find('.at-select__selected').text()).toBe('0')
+  })
+
   it('handles keyboard: arrows move focus, Enter selects, Escape closes', async () => {
     await mountSelect()
     await open()
@@ -187,6 +218,44 @@ describe('AtSelect + AtOption', () => {
     document.body.click()
     await nextTick()
     expect(isOpen()).toBe(false)
+  })
+
+  it('ignores keys typed into another field while open', async () => {
+    await mountSelect()
+    const other = document.createElement('input')
+    document.body.appendChild(other)
+
+    try {
+      await open()
+      expect(isOpen()).toBe(true)
+
+      other.focus()
+      expect(document.activeElement).toBe(other)
+      const enter = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+      other.dispatchEvent(enter)
+      await nextTick()
+
+      expect(enter.defaultPrevented).toBe(false)
+      expect(select().emitted('update:modelValue')).toBeUndefined()
+      expect(wrapper.vm.value).toBe('')
+      expect(isOpen()).toBe(false)
+    } finally {
+      other.remove()
+    }
+  })
+
+  it('keeps keyboard navigation for the filter input inside the select', async () => {
+    await mountSelect('filterable')
+    await open()
+    const input = wrapper.find('.at-select__input').element
+    input.focus()
+    expect(document.activeElement).toBe(input)
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
+    await nextTick()
+
+    expect(wrapper.vm.value).toBe('1')
   })
 
   // happy-dom has no layout: 10 options of 30px in a 90px high dropdown placed at y=100;

@@ -31,6 +31,7 @@
         v-model="query"
         type="text"
         class="at-select__input"
+        :disabled="disabled"
         :placeholder="showPlaceholder ? localePlaceholder : ''"
         @input="handleInput"
         @blur="handleBlur"
@@ -179,7 +180,7 @@ export default {
       return isEmpty(this.model)
     },
     showCloseIcon() {
-      return !this.multiple && this.clearable && !this.showPlaceholder
+      return !this.multiple && this.clearable && !this.disabled && !this.showPlaceholder
     },
     selectedSingle() {
       if (this.multiple || isEmpty(this.model)) return ''
@@ -315,6 +316,18 @@ export default {
     },
     handleKeydown(evt) {
       if (!this.visible) return
+
+      // focus moved to another field (e.g. Tab): leave its keys alone and close the dropdown
+      const active = document.activeElement
+      if (
+        active &&
+        active !== document.body &&
+        active !== document.documentElement &&
+        !this.$el.contains(active)
+      ) {
+        this.hideMenu()
+        return
+      }
 
       switch (evt.key) {
         case 'Escape':

@@ -25,6 +25,9 @@
 </template>
 
 <script>
+// `null`/`undefined` (an empty v-model) render as 0 stars and are never half
+const isFractional = val => val != null && !Number.isInteger(Number(val))
+
 export default {
   name: 'AtRate',
   props: {
@@ -62,7 +65,7 @@ export default {
       hoverIndex: -1,
       lastHoverIndex: -1,
       isHoverRate: false,
-      isHalf: this.allowHalf,
+      isHalf: this.allowHalf && isFractional(this.modelValue),
     }
   },
   watch: {
@@ -117,7 +120,7 @@ export default {
 
       const isHalf = this.isHalf
       const isHoverStar = this.hoverIndex !== -1
-      const currentIndex = isHoverStar ? this.hoverIndex : this.currentValue
+      const currentIndex = isHoverStar ? this.hoverIndex : Number(this.currentValue ?? 0)
       const lastItemIndex = Math.ceil(currentIndex)
 
       return {
@@ -127,7 +130,7 @@ export default {
       }
     },
     checkIsHalf(val) {
-      this.isHalf = this.allowHalf && val.toString().indexOf('.') >= 0
+      this.isHalf = this.allowHalf && isFractional(val)
     },
   },
 }

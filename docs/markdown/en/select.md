@@ -169,13 +169,13 @@ To set search mode, add `filterable` property to the Select.
 | notFoundText | text to show when search no found | String | - | `No matching data` (from locale) |
 | placement | the direction of popup | String | `top`, `bottom` | bottom |
 | trigger | the way to open the popup | String | `click` | `click` |
-| valueWithLabel | emit `{ value, label }` (an array of them in `multiple` mode) instead of the value | Boolean | - | false |
+| valueWithLabel | `on-change` carries `{ value, label }` (an array of them in `multiple` mode) instead of the value; `v-model` keeps the plain value | Boolean | - | false |
 
 ## Select Events
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| update:modelValue | Emitted when the user changes the selection (click or Enter on an option, removing a tag, the clear icon), used by `v-model` | the value / new array of values; `{ value, label }` with `valueWithLabel` |
+| update:modelValue | Emitted when the user changes the selection (click or Enter on an option, removing a tag, the clear icon), used by `v-model` | the value / new array of values (also with `valueWithLabel`) |
 | on-change | Emitted together with `update:modelValue`, only on user actions (not when `modelValue` is changed by the parent) | the value / new array of values; `{ value, label }` with `valueWithLabel` |
 
 ## Option Props

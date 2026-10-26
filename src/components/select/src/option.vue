@@ -41,7 +41,7 @@ export default {
     const slotText = ref('')
 
     const label = computed(() =>
-      props.label !== undefined ? props.label : slotText.value || props.value,
+      props.label != null ? props.label : slotText.value || props.value,
     )
 
     const hidden = computed(() => {
@@ -70,7 +70,8 @@ export default {
   },
   computed: {
     showLabel() {
-      return this.label ? this.label : this.value
+      // same rule as the `label` computed above: 0 and '' are valid labels
+      return this.label != null ? this.label : this.value
     },
     selected() {
       return !!this.select && this.select.isSelected(this.value)
