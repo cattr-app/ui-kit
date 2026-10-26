@@ -107,35 +107,29 @@ app.use(CattrUI, { i18n: (key, values) => i18n.global.t(key, values) })
 
 Для разработки используются Node.js 24 (версия закреплена в `.nvmrc`) и pnpm (версия закреплена в поле `packageManager` `package.json`).
 
-На машине без Node все команды запускаются через `scripts/node.sh`. Скрипт выполняет команду в одноразовом контейнере; образ собирается автоматически, кэш pnpm общий для всех worktree.
-
 ```bash
-scripts/node.sh pnpm install --frozen-lockfile
-scripts/node.sh pnpm lint
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
 Основные команды:
 
-| Команда             | Назначение                                                                         |
-| ------------------- | ---------------------------------------------------------------------------------- |
-| `pnpm dev`          | Dev-сервер сайта документации на Vite с HMR (порт 7200)                            |
-| `pnpm build`        | Сборка библиотеки в `dist/` (Vite, library mode, ESM) и готового CSS в `dist/css/` |
-| `pnpm build:style`  | Сборка стилей (workspace-пакет `cattr-ui-style`)                                   |
-| `pnpm build:docs`   | `build:style` и статический сайт документации в `dist-docs/`                       |
-| `pnpm lint`         | Проверить JavaScript- и Vue-файлы линтером (ESLint)                                |
-| `pnpm lint:fix`     | Проверить линтером и исправить автоматически исправимые ошибки                     |
-| `pnpm format`       | Отформатировать файлы Prettier                                                     |
-| `pnpm format:check` | Проверить форматирование Prettier без изменений                                    |
-| `pnpm test`         | Запустить тесты Vitest один раз                                                    |
-| `pnpm test:watch`   | Запустить тесты Vitest в режиме watch                                              |
+| Команда              | Назначение                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `pnpm dev`           | Dev-сервер сайта документации на Vite с HMR (порт 7200)                            |
+| `pnpm build`         | Сборка библиотеки в `dist/` (Vite, library mode, ESM) и готового CSS в `dist/css/` |
+| `pnpm build:style`   | Сборка стилей (workspace-пакет `cattr-ui-style`)                                   |
+| `pnpm build:docs`    | `build:style` и статический сайт документации в `dist-docs/`                       |
+| `pnpm lint`          | Проверить JavaScript- и Vue-файлы линтером (ESLint)                                |
+| `pnpm lint:fix`      | Проверить линтером и исправить автоматически исправимые ошибки                     |
+| `pnpm format`        | Отформатировать файлы Prettier                                                     |
+| `pnpm format:check`  | Проверить форматирование Prettier без изменений                                    |
+| `pnpm test`          | Запустить тесты Vitest один раз                                                    |
+| `pnpm test:watch`    | Запустить тесты Vitest в режиме watch                                              |
+| `pnpm test:coverage` | Запустить тесты с отчётом покрытия (`coverage/`)                                   |
 
-Dev-сервер документации на машине без Node доступен, если пробросить порт из контейнера:
-
-```bash
-CATTR_UI_DOCKER_ARGS="-p 7200:7200" scripts/node.sh pnpm dev
-```
-
-Адрес: <http://localhost:7200/>.
+Dev-сервер документации: <http://localhost:7200/>.
 
 При push в ветку `main` GitHub Actions собирает документацию и публикует её на GitHub Pages.
 
