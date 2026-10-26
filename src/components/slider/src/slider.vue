@@ -47,6 +47,13 @@ import AtTooltip from '../../tooltip'
 
 const HIDE_DELAY = 200
 
+// number of digits after the decimal point (0.25 → 2, 3 → 0)
+function decimals(num) {
+  const str = String(num)
+  const dot = str.indexOf('.')
+  return dot === -1 ? 0 : str.length - dot - 1
+}
+
 export default {
   name: 'AtSlider',
   components: {
@@ -193,11 +200,15 @@ export default {
         pos = 100
       }
 
-      const lengthPerStep = 100 / ((this.max - this.min) / this.step)
-      const steps = Math.round(pos / lengthPerStep)
-      let value = steps * lengthPerStep * (this.max - this.min) * 0.01 + this.min
+      const { min, max } = this
+      const step = this.step > 0 ? this.step : 1
+      const raw = min + (pos * (max - min)) / 100
 
-      value = parseFloat(value.toFixed(0))
+      // snap to the min + k * step grid, stay within [min, max] and drop float
+      // noise (0.30000000000000004) at the precision of step/min/max
+      let value = min + Math.round((raw - min) / step) * step
+      value = Math.min(max, Math.max(min, value))
+      value = parseFloat(value.toFixed(Math.max(decimals(step), decimals(min), decimals(max))))
 
       if (value !== this.currentValue) {
         this.currentValue = value
