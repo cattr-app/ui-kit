@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { nextTick } from 'vue'
 import { mount } from '../helpers/mount.js'
 import AtModal from '../../src/components/modal'
 
@@ -79,5 +80,12 @@ describe('AtModal', () => {
     expect(wrapper.find('.at-modal__footer .custom-footer').exists()).toBe(true)
     expect(wrapper.find('.at-modal__footer .at-btn').exists()).toBe(false)
     expect(wrapper.find('.at-modal__body').text()).toBe('Body')
+  })
+
+  it('focuses the input when mounted already open', async () => {
+    const wrapper = mountModal({ props: { modelValue: true, showInput: true } })
+    await nextTick()
+
+    expect(document.activeElement).toBe(wrapper.find('.at-modal__input input').element)
   })
 })

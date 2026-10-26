@@ -185,9 +185,7 @@ export default {
       this.clearTimer()
       if (val) {
         this.wrapShow = true
-        if (this.showInput) {
-          this.$nextTick(() => this.$refs.input?.$el.querySelector('input')?.focus())
-        }
+        this.focusInput()
       } else {
         this.timer = setTimeout(() => {
           this.wrapShow = false
@@ -198,6 +196,8 @@ export default {
   mounted() {
     if (this.visible) {
       this.wrapShow = true
+      // opened from the start: the input gets focus as when opened later
+      this.focusInput()
     }
 
     document.addEventListener('keydown', this.handleKeydown)
@@ -207,6 +207,11 @@ export default {
     this.clearTimer()
   },
   methods: {
+    focusInput() {
+      if (this.showInput) {
+        this.$nextTick(() => this.$refs.input?.$el.querySelector('input')?.focus())
+      }
+    },
     close() {
       this.visible = false
       this.$emit('update:modelValue', false)
