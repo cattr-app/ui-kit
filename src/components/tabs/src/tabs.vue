@@ -158,7 +158,17 @@ export default {
 
       emit('on-tab-remove', { index, name: tab.name })
 
-      if (tab.name !== activeKey.value) return
+      if (tab.name !== activeKey.value) {
+        // The active pane stays, but if it is named by its index and sits after the closed one,
+        // its name shifts down once the consumer removes the closed pane ('2' -> '1'): follow it.
+        // Not a pane switch, so only `update:modelValue` is emitted, not `on-change`.
+        const activePos = list.findIndex(item => item.name === activeKey.value)
+        if (activePos > index && !list[activePos].ownName) {
+          currentValue.value = String(activePos - 1)
+          emit('update:modelValue', currentValue.value)
+        }
+        return
+      }
 
       const next =
         list.slice(index + 1).find(item => !item.disabled) ||
