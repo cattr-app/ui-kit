@@ -29,4 +29,16 @@ describe('AtProgress', () => {
     expect(wrapper.find('.at-progress__text i').classes()).toContain('icon-check-circle')
     expect(wrapper.emitted('on-status-success')).toEqual([[100]])
   })
+
+  it('follows a status change while percent stays the same', async () => {
+    const wrapper = mount(AtProgress, { props: { percent: 50 } })
+
+    await wrapper.setProps({ status: 'error' })
+    expect(wrapper.classes()).toContain('at-progress--error')
+    expect(wrapper.find('.at-progress__text i').classes()).toContain('icon-x-circle')
+
+    await wrapper.setProps({ status: '' })
+    expect(wrapper.classes()).not.toContain('at-progress--error')
+    expect(wrapper.find('.at-progress__text').text()).toBe('50%')
+  })
 })

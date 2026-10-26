@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { getCurrentInstance, reactive, ref, toRef, watch } from 'vue'
+import { reactive, ref, toRef, watch } from 'vue'
 import { useChildren } from '../../../composables/useChildren'
 import { MenuContext } from './context'
 
@@ -48,7 +48,6 @@ export default {
   setup(props, { emit }) {
     const { children, register, unregister } = useChildren()
     const currentActiveName = ref(normalize(props.activeName))
-    const { proxy } = getCurrentInstance()
 
     watch(
       () => props.activeName,
@@ -60,11 +59,7 @@ export default {
     function select(item) {
       currentActiveName.value = normalize(item.name)
       emit('on-select', item.name)
-
-      if (props.router) {
-        const route = item.to || {}
-        item.replace ? proxy.$router.replace(route) : proxy.$router.push(route)
-      }
+      // navigation (`router` mode included) is done by the clicked AtMenuItem
     }
 
     MenuContext.provide(
@@ -72,6 +67,7 @@ export default {
         mode: toRef(props, 'mode'),
         theme: toRef(props, 'theme'),
         inlineCollapsed: toRef(props, 'inlineCollapsed'),
+        router: toRef(props, 'router'),
         activeName: currentActiveName,
         children,
         register,

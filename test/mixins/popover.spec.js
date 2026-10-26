@@ -83,9 +83,54 @@ describe('popover mixin', () => {
     const wrapper = mountHost({ trigger: 'focus' })
     const trigger = wrapper.find('.trigger')
 
-    await trigger.trigger('focus')
+    await trigger.trigger('focusin')
     expect(wrapper.vm.show).toBe(true)
-    await trigger.trigger('blur')
+    await trigger.trigger('focusout')
+    expect(wrapper.vm.show).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('focus trigger reacts to an input focused inside the trigger', async () => {
+    const InputHost = {
+      ...Host,
+      name: 'PopoverInputHost',
+      template: `
+        <div>
+          <span ref="trigger" class="trigger"><input class="a" /><input class="b" /></span>
+          <div v-show="show" ref="popover" class="popover">popover</div>
+        </div>
+      `,
+    }
+    const wrapper = mount(InputHost, { props: { trigger: 'focus' }, attachTo: document.body })
+    const [a, b] = wrapper.findAll('input').map(w => w.element)
+
+    a.focus()
+    await nextTick()
+    expect(wrapper.vm.show).toBe(true)
+
+    // focus moving between inputs of the same trigger keeps it open
+    b.focus()
+    await nextTick()
+    expect(wrapper.vm.show).toBe(true)
+
+    b.blur()
+    await nextTick()
+    expect(wrapper.vm.show).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('rebinds listeners when the trigger prop changes', async () => {
+    const wrapper = mountHost({ trigger: 'hover' })
+    const trigger = wrapper.find('.trigger')
+
+    await wrapper.setProps({ trigger: 'click' })
+
+    await trigger.trigger('mouseenter')
+    expect(wrapper.vm.show).toBe(false)
+
+    await trigger.trigger('click')
+    expect(wrapper.vm.show).toBe(true)
+    await trigger.trigger('click')
     expect(wrapper.vm.show).toBe(false)
     wrapper.unmount()
   })

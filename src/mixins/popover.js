@@ -47,6 +47,12 @@ export default {
       // the host renders the popover with `v-if`: position it once it is in the DOM
       if (value) this.setPopoverPosition()
     },
+    // a changed `trigger` takes effect right away: drop the old listeners, bind the new ones
+    trigger() {
+      clearTimeout(this.popoverTimer)
+      this.removeTriggerListeners()
+      this.bindTriggerListeners()
+    },
     show(value) {
       if (this.popoverSyncing) {
         this.popoverSyncing = false
@@ -163,6 +169,27 @@ export default {
       el.addEventListener(event, handler)
       this.popoverListeners.push([el, event, handler])
     },
+    // focus moved to another element inside the trigger: still focused, keep it open
+    handleFocusOut(evt) {
+      const trigger = this.$refs.trigger
+      if (trigger && evt.relatedTarget && trigger.contains(evt.relatedTarget)) return
+      this.hidePopover()
+    },
+    bindTriggerListeners() {
+      const trigger = this.$refs.trigger
+      if (!trigger) return
+
+      if (this.trigger === 'click') {
+        this.addTriggerListener(trigger, 'click', this.toggle)
+      } else if (this.trigger === 'hover') {
+        this.addTriggerListener(trigger, 'mouseenter', this.handleMouseEnter)
+        this.addTriggerListener(trigger, 'mouseleave', this.handleMouseLeave)
+      } else if (this.trigger === 'focus') {
+        // `focusin`/`focusout` bubble: focusing an input inside the trigger counts too
+        this.addTriggerListener(trigger, 'focusin', this.showPopover)
+        this.addTriggerListener(trigger, 'focusout', this.handleFocusOut)
+      }
+    },
     removeTriggerListeners() {
       this.popoverListeners.forEach(([el, event, handler]) => {
         el.removeEventListener(event, handler)
@@ -177,15 +204,7 @@ export default {
       return console.error('Could not find trigger ref in your component that uses popovermixin')
     }
 
-    if (this.trigger === 'click') {
-      this.addTriggerListener(trigger, 'click', this.toggle)
-    } else if (this.trigger === 'hover') {
-      this.addTriggerListener(trigger, 'mouseenter', this.handleMouseEnter)
-      this.addTriggerListener(trigger, 'mouseleave', this.handleMouseLeave)
-    } else if (this.trigger === 'focus') {
-      this.addTriggerListener(trigger, 'focus', this.showPopover)
-      this.addTriggerListener(trigger, 'blur', this.hidePopover)
-    }
+    this.bindTriggerListeners()
 
     // mounted open (`modelValue: true`): neither a trigger nor the modelValue watcher positions it
     if (this.show) this.setPopoverPosition()

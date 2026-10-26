@@ -1,7 +1,8 @@
 /* eslint-disable vue/one-component-per-file -- test fixtures: parent + child pair */
 import { describe, expect, it } from 'vitest'
-import { defineComponent, h, nextTick, reactive, ref, toRef } from 'vue'
+import { KeepAlive, defineComponent, h, nextTick, reactive, ref, toRef } from 'vue'
 import { mount } from '@vue/test-utils'
+import { mount as mountLib } from '../helpers/mount.js'
 import { renderToString } from 'vue/server-renderer'
 import { createContext } from '../../src/utils/context.js'
 import { useChild, useChildren } from '../../src/composables/useChildren.js'
@@ -85,5 +86,62 @@ describe('useChildren', () => {
   it('is a no-op without a parent', () => {
     const wrapper = mount(Item, { props: { name: 'solo' } })
     expect(wrapper.text()).toBe('solo:-1')
+  })
+
+  it('drops a child deactivated by <keep-alive> and re-adds it in DOM order', async () => {
+    const show = ref(true)
+    const wrapper = mount({
+      setup: () => () =>
+        h(List, null, () => [
+          h(Item, { name: 'a' }),
+          h(KeepAlive, null, () => (show.value ? h(Item, { name: 'b' }) : null)),
+          h(Item, { name: 'c' }),
+        ]),
+    })
+    const list = wrapper.getComponent(List)
+    await nextTick()
+    expect(list.vm.names()).toEqual(['a', 'b', 'c'])
+
+    show.value = false
+    await nextTick()
+    await nextTick()
+    expect(list.vm.names()).toEqual(['a', 'c'])
+    expect(wrapper.text()).toBe('a:0c:1')
+
+    show.value = true
+    await nextTick()
+    await nextTick()
+    expect(list.vm.names()).toEqual(['a', 'b', 'c'])
+    expect(wrapper.text()).toBe('a:0b:1c:2')
+  })
+
+  it('does not loop in Tabs with a pane under <keep-alive>', async () => {
+    const errors = []
+    const wrapper = mountLib(
+      {
+        data: () => ({ show: true }),
+        template: `
+          <at-tabs>
+            <at-tab-pane label="A">a</at-tab-pane>
+            <keep-alive><at-tab-pane v-if="show" label="B">b</at-tab-pane></keep-alive>
+            <at-tab-pane label="C">c</at-tab-pane>
+          </at-tabs>`,
+      },
+      { global: { config: { errorHandler: err => errors.push(err) } } },
+    )
+    await nextTick()
+    const labels = () => wrapper.findAll('.at-tabs-nav__item').map(i => i.text())
+    expect(labels()).toEqual(['A', 'B', 'C'])
+
+    wrapper.vm.show = false
+    await nextTick()
+    await nextTick()
+    expect(labels()).toEqual(['A', 'C'])
+
+    wrapper.vm.show = true
+    await nextTick()
+    await nextTick()
+    expect(labels()).toEqual(['A', 'B', 'C'])
+    expect(errors).toEqual([])
   })
 })

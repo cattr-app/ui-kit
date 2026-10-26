@@ -119,4 +119,50 @@ describe('AtPagination', () => {
     expect(wrapper.emitted('page-change')).toEqual([[3], [2], [3]])
     expect(input.element.value).toBe('3')
   })
+
+  it('moves to the last page when total or pageSize shrink below the current page', async () => {
+    const wrapper = mount({
+      data: () => ({ page: 5, total: 50, size: 10 }),
+      template: '<at-pagination v-model:current="page" :total="total" :page-size="size" />',
+    })
+    const pagination = wrapper.getComponent(AtPagination)
+
+    wrapper.vm.total = 30
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.page).toBe(3)
+    expect(pagination.emitted('page-change')).toEqual([[3]])
+    expect(wrapper.find('.at-pagination__item--active').text()).toBe('3')
+    expect(wrapper.find('.at-pagination__next').classes()).toContain('at-pagination--disabled')
+
+    wrapper.vm.size = 20
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.page).toBe(2)
+    expect(pagination.emitted('update:current')).toEqual([[3], [2]])
+
+    // growing does not move the page
+    wrapper.vm.total = 500
+    await wrapper.vm.$nextTick()
+    expect(wrapper.vm.page).toBe(2)
+    expect(pagination.emitted('page-change')).toEqual([[3], [2]])
+  })
+
+  it('quickjump keydown blocks only printable non-digit characters', () => {
+    const wrapper = mount(AtPagination, { props: { total: 50, showQuickjump: true } })
+    const input = wrapper.find('.at-pagination__quickjump input').element
+    const prevented = init => {
+      const evt = new KeyboardEvent('keydown', { cancelable: true, ...init })
+      input.dispatchEvent(evt)
+      return evt.defaultPrevented
+    }
+
+    expect(['a', ' ', '-', '.'].map(key => prevented({ key }))).toEqual([true, true, true, true])
+    expect(
+      ['1', 'Tab', 'Delete', 'Backspace', 'Home', 'End', 'ArrowLeft', 'Enter'].map(key =>
+        prevented({ key }),
+      ),
+    ).toEqual([false, false, false, false, false, false, false, false])
+    expect(prevented({ key: 'a', ctrlKey: true })).toBe(false)
+    expect(prevented({ key: 'c', ctrlKey: true })).toBe(false)
+    expect(prevented({ key: 'v', metaKey: true })).toBe(false)
+  })
 })

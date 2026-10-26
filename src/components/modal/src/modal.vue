@@ -64,6 +64,14 @@ import { t } from '../../../locale'
 import AtButton from '../../button'
 import AtInput from '../../input'
 
+// Open modals, the last opened on top: only the topmost one handles Escape.
+const openModals = []
+
+function removeOpen(vm) {
+  const i = openModals.indexOf(vm)
+  if (i !== -1) openModals.splice(i, 1)
+}
+
 export default {
   name: 'AtModal',
   // local: the dialog works with a standalone `app.use(Dialog)` / `app.use(AtModal)`
@@ -183,11 +191,11 @@ export default {
     },
     visible(val) {
       this.clearTimer()
+      removeOpen(this)
       if (val) {
+        openModals.push(this)
         this.wrapShow = true
-        if (this.showInput) {
-          this.$nextTick(() => this.$refs.input?.$el.querySelector('input')?.focus())
-        }
+        this.focusInput()
       } else {
         this.timer = setTimeout(() => {
           this.wrapShow = false
@@ -197,16 +205,25 @@ export default {
   },
   mounted() {
     if (this.visible) {
+      openModals.push(this)
       this.wrapShow = true
+      // opened from the start: the input gets focus as when opened later
+      this.focusInput()
     }
 
     document.addEventListener('keydown', this.handleKeydown)
   },
   beforeUnmount() {
     document.removeEventListener('keydown', this.handleKeydown)
+    removeOpen(this)
     this.clearTimer()
   },
   methods: {
+    focusInput() {
+      if (this.showInput) {
+        this.$nextTick(() => this.$refs.input?.$el.querySelector('input')?.focus())
+      }
+    },
     close() {
       this.visible = false
       this.$emit('update:modelValue', false)
@@ -227,7 +244,8 @@ export default {
       this.$emit(action === 'confirm' ? 'on-confirm' : 'on-cancel')
     },
     handleKeydown(evt) {
-      if (this.visible && this.showClose && this.closeOnPressEsc && evt.key === 'Escape') {
+      if (evt.key !== 'Escape' || openModals[openModals.length - 1] !== this) return
+      if (this.visible && this.showClose && this.closeOnPressEsc) {
         this.handleAction('cancel')
       }
     },

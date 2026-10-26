@@ -49,12 +49,11 @@ export default {
     },
   },
   emits: ['on-status-success'],
-  data() {
-    return {
-      currentStatus: this.status,
-    }
-  },
   computed: {
+    // derived, not copied once: a later `status` change applies too; 100% is always `success`
+    currentStatus() {
+      return (this.percent | 0) === 100 ? 'success' : this.status
+    },
     barStyle() {
       return {
         height: `${this.strokeWidth}px`,
@@ -75,10 +74,7 @@ export default {
   methods: {
     handleChange(val) {
       if (val === 100) {
-        this.currentStatus = 'success'
         this.$emit('on-status-success', this.percent)
-      } else {
-        this.currentStatus = this.status
       }
     },
   },

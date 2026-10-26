@@ -250,6 +250,10 @@ export default {
     pageSize(val) {
       this.currentPageSize = val
     },
+    // `total`/`pageSize` shrank below the current page: move to the new last page
+    totalPage(val) {
+      if (this.currentPage > val) this.changePage(val)
+    },
   },
   methods: {
     clampPage(page) {
@@ -286,10 +290,10 @@ export default {
       page > this.totalPage ? this.changePage(this.totalPage) : this.changePage(page)
     },
     handleKeydown(evt) {
-      // digits 0-9, Backspace, Left/Right arrows
-      const allowed =
-        /^[0-9]$/.test(evt.key) || ['Backspace', 'ArrowLeft', 'ArrowRight'].includes(evt.key)
-      if (!allowed) {
+      // block only printable non-digit characters; Tab, Delete, Home/End, arrows and
+      // Ctrl/Cmd/Alt combos (select all, copy, paste) keep working
+      const printable = typeof evt.key === 'string' && evt.key.length === 1
+      if (printable && !/^[0-9]$/.test(evt.key) && !evt.ctrlKey && !evt.metaKey && !evt.altKey) {
         evt.preventDefault()
       }
     },

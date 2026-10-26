@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { computed, reactive, ref } from 'vue'
+import { computed, onUpdated, reactive, ref } from 'vue'
 import CollapseTransition from '../../../utils/collapse-transition'
 import { getStyle } from '../../../utils/util'
 import { useChild, useChildren } from '../../../composables/useChildren'
@@ -57,7 +57,9 @@ export default {
   setup(props) {
     const menu = MenuContext.inject(null)
     const parentSubmenu = SubmenuContext.inject(null)
-    const { children, register, unregister } = useChildren()
+    const { children, register, unregister, sort } = useChildren()
+    // keyed `v-for` reorders move children without remounting them: re-sort by DOM order
+    onUpdated(sort)
     const isOpen = ref(props.opened)
     const mode = computed(() => (menu ? menu.mode : 'inline'))
     // active while any nested item (or nested submenu) is active
@@ -142,7 +144,8 @@ export default {
       if (this.disabled || this.mode !== 'inline') return
 
       const opened = this.isOpen
-      if (this.inlineCollapsed && this.menu) {
+      // only top-level submenus close each other: a nested one must not close its own ancestor
+      if (this.inlineCollapsed && this.menu && !this.parentSubmenu) {
         this.menu.children.forEach(child => child.exposed.close())
       }
       this.isOpen = !opened

@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { computed, reactive, ref, toRef, watch } from 'vue'
+import { computed, onUpdated, reactive, ref, toRef, watch } from 'vue'
 import { useChildren } from '../../../composables/useChildren'
 import { CollapseContext } from './context'
 
@@ -36,7 +36,9 @@ export default {
   },
   emits: ['update:modelValue', 'on-change'],
   setup(props, { emit }) {
-    const { children, register, unregister } = useChildren()
+    const { children, register, unregister, sort } = useChildren()
+    // keyed `v-for` reorders move children without remounting them: re-sort by DOM order
+    onUpdated(sort)
     const currentValue = ref(normalize(props.modelValue))
 
     // `deep`: in-place mutations of the bound array (`active.push('b')`, `splice`) must sync too,
