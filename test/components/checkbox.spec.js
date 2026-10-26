@@ -93,6 +93,17 @@ describe('AtCheckboxGroup + AtCheckbox', () => {
     expect(first.emitted('on-change')).toBeUndefined()
   })
 
+  it('treats a null group value as no selection', async () => {
+    const wrapper = mountGroup(null)
+    const group = wrapper.getComponent(AtCheckboxGroup)
+
+    expect(wrapper.findAll('input').map(i => i.element.checked)).toEqual([false, false, false])
+
+    await wrapper.findAll('input')[0].setValue(true)
+    expect(group.emitted('update:modelValue')).toEqual([[['a']]])
+    expect(wrapper.vm.value).toEqual(['a'])
+  })
+
   it('does not emit when a disabled checkbox receives change', async () => {
     const wrapper = mountGroup(['a'])
     const group = wrapper.getComponent(AtCheckboxGroup)
