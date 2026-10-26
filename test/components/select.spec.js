@@ -158,6 +158,26 @@ describe('AtSelect + AtOption', () => {
     expect(isOpen()).toBe(true)
   })
 
+  it('hides the clear icon and does not clear when disabled', async () => {
+    await mountSelect('clearable disabled', '1')
+    const clear = wrapper.find('.at-select__clear')
+
+    expect(clear.element.style.display).toBe('none')
+    expect(wrapper.find('.at-select').classes()).not.toContain('at-select--show-clear')
+
+    await clear.trigger('click')
+    expect(wrapper.vm.value).toBe('1')
+    expect(select().emitted('update:modelValue')).toBeUndefined()
+    expect(select().emitted('on-change')).toBeUndefined()
+  })
+
+  it('disables the filter input when disabled', async () => {
+    await mountSelect('filterable disabled', '1')
+    const input = wrapper.find('.at-select__input')
+
+    expect(input.element.disabled).toBe(true)
+  })
+
   it('handles keyboard: arrows move focus, Enter selects, Escape closes', async () => {
     await mountSelect()
     await open()

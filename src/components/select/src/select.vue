@@ -31,6 +31,7 @@
         v-model="query"
         type="text"
         class="at-select__input"
+        :disabled="disabled"
         :placeholder="showPlaceholder ? localePlaceholder : ''"
         @input="handleInput"
         @blur="handleBlur"
@@ -179,7 +180,7 @@ export default {
       return isEmpty(this.model)
     },
     showCloseIcon() {
-      return !this.multiple && this.clearable && !this.showPlaceholder
+      return !this.multiple && this.clearable && !this.disabled && !this.showPlaceholder
     },
     selectedSingle() {
       if (this.multiple || isEmpty(this.model)) return ''
