@@ -182,11 +182,15 @@ export default {
       }
 
       const quantity = Math.pow(10, Math.max(decimal1, decimal2))
+      // round the scaled operands to integers so 0.14 * 100 = 14.000000000000002
+      // does not leak float noise into the result
+      const scaledNum = Math.round(num * quantity)
+      const scaledStep = Math.round(stepNum * quantity)
 
       if (symbol === '+') {
-        return (num * quantity + stepNum * quantity) / quantity
+        return (scaledNum + scaledStep) / quantity
       } else if (symbol === '-') {
-        return (num * quantity - stepNum * quantity) / quantity
+        return (scaledNum - scaledStep) / quantity
       }
     },
   },

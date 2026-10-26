@@ -32,6 +32,25 @@ describe('AtInputNumber', () => {
     expect(wrapper.vm.num).toBe(0.7)
   })
 
+  it.each([
+    [0.14, 0.01, ['0.15', '0.16', '0.17', '0.18'], ['0.13', '0.12', '0.11', '0.1']],
+    [2.01, 0.01, ['2.02', '2.03', '2.04', '2.05'], ['2', '1.99', '1.98', '1.97']],
+    [0.2, 0.1, ['0.3', '0.4', '0.5', '0.6'], ['0.1', '0', '-0.1', '-0.2']],
+    [1.15, 0.05, ['1.2', '1.25', '1.3', '1.35'], ['1.1', '1.05', '1', '0.95']],
+  ])('steps %s by %s without float artifacts', async (start, step, ups, downs) => {
+    const upWrapper = mount(AtInputNumber, { props: { modelValue: start, step } })
+    for (let i = 0; i < ups.length; i++) {
+      await upWrapper.find('.at-input-number__up').trigger('click')
+    }
+    expect(upWrapper.emitted('update:modelValue').map(([v]) => String(v))).toEqual(ups)
+
+    const downWrapper = mount(AtInputNumber, { props: { modelValue: start, step } })
+    for (let i = 0; i < downs.length; i++) {
+      await downWrapper.find('.at-input-number__down').trigger('click')
+    }
+    expect(downWrapper.emitted('update:modelValue').map(([v]) => String(v))).toEqual(downs)
+  })
+
   it('emits when reaching min/max and stops beyond them', async () => {
     const wrapper = mount(AtInputNumber, { props: { modelValue: 1, min: 0, max: 2 } })
     const up = wrapper.find('.at-input-number__up')
