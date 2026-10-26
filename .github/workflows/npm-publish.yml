@@ -2,7 +2,15 @@ name: Publish Package
 
 on:
   release:
-    types: [created]
+    # `published` fires both for releases created directly and for drafts that are
+    # published later; `created` is never delivered for draft releases.
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish (e.g. v2.0.0)
+        required: true
+        type: string
 
 permissions:
   id-token: write
@@ -15,6 +23,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
