@@ -162,6 +162,31 @@ describe('AtTable', () => {
     wrapper.unmount()
   })
 
+  it('gives the selection column its own col, data column widths stay in place', async () => {
+    // happy-dom does no layout: measured cell widths come from getComputedStyle
+    const measured = ['40px', '300px', '120px']
+    const getComputedStyle = window.getComputedStyle
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((el, pseudo) =>
+      el.tagName === 'TD' ? { width: measured[el.cellIndex] } : getComputedStyle(el, pseudo),
+    )
+    const wrapper = mountTable({
+      columns: [
+        { title: 'Name', key: 'name', width: 300 },
+        { title: 'Age', key: 'age' },
+      ],
+      optional: true,
+    })
+    await nextTick()
+    await nextTick()
+
+    const cols = wrapper.findAll('col')
+    expect(cols).toHaveLength(3)
+    expect(cols[0].classes()).toContain('at-table__col-selection')
+    expect(cols.map(col => col.attributes('width'))).toEqual([undefined, '300', '120'])
+    wrapper.unmount()
+    window.getComputedStyle.mockRestore()
+  })
+
   describe('pagination', () => {
     const rows = n => Array.from({ length: n }, (_, i) => ({ name: `r${i}`, age: i }))
     const shownAges = wrapper => cellTexts(wrapper).map(row => Number(row[1]))

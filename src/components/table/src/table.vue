@@ -15,6 +15,7 @@
       <div v-if="height" class="at-table__header">
         <table>
           <colgroup>
+            <col v-if="optional" class="at-table__col-selection" />
             <col
               v-for="(column, index) in columnsData"
               :key="index"
@@ -73,6 +74,7 @@
       <div class="at-table__body" :style="bodyStyle">
         <table>
           <colgroup>
+            <col v-if="optional" class="at-table__col-selection" />
             <col
               v-for="(column, index) in columnsData"
               :key="index"
@@ -548,9 +550,11 @@ export default {
 
         if (this.data.length && this.$refs.body) {
           const $td = this.$refs.body.querySelectorAll('tr')[0].querySelectorAll('td')
+          // the selection cell comes first and has no column
+          const offset = this.optional ? 1 : 0
 
-          for (let i = 0; i < $td.length; i++) {
-            const column = this.columnsData[i]
+          for (let i = offset; i < $td.length; i++) {
+            const column = this.columnsData[i - offset]
             let width = parseInt(getStyle($td[i], 'width'))
 
             if (column) {
