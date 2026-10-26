@@ -356,13 +356,22 @@ export default {
     resetScrollTop() {
       const popover = this.$refs.popover
       const child = this.children.find(c => c.exposed.uid === this.focusUid)
-      if (!popover || !child || !child.el || !child.el.getBoundingClientRect) return
+      if (!popover || !child || !child.el) return
 
-      const bottomOverflowDistance =
-        child.el.getBoundingClientRect().bottom - popover.getBoundingClientRect().bottom
+      // offset of the option inside the dropdown's scrolled content
+      let top = 0
+      let el = child.el
+      while (el && el !== popover) {
+        top += el.offsetTop
+        el = el.offsetParent
+      }
+      if (el !== popover) return
 
-      if (bottomOverflowDistance > 0) {
-        popover.scrollTop += bottomOverflowDistance
+      const bottom = top + child.el.offsetHeight
+      if (top < popover.scrollTop) {
+        popover.scrollTop = top
+      } else if (bottom > popover.scrollTop + popover.clientHeight) {
+        popover.scrollTop = bottom - popover.clientHeight
       }
     },
     updatePosition() {

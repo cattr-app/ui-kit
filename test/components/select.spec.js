@@ -160,6 +160,66 @@ describe('AtSelect + AtOption', () => {
     expect(isOpen()).toBe(false)
   })
 
+  it('scrolls the focused option into view in both directions', async () => {
+    await mountSelect(
+      '',
+      '',
+      '<at-option v-for="n in 10" :key="n" :value="String(n)">{{ n }}</at-option>',
+    )
+    await open()
+
+    // happy-dom has no layout: 10 options of 30px in a 90px high dropdown
+    const popover = dropdown().element
+    let scrollTop = 0
+    const rect = (top, height) => ({ top, bottom: top + height, left: 0, right: 0, height })
+    popover.getBoundingClientRect = () => rect(0, 90)
+    Object.defineProperty(popover, 'clientHeight', { configurable: true, get: () => 90 })
+    Object.defineProperty(popover, 'scrollTop', {
+      configurable: true,
+      get: () => scrollTop,
+      set: value => {
+        scrollTop = value
+      },
+    })
+    options().forEach((option, i) => {
+      Object.defineProperty(option.element, 'offsetTop', { configurable: true, get: () => i * 30 })
+      Object.defineProperty(option.element, 'offsetHeight', { configurable: true, get: () => 30 })
+      Object.defineProperty(option.element, 'offsetParent', {
+        configurable: true,
+        get: () => popover,
+      })
+      option.element.getBoundingClientRect = () => rect(i * 30 - scrollTop, 30)
+    })
+
+    const key = async k => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: k }))
+      await nextTick()
+    }
+
+    // ArrowUp from nothing focuses the last option: scrolled down to it
+    await key('ArrowUp')
+    expect(options()[9].classes()).toContain('at-select__option--focus')
+    expect(scrollTop).toBe(210)
+
+    // moving up inside the viewport keeps the scroll position
+    await key('ArrowUp')
+    await key('ArrowUp')
+    expect(scrollTop).toBe(210)
+
+    // past the top edge: scrolled up to the focused option
+    await key('ArrowUp')
+    expect(options()[6].classes()).toContain('at-select__option--focus')
+    expect(scrollTop).toBe(180)
+
+    // wrapping from last to first scrolls back to the top
+    await key('ArrowDown')
+    await key('ArrowDown')
+    await key('ArrowDown')
+    await key('ArrowDown')
+    expect(options()[0].classes()).toContain('at-select__option--focus')
+    expect(scrollTop).toBe(0)
+  })
+
   it('registers options added later in DOM order', async () => {
     await mountSelect(
       '',
