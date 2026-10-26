@@ -83,4 +83,35 @@ describe('CollapseTransition', () => {
     expect(el.style.display).toBe('none')
     wrapper.unmount()
   })
+
+  it('restores its own padding and overflow when re-opened while closing', async () => {
+    const wrapper = mountCollapse(true)
+    const el = wrapper.find('.panel').element
+    el.style.paddingTop = '4px'
+
+    await wrapper.setProps({ open: false })
+    await nextTick()
+    expect(el.style.paddingTop).toBe('0px')
+
+    // before the leave finishes
+    await wrapper.setProps({ open: true })
+    await nextTick()
+    await frame()
+
+    expect(el.style.paddingTop).toBe('4px')
+    expect(el.style.paddingBottom).toBe('')
+    expect(el.style.overflow).toBe('')
+    expect(el.style.height).toBe('')
+    expect(el.classList.contains('collapse-transition')).toBe(false)
+    expect(el.style.display).toBe('')
+
+    // a later close/open cycle still ends on the element's own styles
+    await wrapper.setProps({ open: false })
+    await frame()
+    await wrapper.setProps({ open: true })
+    await frame()
+    expect(el.style.paddingTop).toBe('4px')
+    expect(el.style.overflow).toBe('')
+    wrapper.unmount()
+  })
 })

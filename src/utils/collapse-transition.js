@@ -7,12 +7,29 @@
 import { h, Transition } from 'vue'
 import { addClass, removeClass } from './util'
 
+// Save the element's own inline padding/overflow once per transition. A transition reversed
+// mid-way (re-open while closing) must not save the zeroed values of the cancelled one.
+function saveStyle(el) {
+  if (el.dataset.collapseTransitioning) return
+  el.dataset.collapseTransitioning = 'true'
+  el.dataset.oldPaddingTop = el.style.paddingTop
+  el.dataset.oldPaddingBottom = el.style.paddingBottom
+  el.dataset.oldOverflow = el.style.overflow
+}
+
+function restoreStyle(el) {
+  removeClass(el, 'collapse-transition')
+  el.style.height = ''
+  el.style.overflow = el.dataset.oldOverflow
+  el.style.paddingTop = el.dataset.oldPaddingTop
+  el.style.paddingBottom = el.dataset.oldPaddingBottom
+  delete el.dataset.collapseTransitioning
+}
+
 const hooks = {
   onBeforeEnter(el) {
     addClass(el, 'collapse-transition')
-
-    el.dataset.oldPaddingTop = el.style.paddingTop
-    el.dataset.oldPaddingBottom = el.style.paddingBottom
+    saveStyle(el)
 
     el.style.height = '0'
     el.style.paddingTop = 0
@@ -20,7 +37,6 @@ const hooks = {
   },
 
   onEnter(el) {
-    el.dataset.oldOverflow = el.style.overflow
     if (el.scrollHeight !== 0) {
       el.style.height = el.scrollHeight + 'px'
     } else {
@@ -34,15 +50,13 @@ const hooks = {
 
   onAfterEnter(el) {
     // for safari: remove class then reset height is necessary
-    removeClass(el, 'collapse-transition')
-    el.style.height = ''
-    el.style.overflow = el.dataset.oldOverflow
+    restoreStyle(el)
   },
 
+  onEnterCancelled: restoreStyle,
+
   onBeforeLeave(el) {
-    el.dataset.oldPaddingTop = el.style.paddingTop
-    el.dataset.oldPaddingBottom = el.style.paddingBottom
-    el.dataset.oldOverflow = el.style.overflow
+    saveStyle(el)
 
     el.style.height = el.scrollHeight + 'px'
     el.style.overflow = 'hidden'
@@ -58,13 +72,9 @@ const hooks = {
     }
   },
 
-  onAfterLeave(el) {
-    removeClass(el, 'collapse-transition')
-    el.style.height = ''
-    el.style.overflow = el.dataset.oldOverflow
-    el.style.paddingTop = el.dataset.oldPaddingTop
-    el.style.paddingBottom = el.dataset.oldPaddingBottom
-  },
+  onAfterLeave: restoreStyle,
+
+  onLeaveCancelled: restoreStyle,
 }
 
 const CollapseTransition = (props, { slots }) => h(Transition, hooks, slots.default)
