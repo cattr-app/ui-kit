@@ -5,12 +5,6 @@ on:
     # `published` fires both for releases created directly and for drafts that are
     # published later; `created` is never delivered for draft releases.
     types: [published]
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: Release tag to publish (e.g. v2.0.0)
-        required: true
-        type: string
 
 permissions:
   id-token: write
@@ -23,7 +17,6 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -39,11 +32,11 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
-      # package.json may already carry the release version (2.0.0+); `npm version from-git`
-      # fails with "Version not changed" in that case, so only bump when they differ.
+      # package.json keeps a placeholder version (0.0.0); the published version comes from
+      # the release tag. Skipped if they already match (`npm version` refuses a no-op).
       - name: Set version from tag
         env:
-          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           version="${TAG#v}"
           current="$(node -p "require('./package.json').version")"
