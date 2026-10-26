@@ -464,7 +464,10 @@ export default {
         // Sort the whole data set (not only the current page), `normal` restores the original order
         this.sortKey = type === 'normal' ? null : key
         this.sortOrder = type === 'normal' ? 'normal' : type
-        this.columnsData[index]._sortType = type
+        // Only one column is sorted at a time: clear the arrow of the previously sorted one
+        this.columnsData.forEach((column, idx) => {
+          column._sortType = idx === index ? type : 'normal'
+        })
         this.sortData = this.makeDataWithSortAndPage(this.currentPage)
       } else {
         this.columnsData[index]._sortType = type

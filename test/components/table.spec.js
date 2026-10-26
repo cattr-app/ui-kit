@@ -132,6 +132,24 @@ describe('AtTable', () => {
       expect(wrapper.emitted('on-sort-change')[0][0].order).toBe('normal')
       wrapper.unmount()
     })
+
+    it('shows the sort arrow only on the last sorted column', async () => {
+      const wrapper = mountTable({
+        columns: [
+          { title: 'Name', key: 'name', sortType: 'normal' },
+          { title: 'Age', key: 'age', sortType: 'normal' },
+        ],
+      })
+      const sorters = () => wrapper.findAll('.at-table__column-sorter')
+
+      await sorters()[0].find('.at-table__column-sorter-up').trigger('click')
+      await sorters()[1].find('.at-table__column-sorter-down').trigger('click')
+
+      expect(sorters()[0].classes()).not.toContain('sort-asc')
+      expect(sorters()[1].classes()).toContain('sort-desc')
+      expect(cellTexts(wrapper).map(row => row[1])).toEqual(['40', '30', '20'])
+      wrapper.unmount()
+    })
   })
 
   it('emits on-selection-change with selected rows from row and select-all checkboxes', async () => {
