@@ -250,6 +250,10 @@ export default {
     pageSize(val) {
       this.currentPageSize = val
     },
+    // `total`/`pageSize` shrank below the current page: move to the new last page
+    totalPage(val) {
+      if (this.currentPage > val) this.changePage(val)
+    },
   },
   methods: {
     clampPage(page) {
