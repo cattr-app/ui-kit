@@ -132,6 +132,39 @@ describe('popover mixin', () => {
     wrapper.unmount()
   })
 
+  it('positions the popover when it is mounted with modelValue true', async () => {
+    const position = vi.fn()
+    const VIfHost = {
+      ...Host,
+      name: 'PopoverMountedOpenHost',
+      template: `
+        <div>
+          <span ref="trigger" class="trigger">trigger</span>
+          <div v-if="show" ref="popover" class="popover">popover</div>
+        </div>
+      `,
+      methods: {
+        setPopoverPosition() {
+          position()
+          return PopoverMixin.methods.setPopoverPosition.call(this)
+        },
+      },
+    }
+    const wrapper = mount(VIfHost, {
+      props: { trigger: 'click', modelValue: true },
+      attachTo: document.body,
+    })
+    await nextTick()
+    await nextTick()
+
+    const popover = wrapper.find('.popover').element
+    // happy-dom has no layout: offsets are 0, but the coordinates are applied
+    expect(popover.style.top).toBe('0px')
+    expect(popover.style.left).toBe('0px')
+    expect(position).toHaveBeenCalledTimes(1)
+    wrapper.unmount()
+  })
+
   it('works with v-model in both directions', async () => {
     const wrapper = mount(
       {

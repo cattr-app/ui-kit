@@ -186,6 +186,9 @@ export default {
       this.addTriggerListener(trigger, 'focus', this.showPopover)
       this.addTriggerListener(trigger, 'blur', this.hidePopover)
     }
+
+    // mounted open (`modelValue: true`): neither a trigger nor the modelValue watcher positions it
+    if (this.show) this.setPopoverPosition()
   },
   beforeUnmount() {
     clearTimeout(this.popoverTimer)
