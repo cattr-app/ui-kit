@@ -189,6 +189,37 @@ describe('AtSelect + AtOption', () => {
     expect(isOpen()).toBe(false)
   })
 
+  // happy-dom has no layout: 10 options of 30px in a 90px high dropdown placed at y=100;
+  // `offsetParent` of the options is stubbed with the given element (offsets relative to it)
+  function stubDropdownLayout(offsetParent) {
+    const popover = dropdown().element
+    const state = { scrollTop: 0 }
+    const rect = (top, height) => ({ top, bottom: top + height, left: 0, right: 0, height })
+    popover.getBoundingClientRect = () => rect(100, 90)
+    Object.defineProperty(popover, 'clientHeight', { configurable: true, get: () => 90 })
+    Object.defineProperty(popover, 'scrollTop', {
+      configurable: true,
+      get: () => state.scrollTop,
+      set: value => {
+        state.scrollTop = value
+      },
+    })
+    const parentTop = offsetParent === popover ? 0 : 100
+    options().forEach((option, i) => {
+      const el = option.element
+      Object.defineProperty(el, 'offsetTop', { configurable: true, get: () => parentTop + i * 30 })
+      Object.defineProperty(el, 'offsetHeight', { configurable: true, get: () => 30 })
+      Object.defineProperty(el, 'offsetParent', { configurable: true, get: () => offsetParent })
+      el.getBoundingClientRect = () => rect(100 + i * 30 - state.scrollTop, 30)
+    })
+    return state
+  }
+
+  const key = async k => {
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: k }))
+    await nextTick()
+  }
+
   it('scrolls the focused option into view in both directions', async () => {
     await mountSelect(
       '',
@@ -196,49 +227,23 @@ describe('AtSelect + AtOption', () => {
       '<at-option v-for="n in 10" :key="n" :value="String(n)">{{ n }}</at-option>',
     )
     await open()
-
-    // happy-dom has no layout: 10 options of 30px in a 90px high dropdown
-    const popover = dropdown().element
-    let scrollTop = 0
-    const rect = (top, height) => ({ top, bottom: top + height, left: 0, right: 0, height })
-    popover.getBoundingClientRect = () => rect(0, 90)
-    Object.defineProperty(popover, 'clientHeight', { configurable: true, get: () => 90 })
-    Object.defineProperty(popover, 'scrollTop', {
-      configurable: true,
-      get: () => scrollTop,
-      set: value => {
-        scrollTop = value
-      },
-    })
-    options().forEach((option, i) => {
-      Object.defineProperty(option.element, 'offsetTop', { configurable: true, get: () => i * 30 })
-      Object.defineProperty(option.element, 'offsetHeight', { configurable: true, get: () => 30 })
-      Object.defineProperty(option.element, 'offsetParent', {
-        configurable: true,
-        get: () => popover,
-      })
-      option.element.getBoundingClientRect = () => rect(i * 30 - scrollTop, 30)
-    })
-
-    const key = async k => {
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: k }))
-      await nextTick()
-    }
+    const layout = stubDropdownLayout(dropdown().element)
+    const scrollTop = () => layout.scrollTop
 
     // ArrowUp from nothing focuses the last option: scrolled down to it
     await key('ArrowUp')
     expect(options()[9].classes()).toContain('at-select__option--focus')
-    expect(scrollTop).toBe(210)
+    expect(scrollTop()).toBe(210)
 
     // moving up inside the viewport keeps the scroll position
     await key('ArrowUp')
     await key('ArrowUp')
-    expect(scrollTop).toBe(210)
+    expect(scrollTop()).toBe(210)
 
     // past the top edge: scrolled up to the focused option
     await key('ArrowUp')
     expect(options()[6].classes()).toContain('at-select__option--focus')
-    expect(scrollTop).toBe(180)
+    expect(scrollTop()).toBe(180)
 
     // wrapping from last to first scrolls back to the top
     await key('ArrowDown')
@@ -246,7 +251,35 @@ describe('AtSelect + AtOption', () => {
     await key('ArrowDown')
     await key('ArrowDown')
     expect(options()[0].classes()).toContain('at-select__option--focus')
-    expect(scrollTop).toBe(0)
+    expect(scrollTop()).toBe(0)
+  })
+
+  it('scrolls the focused option into view when the dropdown is not its offsetParent', async () => {
+    await mountSelect(
+      '',
+      '',
+      '<at-option v-for="n in 10" :key="n" :value="String(n)">{{ n }}</at-option>',
+    )
+    await open()
+    // e.g. the consumer overrides `position` of .at-select__dropdown
+    const layout = stubDropdownLayout(document.body)
+
+    await key('ArrowUp')
+    expect(options()[9].classes()).toContain('at-select__option--focus')
+    expect(layout.scrollTop).toBe(210)
+
+    await key('ArrowUp')
+    await key('ArrowUp')
+    await key('ArrowUp')
+    expect(options()[6].classes()).toContain('at-select__option--focus')
+    expect(layout.scrollTop).toBe(180)
+
+    await key('ArrowDown')
+    await key('ArrowDown')
+    await key('ArrowDown')
+    await key('ArrowDown')
+    expect(options()[0].classes()).toContain('at-select__option--focus')
+    expect(layout.scrollTop).toBe(0)
   })
 
   it('registers options added later in DOM order', async () => {

@@ -358,16 +358,13 @@ export default {
       const child = this.children.find(c => c.exposed.uid === this.focusUid)
       if (!popover || !child || !child.el) return
 
-      // offset of the option inside the dropdown's scrolled content
-      let top = 0
-      let el = child.el
-      while (el && el !== popover) {
-        top += el.offsetTop
-        el = el.offsetParent
-      }
-      if (el !== popover) return
-
-      const bottom = top + child.el.offsetHeight
+      // Offset of the option inside the dropdown's scrolled content. Measured from the rendered
+      // boxes, not via `offsetParent`: the dropdown is not necessarily the option's offsetParent
+      // (e.g. when its `position` is overridden).
+      const optionRect = child.el.getBoundingClientRect()
+      const popoverRect = popover.getBoundingClientRect()
+      const top = optionRect.top - popoverRect.top - popover.clientTop + popover.scrollTop
+      const bottom = top + optionRect.height
       if (top < popover.scrollTop) {
         popover.scrollTop = top
       } else if (bottom > popover.scrollTop + popover.clientHeight) {

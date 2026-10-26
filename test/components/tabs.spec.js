@@ -115,6 +115,42 @@ describe('AtTabs + AtTabPane', () => {
     expect(visiblePanes()).toEqual(['C'])
   })
 
+  it('keeps an unnamed active pane selected when an earlier pane is closed', async () => {
+    const wrapper = await mountTabs({
+      attrs: 'closable :animated="false" @on-tab-remove="remove"',
+      value: '',
+      data: { list: ['A', 'B', 'C'] },
+      methods: {
+        remove({ index }) {
+          this.list.splice(index, 1)
+        },
+      },
+      panes: `<at-tab-pane v-for="n in list" :key="n" :label="n">{{ n }}</at-tab-pane>`,
+    })
+    const tabs = wrapper.getComponent(AtTabs)
+    const visiblePanes = () =>
+      wrapper
+        .findAll('.at-tabs__pane')
+        .filter(pane => pane.element.style.display !== 'none')
+        .map(pane => pane.text())
+
+    await navItems(wrapper)[2].trigger('click')
+    expect(wrapper.vm.value).toBe('2')
+    expect(visiblePanes()).toEqual(['C'])
+
+    await navItems(wrapper)[0].find('.at-tabs-nav__close').trigger('click')
+    await nextTick()
+
+    expect(tabs.emitted('on-tab-remove')).toEqual([[{ index: 0, name: '0' }]])
+    expect(tabs.emitted('update:modelValue').at(-1)).toEqual(['1'])
+    // the same pane stays active: no pane switch, no extra on-change
+    expect(tabs.emitted('on-change')).toEqual([[{ index: 2, name: '2' }]])
+    expect(wrapper.vm.value).toBe('1')
+    expect(navLabels(wrapper)).toEqual(['B', 'C'])
+    expect(activeNav(wrapper)).toEqual([false, true])
+    expect(visiblePanes()).toEqual(['C'])
+  })
+
   it('keeps nav in DOM order for panes added later', async () => {
     const wrapper = await mountTabs({
       value: 'c',

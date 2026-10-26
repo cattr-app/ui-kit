@@ -259,6 +259,7 @@ grep -rnE "\.[a-z-]+-(enter|leave)\b[^-]" src
 - Closing a tab: as in 1.x, the pane is removed from the DOM by the **consumer** in the `on-tab-remove` handler (`tabList.splice(index, 1)`). Before: Tabs temporarily removed the item from the nav itself, but after the next update it came back if the pane had not been removed. After: the nav is built from the mounted `AtTabPane`s, the item disappears only together with the pane. If the active tab is closed, Tabs selects the next non-disabled one (otherwise the previous one) and emits `update:modelValue` + `on-change` with the index in the list without the closed pane.
 - Tabs ↔ TabPane link: before `$children`/`$parent.updateNav()` (direct children only) → after, provide/inject + registration in DOM order: panes can be wrapped in other elements/components, panes added later or reordered (keyed `v-for`) take their place in the nav according to DOM order. The pane's `label`/`icon`/`disabled`/`closable` are reactive.
 - An `AtTabPane` without `name` gets a name = its index in DOM order as a string (`'0'`, `'1'`, …), known already on the first render; in 1.x it was a number. An `AtTabPane` outside `AtTabs` simply shows its content.
+- Closing a non-active tab that sits before an active `AtTabPane` without `name`: Tabs emits `update:modelValue` with the active pane's index name after removal (`'2'` → `'1'`), so it stays selected once the consumer removes the closed pane; `on-change` is not emitted (the active pane does not change).
 
 #### Textarea
 
