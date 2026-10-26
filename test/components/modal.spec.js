@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '../helpers/mount.js'
 import AtModal from '../../src/components/modal'
+import { Dialog } from '../../src/index.js'
 
 const mounted = []
 const mountModal = (options = {}) => {
@@ -87,5 +88,32 @@ describe('AtModal', () => {
     await nextTick()
 
     expect(document.activeElement).toBe(wrapper.find('.at-modal__input input').element)
+  })
+
+  it('Escape closes only the topmost open modal', async () => {
+    vi.useFakeTimers()
+    try {
+      const outer = mountModal({ props: { modelValue: true } })
+      const inner = Dialog.confirm('inner')
+      let innerResult
+      inner.catch(action => {
+        innerResult = action
+      })
+      await nextTick()
+      await vi.runAllTimersAsync()
+      expect(document.body.querySelectorAll('.at-modal')).toHaveLength(2)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      await vi.runAllTimersAsync()
+      expect(innerResult).toBe('cancel')
+      expect(outer.emitted('on-cancel')).toBeUndefined()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      expect(outer.emitted('on-cancel')).toHaveLength(1)
+    } finally {
+      Dialog.close()
+      await vi.runAllTimersAsync()
+      vi.useRealTimers()
+    }
   })
 })

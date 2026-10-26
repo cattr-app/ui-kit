@@ -64,6 +64,14 @@ import { t } from '../../../locale'
 import AtButton from '../../button'
 import AtInput from '../../input'
 
+// Open modals, the last opened on top: only the topmost one handles Escape.
+const openModals = []
+
+function removeOpen(vm) {
+  const i = openModals.indexOf(vm)
+  if (i !== -1) openModals.splice(i, 1)
+}
+
 export default {
   name: 'AtModal',
   // local: the dialog works with a standalone `app.use(Dialog)` / `app.use(AtModal)`
@@ -183,7 +191,9 @@ export default {
     },
     visible(val) {
       this.clearTimer()
+      removeOpen(this)
       if (val) {
+        openModals.push(this)
         this.wrapShow = true
         this.focusInput()
       } else {
@@ -195,6 +205,7 @@ export default {
   },
   mounted() {
     if (this.visible) {
+      openModals.push(this)
       this.wrapShow = true
       // opened from the start: the input gets focus as when opened later
       this.focusInput()
@@ -204,6 +215,7 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener('keydown', this.handleKeydown)
+    removeOpen(this)
     this.clearTimer()
   },
   methods: {
@@ -232,7 +244,8 @@ export default {
       this.$emit(action === 'confirm' ? 'on-confirm' : 'on-cancel')
     },
     handleKeydown(evt) {
-      if (this.visible && this.showClose && this.closeOnPressEsc && evt.key === 'Escape') {
+      if (evt.key !== 'Escape' || openModals[openModals.length - 1] !== this) return
+      if (this.visible && this.showClose && this.closeOnPressEsc) {
         this.handleAction('cancel')
       }
     },
