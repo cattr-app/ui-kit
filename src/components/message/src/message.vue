@@ -43,6 +43,8 @@ export default {
   data() {
     return {
       visible: false,
+      // true once rendered visible: before that a leave transition never runs (see close())
+      shown: false,
       closed: false,
       timer: null,
     }
@@ -55,6 +57,9 @@ export default {
   mounted() {
     // Shown after mount so the `move-up` enter transition plays.
     this.visible = true
+    this.$nextTick(() => {
+      this.shown = true
+    })
     this.startTimer()
   },
   beforeUnmount() {
@@ -67,6 +72,9 @@ export default {
       this.visible = false
       this.clearTimer()
       this.$emit('close')
+      // Closed in the same tick as opened: never rendered visible, so the leave transition
+      // (and its after-leave) does not run. Destroy now or the element stays in the body.
+      if (!this.shown) this.$emit('destroy')
     },
     startTimer() {
       if (this.duration) {
