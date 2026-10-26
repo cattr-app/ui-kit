@@ -65,7 +65,7 @@ export default {
       hoverIndex: -1,
       lastHoverIndex: -1,
       isHoverRate: false,
-      isHalf: this.allowHalf,
+      isHalf: this.allowHalf && isFractional(this.modelValue),
     }
   },
   watch: {

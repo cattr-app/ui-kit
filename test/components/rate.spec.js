@@ -66,4 +66,26 @@ describe('AtRate', () => {
     expect(wrapper.findAll('.at-rate__item--half')).toHaveLength(0)
     expect(wrapper.findAll('.at-rate__item--off')).toHaveLength(5)
   })
+
+  it('renders an integer initial value as whole stars with allowHalf', () => {
+    const wrapper = mount(AtRate, { props: { count: 5, modelValue: 3, allowHalf: true } })
+
+    const classes = wrapper
+      .findAll('.at-rate__item')
+      .map(item =>
+        item.classes('at-rate__item--on')
+          ? 'on'
+          : item.classes('at-rate__item--half')
+            ? 'half'
+            : 'off',
+      )
+    expect(classes).toEqual(['on', 'on', 'on', 'off', 'off'])
+  })
+
+  it('renders a fractional initial value with a half star', () => {
+    const wrapper = mount(AtRate, { props: { count: 5, modelValue: 2.5, allowHalf: true } })
+
+    expect(wrapper.findAll('.at-rate__item--on')).toHaveLength(2)
+    expect(wrapper.findAll('.at-rate__item--half')).toHaveLength(1)
+  })
 })
