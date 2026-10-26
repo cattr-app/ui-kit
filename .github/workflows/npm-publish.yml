@@ -39,7 +39,18 @@ jobs:
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action"
 
-      - run: npm --no-git-tag-version version from-git
+      # package.json may already carry the release version (2.0.0+); `npm version from-git`
+      # fails with "Version not changed" in that case, so only bump when they differ.
+      - name: Set version from tag
+        env:
+          TAG: ${{ inputs.tag || github.event.release.tag_name }}
+        run: |
+          version="${TAG#v}"
+          current="$(node -p "require('./package.json').version")"
+          if [ "$current" != "$version" ]; then
+            npm --no-git-tag-version version "$version"
+          fi
+          echo "publishing @amazingcat/cattr-ui@$version"
 
       - name: Build
         run: pnpm build:package
