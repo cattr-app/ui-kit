@@ -105,4 +105,39 @@ describe('Dialog ($Modal)', () => {
     confirmButton().click()
     await expect(second).resolves.toBe('confirm')
   })
+
+  it('settles the promise even if the callback throws, and reports the error', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const boom = new Error('boom')
+    const promise = Dialog.confirm({
+      content: 'Sure?',
+      callback: () => {
+        throw boom
+      },
+    })
+    let result
+    promise.then(value => {
+      result = value
+    })
+    await flush()
+
+    confirmButton().click()
+    await flush()
+
+    expect(result).toBe('confirm')
+    expect(error).toHaveBeenCalledWith(expect.any(String), boom)
+    error.mockRestore()
+  })
+
+  it('Dialog() without options does not throw', async () => {
+    let promise
+    expect(() => {
+      promise = Dialog()
+    }).not.toThrow()
+    await flush()
+
+    expect(modals()).toHaveLength(1)
+    confirmButton().click()
+    await expect(promise).resolves.toBe('confirm')
+  })
 })

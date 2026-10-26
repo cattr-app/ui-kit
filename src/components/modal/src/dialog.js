@@ -34,14 +34,7 @@ const settle = (item, action) => {
   const withInput = !!options.showInput
   const value = withInput ? service.vm.currentInputValue : undefined
 
-  if (typeof callback === 'function') {
-    if (withInput) {
-      callback(value, action)
-    } else {
-      callback(action)
-    }
-  }
-
+  // settle the promise first: a throwing callback must not leave it pending
   if (options.type === 'confirm' || options.type === 'prompt') {
     if (action === 'confirm') {
       resolve(withInput ? { value, action } : action)
@@ -50,6 +43,18 @@ const settle = (item, action) => {
     }
   } else {
     resolve(action)
+  }
+
+  if (typeof callback === 'function') {
+    try {
+      if (withInput) {
+        callback(value, action)
+      } else {
+        callback(action)
+      }
+    } catch (err) {
+      console.error('[cattr-ui] Dialog callback threw:', err)
+    }
   }
 }
 
@@ -86,7 +91,7 @@ const showNextModal = () => {
   })
 }
 
-const Dialog = (options, callback) => {
+const Dialog = (options = {}, callback) => {
   if (typeof window === 'undefined') return
   if (options.callback && !callback) {
     callback = options.callback
