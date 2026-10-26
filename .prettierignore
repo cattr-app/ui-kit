@@ -1,0 +1,9 @@
+dist
+dist-docs
+node_modules
+pnpm-lock.yaml
+src/stylesheet/css
+docs/markdown/**
+# owned by the stylesheet package, out of scope for repo-wide formatting
+src/stylesheet/**
+!src/stylesheet/package.json

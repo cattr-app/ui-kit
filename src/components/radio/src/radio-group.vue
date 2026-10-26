@@ -5,25 +5,32 @@
 </template>
 
 <script>
-import Emitter from 'at-ui/src/mixins/emitter'
+import { reactive, toRef } from 'vue'
+import { RadioGroupContext } from './context'
 
 export default {
   name: 'AtRadioGroup',
   props: {
-    value: [String, Number],
+    modelValue: [String, Number],
     size: String,
     fill: String,
-    textColor: String
+    textColor: String,
   },
-  mixins: [Emitter],
-  watch: {
-    value (value) {
-      this.$emit('radio-group-change', value)
-      this.broadcast('AtRadio', 'init-data', value)
-    }
+  emits: ['update:modelValue', 'radio-group-change'],
+  setup(props, { emit }) {
+    RadioGroupContext.provide(
+      reactive({
+        modelValue: toRef(props, 'modelValue'),
+        size: toRef(props, 'size'),
+        fill: toRef(props, 'fill'),
+        textColor: toRef(props, 'textColor'),
+        update(value) {
+          if (value === props.modelValue) return
+          emit('update:modelValue', value)
+          emit('radio-group-change', value)
+        },
+      }),
+    )
   },
-  mounted () {
-    this.broadcast('AtRadio', 'init-data', this.value)
-  }
 }
 </script>

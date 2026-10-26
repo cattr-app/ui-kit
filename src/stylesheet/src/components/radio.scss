@@ -1,7 +1,8 @@
 /**
  * Radio Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
+@use '../mixins' as *;
 
 @mixin button-size($padding, $font-size) {
   padding: $padding;

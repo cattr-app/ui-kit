@@ -2,7 +2,7 @@
  * Core
  */
 
-@import './normalize';
-@import './base';
-@import './grid';
-@import './font';
+@use 'normalize';
+@use 'base';
+@use 'grid';
+@use 'font';

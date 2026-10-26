@@ -1,8 +1,8 @@
-@use "sass:math";
 /**
  * Steps Style
  */
-@import '../variables/index.scss';
+@use 'sass:math';
+@use '../variables' as *;
 
 .at-steps {
   font-size: 0;

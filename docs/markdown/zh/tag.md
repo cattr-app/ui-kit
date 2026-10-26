@@ -35,7 +35,7 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| name | 用于触发关闭事件时的回调 | Boolean | — | false |
+| name | 标签的标识，触发关闭事件时作为第二个参数返回 | String / Number | — | - |
 | color | 类型 | String / Hex | 可传入十六进制颜色值，或者 `default`, `primary`, `success`, `error`, `warning`, `info` | default |
 | closable | 是否可关闭 | Boolean | — | false |
 
@@ -43,7 +43,7 @@
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| on-close | 点击关闭按钮时触发 | event |
+| on-close | 点击关闭按钮时触发 | `(event, name)`，未设置 `name` 时只有 `event` |
 
 <script>
   export default {

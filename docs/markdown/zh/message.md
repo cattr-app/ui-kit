@@ -8,7 +8,7 @@
 - 提供消息、成功、错误、警告等反馈提示
 - 在顶部居中显示，并自动消失，是一种不打断用户操作的轻量级提示
 
-我们在 `Vue.prototype` 中添加了全局对象 `$Message`，我们可以直接通过 `this.$Message` 操作实例
+我们在 `app.config.globalProperties` 中添加了全局对象 `$Message`，我们可以直接通过 `this.$Message` 操作实例；在 `<script setup>` 中可以使用 `import { Message } from '@amazingcat/cattr-ui'`。需在 `app.use(CattrUI)` 之后调用
 
 - `this.$Message(config)`
 - `this.$Message.info(config)`
@@ -16,6 +16,10 @@
 - `this.$Message.warning(config)`
 - `this.$Message.error(config)`
 - `this.$Message.loading(config)`
+- `this.$Message.close(id)`：关闭指定提示
+- `this.$Message.closeAll()`：关闭所有提示
+
+`config` 可以是字符串（即 `message`），也可以是配置对象。每次调用都返回一个关闭当前提示的函数，函数的 `id` 属性可传给 `this.$Message.close(id)`。
 
 ## 基础用法
 
@@ -99,11 +103,11 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| type | 全局提示的类别 | String | `success`, `error`, `warning`, `info` | `info` |
-| message | 提示的内容 | String | - | - |
-| duration | 自动关闭的延时，默认为 `3000` 毫秒 | Number | - | 3000 |
-| icon | 自定义类别ICON | String | - | `info` |
-| onClose | 关闭提示框时的回调函数 | Function | - | - |
+| type | 全局提示的类别 | String | `success`, `error`, `warning`, `info`, `loading` | `info` |
+| message | 提示的内容 | String / Number | - | - |
+| duration | 自动关闭的延时，单位为毫秒，设为 `0` 则不自动关闭 | Number | - | 3000 |
+| icon | 自定义类别ICON，优先于类别的图标 | String | - | - |
+| onClose | 关闭提示框时的回调函数，参数为提示组件的实例 | Function | - | - |
 
 <script>
   export default {

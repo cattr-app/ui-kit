@@ -2,11 +2,11 @@ export default {
   at: {
     select: {
       placeholder: 'Selecione',
-      notFoundText: 'Nenhum dado correspondente'
+      notFoundText: 'Nenhum dado correspondente',
     },
     modal: {
       okText: 'OK',
-      cancelText: 'Cancelar'
+      cancelText: 'Cancelar',
     },
     pagination: {
       prevText: 'Página anterior',
@@ -18,10 +18,10 @@ export default {
       goto: 'Ir para',
       pageText: '',
       prev5Text: '5 Páginas anteriores',
-      next5Text: 'Próximas 5 Páginas'
+      next5Text: 'Próximas 5 Páginas',
     },
     table: {
-      emptyText: 'Sem dados'
-    }
-  }
+      emptyText: 'Sem dados',
+    },
+  },
 }

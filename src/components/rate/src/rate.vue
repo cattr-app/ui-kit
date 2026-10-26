@@ -1,23 +1,24 @@
 <template>
   <div class="at-rate">
-    <ul class="at-rate__list"
+    <ul
+      class="at-rate__list"
       :class="{
-        'at-rate--disabled': disabled
+        'at-rate--disabled': disabled,
       }"
       @mouseover="overRateHandle"
-      @mouseleave="leaveRateHandle">
-      <li class="at-rate__item"
-        :class="clacClass(index)"
-        v-for="index in count"
-        :key="index">
-        <i :class="['icon', 'at-rate__icon', icon]"
+      @mouseleave="leaveRateHandle"
+    >
+      <li v-for="index in count" :key="index" class="at-rate__item" :class="clacClass(index)">
+        <i
+          :class="['icon', 'at-rate__icon', icon]"
           @mousemove="moveStarHandle(index, $event)"
-          @click="confirmValue(index)">
+          @click="confirmValue(index)"
+        >
           <span :class="['icon', 'at-rate__left', icon]" type="half"></span>
         </i>
       </li>
     </ul>
-    <div class="at-rate__text" v-if="showText">
+    <div v-if="showText" class="at-rate__text">
       <slot>{{ currentValue }}</slot>
     </div>
   </div>
@@ -27,64 +28,65 @@
 export default {
   name: 'AtRate',
   props: {
-    value: {
+    modelValue: {
       type: Number,
       default: 0,
-      validator: val => val >= 0
+      validator: val => val >= 0,
     },
     count: {
       type: Number,
       default: 5,
-      validator: val => val >= 0
+      validator: val => val >= 0,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     allowHalf: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showText: {
       type: Boolean,
-      default: false
+      default: false,
     },
     icon: {
       type: String,
-      default: 'icon-star-on'
-    }
+      default: 'icon-star-on',
+    },
   },
-  data () {
+  emits: ['update:modelValue', 'on-change', 'on-hover-change'],
+  data() {
     return {
-      currentValue: this.value,
+      currentValue: this.modelValue,
       hoverIndex: -1,
       lastHoverIndex: -1,
       isHoverRate: false,
-      isHalf: this.allowHalf
+      isHalf: this.allowHalf,
     }
   },
   watch: {
-    value (val) {
+    // external change: sync the stars only, events are emitted for user clicks (confirmValue)
+    modelValue(val) {
       this.currentValue = val
-      this.$emit('on-change', val)
     },
-    currentValue (val) {
+    currentValue(val) {
       this.checkIsHalf(val)
-    }
+    },
   },
   methods: {
-    overRateHandle () {
+    overRateHandle() {
       if (this.disabled) return
       this.isHoverRate = true
     },
-    leaveRateHandle () {
+    leaveRateHandle() {
       if (this.disabled) return
       this.isHoverRate = false
       this.hoverIndex = -1
       this.lastHoverIndex = -1
       this.checkIsHalf(this.currentValue)
     },
-    moveStarHandle (index, event) {
+    moveStarHandle(index, event) {
       if (this.disabled) return
       this.hoverIndex = index
 
@@ -102,13 +104,13 @@ export default {
 
       this.lastHoverIndex = exactlyHoverIndex
     },
-    confirmValue (index) {
+    confirmValue(index) {
       if (this.disabled) return
       this.currentValue = this.isHalf ? index - 0.5 : index
       this.$emit('on-change', this.currentValue)
-      this.$emit('input', this.currentValue)
+      this.$emit('update:modelValue', this.currentValue)
     },
-    clacClass (index) {
+    clacClass(index) {
       const STAR_ON_CLASS_NAME = 'at-rate__item--on'
       const STAR_OFF_CLASS_NAME = 'at-rate__item--off'
       const STAR_HALF_CLASS_NAME = 'at-rate__item--half'
@@ -120,14 +122,13 @@ export default {
 
       return {
         [STAR_ON_CLASS_NAME]: isHalf ? index < lastItemIndex : index <= lastItemIndex,
-        [STAR_HALF_CLASS_NAME]: (index === lastItemIndex) && isHalf,
-        [STAR_OFF_CLASS_NAME]: index > lastItemIndex
+        [STAR_HALF_CLASS_NAME]: index === lastItemIndex && isHalf,
+        [STAR_OFF_CLASS_NAME]: index > lastItemIndex,
       }
     },
-    checkIsHalf (val) {
+    checkIsHalf(val) {
       this.isHalf = this.allowHalf && val.toString().indexOf('.') >= 0
-    }
-  }
+    },
+  },
 }
 </script>
-

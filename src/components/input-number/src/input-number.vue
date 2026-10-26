@@ -4,12 +4,16 @@
     :class="[
       size ? `at-input-number--${size}` : '',
       {
-        'at-input-number--disabled': disabled
-      }
-    ]">
+        'at-input-number--disabled': disabled,
+      },
+      $attrs.class,
+    ]"
+    :style="$attrs.style"
+  >
     <!-- S input -->
     <div class="at-input-number__input">
       <input
+        v-bind="inputAttrs()"
         type="number"
         class="at-input-number__original"
         :value="currentValue"
@@ -21,8 +25,11 @@
         :autofocus="autofocus"
         @focus="handleFocus"
         @blur="handleBlur"
+        @change="handleChange"
+        @keydown.enter="handleChange"
         @keydown.up.stop.prevent="increaseNum"
-        @keydown.down.stop.prevent="decreaseNum">
+        @keydown.down.stop.prevent="decreaseNum"
+      />
     </div>
     <!-- E input -->
 
@@ -31,17 +38,19 @@
       <span
         class="at-input-number__up"
         :class="{
-          'at-input-number__up--disabled': upDisabled
+          'at-input-number__up--disabled': upDisabled,
         }"
-        @click="increaseNum">
+        @click="increaseNum"
+      >
         <i class="icon icon-chevron-up"></i>
       </span>
       <span
         class="at-input-number__down"
         :class="{
-          'at-input-number__down--disabled': downDisabled
+          'at-input-number__down--disabled': downDisabled,
         }"
-        @click="decreaseNum">
+        @click="decreaseNum"
+      >
         <i class="icon icon-chevron-down"></i>
       </span>
     </div>
@@ -50,71 +59,90 @@
 </template>
 
 <script>
-import Emitter from 'at-ui/src/mixins/emitter'
-
 export default {
   name: 'AtInputNumber',
-  mixins: [Emitter],
+  inheritAttrs: false,
   props: {
-    value: {
+    modelValue: {
       type: Number,
-      default: 0
+      default: 0,
     },
     size: {
       type: String,
-      default: 'normal'
+      default: 'normal',
     },
     step: {
       type: [Number, String],
-      default: 1
+      default: 1,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     name: String,
     readonly: Boolean,
     autofocus: Boolean,
     max: Number,
-    min: Number
+    min: Number,
   },
-  data () {
+  emits: ['update:modelValue', 'change', 'focus', 'blur'],
+  data() {
     return {
-      currentValue: this.value
-    }
-  },
-  watch: {
-    currentValue (value) {
-      this.$emit('change', value)
-      this.$emit('input', value)
+      currentValue: this.modelValue,
     }
   },
   computed: {
-    upDisabled () {
-      return this.currentValue + this.step > this.max
+    upDisabled() {
+      return this.currentValue + Number(this.step) > this.max
     },
-    downDisabled () {
-      return this.currentValue - this.step < this.min
-    }
+    downDisabled() {
+      return this.currentValue - Number(this.step) < this.min
+    },
+  },
+  watch: {
+    modelValue(value) {
+      this.currentValue = value
+    },
   },
   methods: {
-    handleFocus (evt) {
+    // Everything except class/style goes to the native <input>: listeners
+    // (@keyup, @keydown, @paste…) and attributes (id, placeholder, aria-*).
+    inputAttrs() {
+      // eslint-disable-next-line no-unused-vars
+      const { class: _class, style: _style, ...rest } = this.$attrs
+      return rest
+    },
+    handleFocus(evt) {
       this.$emit('focus', evt)
     },
-    handleBlur (evt) {
+    handleBlur(evt) {
       this.$emit('blur', evt)
     },
-    increaseNum () {
+    // Typed value is applied on native change (blur) and on Enter.
+    handleChange(evt) {
+      const raw = evt.target.value
+      let value = raw === '' ? NaN : Number(raw)
+
+      if (!isNaN(value) && !this.disabled && !this.readonly) {
+        if (value > this.max) value = this.max
+        if (value < this.min) value = this.min
+        this.setValue(value)
+      }
+
+      // Re-sync the field when the value was rejected, clamped or unchanged.
+      evt.target.value = this.currentValue
+    },
+    increaseNum() {
       const value = this.currentValue || 0
       if (value >= this.max || this.disabled) return
       this.calculateStep('up')
     },
-    decreaseNum () {
+    decreaseNum() {
       const value = this.currentValue || 0
       if (value <= this.min || this.disabled) return
       this.calculateStep('down')
     },
-    calculateStep (type) {
+    calculateStep(type) {
       if (this.disabled) return
 
       let value = Number(this.currentValue)
@@ -128,33 +156,39 @@ export default {
 
       if (value > this.max || value < this.min) return
 
-      this.currentValue = value
-      this.$emit('change', value)
-      this.dispatch('AtFormItem', 'on-form-item-change', value)
+      this.setValue(value)
     },
-    calculateNumber (num, stepNum, symbol) {
+    // Emits on every change, including reaching min/max
+    // (fix from 9-input-number-does-not-emit-changes-on-edge-value).
+    setValue(value) {
+      if (value === this.currentValue) return
+      this.currentValue = value
+      this.$emit('update:modelValue', value)
+      this.$emit('change', value)
+    },
+    calculateNumber(num, stepNum, symbol) {
       let decimal1, decimal2
 
       try {
         decimal1 = num.toString().split('.')[1].length
-      } catch (e) {
+      } catch {
         decimal1 = 0
       }
 
       try {
         decimal2 = stepNum.toString().split('.')[1].length
-      } catch (e) {
+      } catch {
         decimal2 = 0
       }
 
       const quantity = Math.pow(10, Math.max(decimal1, decimal2))
 
       if (symbol === '+') {
-        return ((num * quantity) + (stepNum * quantity)) / quantity
+        return (num * quantity + stepNum * quantity) / quantity
       } else if (symbol === '-') {
-        return ((num * quantity) - (stepNum * quantity)) / quantity
+        return (num * quantity - stepNum * quantity) / quantity
       }
-    }
-  }
+    },
+  },
 }
 </script>

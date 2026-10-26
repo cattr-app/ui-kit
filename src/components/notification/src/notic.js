@@ -1,86 +1,105 @@
-import Vue from 'vue'
 import NotificationVue from './notification.vue'
-
-const NotificationConstructor = Vue.extend(NotificationVue)
+import { mountService } from '../../../utils/mount-service.js'
+import { getCurrentApp, setCurrentApp } from '../../../utils/context.js'
 
 const noticeType = ['success', 'error', 'warning', 'info']
+const GAP = 16
 const instances = []
-let instance
 let seed = 1
 let zindexSeed = 1010
 
-const Notification = options => {
-  if (Vue.prototype.$isServer) return
-  options = options || {}
+const normalize = options => (typeof options === 'string' ? { message: options } : { ...options })
 
-  const onClose = options.onClose
+/**
+ * Show a notification in the top right corner.
+ * `options`: a string (the message) or `{ title, message, type, icon, duration, showClose, onClose }`.
+ * Returns a function that closes this notification; its `id` property is the notification id.
+ */
+const Notification = options => {
+  if (typeof window === 'undefined') return
+  const {
+    title,
+    message,
+    type,
+    icon,
+    duration,
+    showClose,
+    onClose: customCloseFunc,
+  } = normalize(options)
   const id = `notification_${seed++}`
 
-  options.onClose = function () {
-    Notification.close(id, onClose)
+  let top = GAP
+  for (const item of instances) {
+    top += item.el.offsetHeight + GAP
   }
 
-  instance = new NotificationConstructor({
-    data: options
+  const service = mountService(NotificationVue, {
+    title,
+    message,
+    type,
+    icon,
+    duration,
+    showClose,
+    top,
+    zIndex: zindexSeed++,
+    onClose: () => Notification.close(id),
+    onDestroy: () => service.unmount(),
   })
 
-  instance.id = id
-  instance.vm = instance.$mount()
-  document.body.appendChild(instance.vm.$el)
-  instance.vm.isShow = true
-  instance.dom = instance.vm.$el
-  instance.dom.style.zIndex = (zindexSeed++)
+  instances.push({
+    id,
+    top,
+    vm: service.vm,
+    el: service.el,
+    onClose: customCloseFunc,
+    update: service.update,
+    unmount: service.unmount,
+  })
 
-  const offset = 0
-  let topDist = offset
-
-  for (let i = 0, len = instances.length; i < len; i++) {
-    topDist += instances[i].$el.offsetHeight + 16
-  }
-
-  topDist += 16
-  instance.top = topDist
-  instances.push(instance)
-
-  return instance.vm
+  // `close.id` can be passed to `Notification.close(id)`
+  const close = () => service.vm.close()
+  close.id = id
+  return close
 }
 
-Notification.close = function (id, onClose) {
-  const len = instances.length
-  let index
-  let removedHeight
-  let i = 0
+/**
+ * Close the notification with this `id` (the `id` property of the function returned by the call),
+ * call its `onClose` and shift the ones below it up. Unknown or already closed `id` — no-op.
+ */
+Notification.close = id => {
+  const index = instances.findIndex(item => item.id === id)
+  if (index === -1) return
 
-  for (i = 0; i < len; i++) {
-    if (id === instances[i].id) {
-      if (typeof onClose === 'function') {
-        onClose(instances[i])
-      }
-      index = i
-      removedHeight = instances[i].dom.offsetHeight
-      instances.splice(i, 1)
-      break
-    }
+  const [removed] = instances.splice(index, 1)
+
+  // Shift the rest up before `onClose`: a notification it opens is placed from the updated stack
+  // and must not be shifted again.
+  const removedHeight = removed.el.offsetHeight
+  for (let i = index; i < instances.length; i++) {
+    instances[i].top -= removedHeight + GAP
+    instances[i].update({ top: instances[i].top })
   }
 
-  if (len > 1) {
-    for (i = index; i < len - 1; i++) {
-      instances[i].dom.style.top = `${parseInt(instances[i].dom.style.top) - removedHeight - 16}px`
-    }
+  if (typeof removed.onClose === 'function') {
+    removed.onClose(removed.vm)
   }
+  // The closing notification is still visible (leave transition) — close() starts it.
+  removed.vm.close()
+}
+
+Notification.closeAll = () => {
+  // close() splices `instances`, iterate over a copy.
+  instances.slice().forEach(item => item.vm.close())
 }
 
 noticeType.forEach(type => {
-  Notification[type] = options => {
-    if (typeof options === 'string') {
-      options = {
-        message: options
-      }
-    }
-
-    options.type = type
-    return Notification(options)
-  }
+  Notification[type] = options => Notification({ ...normalize(options), type })
 })
+
+// Standalone `app.use(Notification)` (without CattrUI): render the service in this app's context.
+Notification.install = app => {
+  if (!getCurrentApp()) setCurrentApp(app)
+  app.config.globalProperties.$Notify = Notification
+}
 
 export default Notification

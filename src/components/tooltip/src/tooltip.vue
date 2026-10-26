@@ -1,17 +1,16 @@
 <template>
   <div class="at-tooltip">
-    <span class="at-tooltip__trigger" ref="trigger">
+    <span ref="trigger" class="at-tooltip__trigger">
       <slot></slot>
     </span>
 
-    <transition :name="transition" @after-leave="doDestory">
+    <transition :name="transition">
       <div
-        class="at-tooltip__popper"
-        :class="[
-          placement ? 'at-tooltip--' + placement : 'at-tooltip--top'
-        ]"
         v-if="show"
-        ref="popover">
+        ref="popover"
+        class="at-tooltip__popper"
+        :class="[placement ? 'at-tooltip--' + placement : 'at-tooltip--top']"
+      >
         <div class="at-tooltip__arrow"></div>
         <div class="at-tooltip__content">
           <slot name="content"><div v-text="content"></div></slot>
@@ -22,7 +21,7 @@
 </template>
 
 <script>
-import PopoverMixin from 'at-ui/src/mixins/popover'
+import PopoverMixin from '../../../mixins/popover'
 
 export default {
   name: 'AtTooltip',
@@ -30,12 +29,12 @@ export default {
   props: {
     trigger: {
       type: String,
-      default: 'hover'
+      default: 'hover',
     },
     transition: {
       type: String,
-      default: 'fade'
-    }
-  }
+      default: 'fade',
+    },
+  },
 }
 </script>

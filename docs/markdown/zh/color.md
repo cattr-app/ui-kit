@@ -2,7 +2,7 @@
 
 ----
 
-统一的色彩搭配可以提高品牌的识别度，色彩的运用除了需要考虑品牌的统一性之外，还需要达到信息传递，交互反馈等目的。`AT-UI` 是凹凸实验室出品，品牌颜色为「凹凸蓝」，因此 `AT-UI` 的整体配色风格也是基于「凹凸蓝」展开的。
+统一的色彩搭配可以提高品牌的识别度，色彩的运用除了需要考虑品牌的统一性之外，还需要达到信息传递，交互反馈等目的。`Cattr UI` 的品牌颜色为「品牌蓝」，因此 `Cattr UI` 的整体配色风格也是基于「品牌蓝」展开的。
 
 ## 主色
 
@@ -22,7 +22,7 @@
 用于标识状态的按钮等
 
 <div class="row no-gutter">
-  <div class="col-sm-12 col-md-6 col-lg-5">
+  <div  class="col-sm-12 col-md-6 col-lg-5">
     <div class="at-color-container" style="background-color: #13CE66;">
       <p class="color-name">Green - Positive</p>
       <p class="color-value">#13CE66</p>

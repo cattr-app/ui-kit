@@ -78,7 +78,7 @@ Set `clearable` property to give Select Button the ability to empty options, onl
 :::
 
 
-## Option Grouop
+## Option Group
 
 Options can be grouped by `OptionGroup` component, and the name of the group can be set using the `label` property.
 
@@ -104,7 +104,7 @@ Options can be grouped by `OptionGroup` component, and the name of the group can
 
 ## Customize Template
 
-Customize the option content. When using label property in Option, the option will show the label preferentially. Otherwise the selected content will be same with the customise content and that is not what we want.
+Customize the option content. When using label property in Option, the option will show the label preferentially. Otherwise the text of the custom content is used as the label (`textContent`, without HTML markup).
 
 :::demo
 ```html
@@ -159,22 +159,38 @@ To set search mode, add `filterable` property to the Select.
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 | :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
-| value | value of Select button，binding with `v-model` | String / Number / Array | - | - |
+| modelValue (v-model) | value of the selected option; an array in `multiple` mode | String / Number / Array | - | - |
 | multiple | whether support multiple | Boolean | - | false |
 | disabled | whether Select is disabled | Boolean | - | false |
 | clearable | whether can clear option | Boolean | - | false |
 | filterable | whether support filter | Boolean | - | false |
 | placeholder | text for placeholder | String | - | Select |
 | size | size of Select | String | `large`, `normal`, `small` | normal |
-| notFoundText | text to show when search no found | String | - | Nothing matched |
+| notFoundText | text to show when search no found | String | - | `No matching data` (from locale) |
 | placement | the direction of popup | String | `top`, `bottom` | bottom |
-| valueWithLabel | set select return value what include label and value, which default return value | Boolean | - | false |
+| trigger | the way to open the popup | String | `click` | `click` |
+| valueWithLabel | emit `{ value, label }` (an array of them in `multiple` mode) instead of the value | Boolean | - | false |
 
 ## Select Events
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| on-change | Emitted when selected Option change | values of selected items |
+| update:modelValue | Emitted when the user changes the selection (click or Enter on an option, removing a tag, the clear icon), used by `v-model` | the value / new array of values; `{ value, label }` with `valueWithLabel` |
+| on-change | Emitted together with `update:modelValue`, only on user actions (not when `modelValue` is changed by the parent) | the value / new array of values; `{ value, label }` with `valueWithLabel` |
+
+## Option Props
+
+| Property      | Description          | Type      | Accepted Values                           | Default  |
+| :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
+| value | value of the option | String / Number | - | - |
+| label | text shown in the selected value and used for filtering; the text of the slot is used if omitted | String / Number | - | - |
+| disabled | whether the option is disabled | Boolean | - | false |
+
+## OptionGroup Props
+
+| Property      | Description          | Type      | Accepted Values                           | Default  |
+| :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
+| label | name of the group | String | - | - |
 
 <script>
   export default {

@@ -159,7 +159,7 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 | :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
-| value | 指定当前组件的 value 值，可通过 `v-model` 绑定 | String / Number / Array | - | - |
+| modelValue | 指定当前组件的 value 值，可通过 `v-model` 绑定 | String / Number / Array | - | - |
 | multiple | 是否支持多选 | Boolean | - | false |
 | disabled | 是否禁用选择器 | Boolean | - | false |
 | clearable | 是否支持清空功能 | Boolean | - | false |
@@ -174,7 +174,22 @@
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| on-change | 绑定的值变化时触发 | 选中的选项值，类型为 `String`，`Number` 或者 `Array` |
+| update:modelValue | 用户选择、删除标签或清空时触发（用于 `v-model`） | 选中的选项值，类型为 `String`，`Number` 或者 `Array` |
+| on-change | 用户选择、删除标签或清空时触发，程序修改 `modelValue` 时不触发 | 选中的选项值，类型为 `String`，`Number` 或者 `Array`；设置 `value-with-label` 时为 `{ value, label }` 或其数组 |
+
+## Option 参数
+
+| 参数      | 说明          | 类型      | 可选值                           | 默认值  |
+|---------- |-------------- |---------- |--------------------------------  |-------- |
+| value | 选项的值 | String / Number | - | - |
+| label | 选项的显示文本，不设置时取插槽内容的文本 | String / Number | - | - |
+| disabled | 是否禁用该选项 | Boolean | - | false |
+
+## OptionGroup 参数
+
+| 参数      | 说明          | 类型      | 可选值                           | 默认值  |
+|---------- |-------------- |---------- |--------------------------------  |-------- |
+| label | 分组的名称 | String | - | - |
 
 <script>
   export default {

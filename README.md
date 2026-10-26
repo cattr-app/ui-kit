@@ -1,82 +1,138 @@
 # Cattr UI
 
-UI-библиотека Cattr на Vue 2. Проект является форком [AT UI](https://github.com/at-ui/at-ui) и сохраняет его API, дополняя оригинальную библиотеку стилями, темой и исправлениями, необходимыми Cattr.
+Cattr's UI component library for Vue 3 and Vite. The project is a fork of [AT UI](https://github.com/at-ui/at-ui) that keeps its API and extends the original library with the styles, theme and fixes Cattr needs.
 
-> Это внутренняя библиотека Cattr, а не официальный релиз AT UI. Для новых проектов стоит учитывать, что она основана на устаревшем стеке Vue 2 и Webpack 3.
+> This is an internal Cattr library, not an official release of the original library.
 
-## Отличия от AT UI
+## Differences from the original
 
-- пакет публикуется как `@amazingcat/cattr-ui`;
-- исходники AT UI Style включены в `src/stylesheet`, отдельный пакет стилей не нужен;
-- переменные, сетка, шрифты и стили компонентов адаптированы под интерфейс Cattr;
-- поддерживается импорт отдельных компонентов;
-- добавлено событие `rowClick` для строк таблицы;
-- включены исправления поведения `InputNumber`, `Tabs`, `Table` и других компонентов, используемых в Cattr.
+- the package is published as `@amazingcat/cattr-ui` and shipped as ESM, with `vue` `^3.5` as a peer dependency;
+- the package contains a prebuilt CSS (`@amazingcat/cattr-ui/style.css`) and the SCSS sources (`src/stylesheet`) for a custom theme, so no separate style package is needed;
+- variables, grid, fonts and component styles are adapted to the Cattr interface;
+- individual components can be imported;
+- the `rowClick` event was added to table rows;
+- behaviour fixes for `InputNumber`, `Tabs`, `Table` and other components used in Cattr are included.
 
-## Установка
+## Installation
 
 ```bash
 pnpm add @amazingcat/cattr-ui
 ```
 
-## Подключение
+## Setup
 
-Подключение всей библиотеки:
+Registering the whole library:
 
 ```js
-import Vue from 'vue'
+import { createApp } from 'vue'
 import CattrUI from '@amazingcat/cattr-ui'
-import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'
+import '@amazingcat/cattr-ui/style.css'
+import App from './App.vue'
 
-Vue.use(CattrUI)
+createApp(App).use(CattrUI).mount('#app')
 ```
 
-После этого компоненты доступны глобально:
+`style.css` is the prebuilt CSS with the default theme (`style.min.css` is available too); the icon fonts are pulled from the package by the bundler, so Sass is not needed for it. After that the components are available globally:
 
 ```vue
 <template>
-  <at-button type="primary">Сохранить</at-button>
+  <at-button type="primary">Save</at-button>
 </template>
 ```
 
-Для импорта отдельного компонента:
+To import a single component, use its named `At*` export:
 
 ```js
-import Vue from 'vue'
-import Button from '@amazingcat/cattr-ui/src/components/button'
-import '@amazingcat/cattr-ui/src/stylesheet/src/index.scss'
+import { createApp } from 'vue'
+import { AtButton } from '@amazingcat/cattr-ui'
+import '@amazingcat/cattr-ui/style.css'
+import App from './App.vue'
 
-Vue.use(Button)
+const app = createApp(App)
+app.use(AtButton)
+app.mount('#app')
 ```
 
-## Разработка
+Instead of `app.use(AtButton)` you can call `app.component(AtButton.name, AtButton)`.
 
-Для разработки используются Node.js 24.21 (версия закреплена в `.nvmrc`) и pnpm 12.9 (версия закреплена в `package.json`).
+Custom theme: instead of `style.css`, import your own SCSS entry that loads the style sources with overridden variables (`src/stylesheet/src/variables/default.scss`):
+
+```scss
+// src/styles/cattr-ui.scss
+@use '@amazingcat/cattr-ui/src/stylesheet/src/index.scss' as cattr with (
+  $brand-blue-500: #ff5722
+);
+```
+
+```js
+import './styles/cattr-ui.scss'
+```
+
+SCSS requires Sass: `pnpm add -D sass-embedded` (recommended; `sass` works too). With pnpm ≥ 10 add the following to the project's `pnpm-workspace.yaml`, otherwise `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS` because of `@parcel/watcher`:
+
+```yaml
+ignoredOptionalDependencies:
+  - sass-embedded-all-unknown
+  - sass-embedded-unknown-all
+```
+
+For `sass` use `allowBuilds: { '@parcel/watcher': false }` instead. See the "Styles" section of [`CHANGELOG.md`](CHANGELOG.md) for details.
+
+Locales are imported from `@amazingcat/cattr-ui/locale/<lang>` and passed to the plugin. Available: `de`, `en-US` (default), `fa-IR`, `ko-KR`, `pt-BR`, `zh-CN`:
+
+```js
+import de from '@amazingcat/cattr-ui/locale/de'
+
+app.use(CattrUI, { locale: de })
+```
+
+Integration with vue-i18n (version 11, `legacy: false`) through the `i18n(key, values)` hook:
+
+```js
+app.use(CattrUI, { i18n: (key, values) => i18n.global.t(key, values) })
+```
+
+If the hook returns `null` or `undefined`, the string is taken from the built-in locale. `i18n.global.t` returns the key itself for a missing key, so the fallback will not trigger; in that case check `i18n.global.te(key)` or add the `at.*` keys to the vue-i18n messages.
+
+## Migrating from 1.x
+
+The step-by-step list of changes with a migration checklist is in [`CHANGELOG.md`](CHANGELOG.md). The essentials:
+
+- `v-model` works through the `modelValue` prop and the `update:modelValue` event: replace `:value` and `@input` with `:model-value` and `@update:model-value`;
+- plugin installation through the global `Vue` is replaced with `app.use(...)` after `createApp`;
+- the table column `render` signature changed: `render: (h, params)` became `render: ({ item, column, index })`, VNodes are written in the Vue 3 format;
+- the `.native` modifier is gone: `@click.native` → `@click`.
+
+## Development
+
+Development uses Node.js 24 (pinned in `.nvmrc`) and pnpm (pinned in the `packageManager` field of `package.json`).
 
 ```bash
 corepack enable
-pnpm install
+pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Основные команды:
+Main commands:
 
-| Команда | Назначение |
-| --- | --- |
-| `pnpm dev` | Запустить локальную документацию и стенд разработки |
-| `pnpm lint` | Проверить JavaScript- и Vue-файлы линтером |
-| `pnpm build:locale` | Собрать локализации |
-| `pnpm build:component` | Собрать библиотеку компонентов |
-| `pnpm build:package` | Собрать локализации и библиотеку компонентов |
-| `pnpm build:docs` | Собрать пакет, стили Dart Sass и сайт документации в `dist/` |
-| `pnpm dist` | Выполнить полную сборку (псевдоним `build:docs`) |
+| Command              | Purpose                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| `pnpm dev`           | Documentation site dev server on Vite with HMR (port 7200)                                     |
+| `pnpm build`         | Build the library into `dist/` (Vite, library mode, ESM) and the prebuilt CSS into `dist/css/` |
+| `pnpm build:style`   | Build the styles (the `cattr-ui-style` workspace package)                                      |
+| `pnpm build:docs`    | `build:style` plus the static documentation site in `dist-docs/`                               |
+| `pnpm lint`          | Lint JavaScript and Vue files (ESLint)                                                         |
+| `pnpm lint:fix`      | Lint and apply automatic fixes                                                                 |
+| `pnpm format`        | Format files with Prettier                                                                     |
+| `pnpm format:check`  | Check formatting with Prettier without changing files                                          |
+| `pnpm test`          | Run the Vitest tests once                                                                      |
+| `pnpm test:watch`    | Run the Vitest tests in watch mode                                                             |
+| `pnpm test:coverage` | Run the tests with a coverage report (`coverage/`)                                             |
 
-По умолчанию dev-сервер доступен по адресу <http://localhost:7200/>.
+Documentation dev server: <http://localhost:7200/>.
 
-При push в ветку `main` GitHub Actions собирает документацию и публикует её на GitHub Pages.
+On push to the `main` branch GitHub Actions builds the documentation and publishes it to GitHub Pages.
 
-## Upstream и лицензия
+## Upstream and license
 
-Исходный проект: [AT UI](https://github.com/at-ui/at-ui).
-
-Проект распространяется по лицензии [MIT](LICENSE).
+The project is distributed under the [MIT](LICENSE) license.

@@ -1,11 +1,11 @@
 /**
  * popover mixins
  * https://github.com/yuche/vue-strap/blob/master/src/utils/popoverMixins.js
+ *
+ * The host component provides `ref="trigger"` (element the listeners are bound to) and
+ * `ref="popover"` (positioned element). `v-model` controls `show`.
  */
-let $
-if (typeof window !== 'undefined') {
-  $ = require('../utils/NodeList.js').default
-}
+const HIDE_DELAY = 200
 
 export default {
   props: {
@@ -13,62 +13,91 @@ export default {
     title: String,
     content: {
       type: String,
-      default: ''
+      default: '',
     },
     header: {
       type: Boolean,
-      default: true
+      default: true,
     },
     placement: {
       type: String,
-      default: 'top'
+      default: 'top',
     },
-    value: {
+    modelValue: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  data () {
+  emits: ['update:modelValue', 'toggle'],
+  data() {
     return {
-      show: this.value,
+      show: this.modelValue,
       position: {
         top: 0,
-        left: 0
-      }
+        left: 0,
+      },
     }
   },
+  watch: {
+    modelValue(value) {
+      if (value === this.show) return
+      // mark the change as coming from the parent so it is not echoed back
+      this.popoverSyncing = true
+      this.show = value
+      // the host renders the popover with `v-if`: position it once it is in the DOM
+      if (value) this.setPopoverPosition()
+    },
+    show(value) {
+      if (this.popoverSyncing) {
+        this.popoverSyncing = false
+        return
+      }
+      this.$emit('update:modelValue', value)
+    },
+  },
+  created() {
+    // plain instance fields, not reactive
+    this.popoverTimer = null
+    this.popoverSyncing = false
+    this.popoverListeners = []
+  },
   methods: {
-    toggle (evt) {
+    // Trigger listeners survive a hide (the popover can be shown again); they are
+    // removed in beforeUnmount.
+    toggle() {
       this.show = !this.show
       this.$emit('toggle', this.show)
       if (!this.show) return
 
       this.setPopoverPosition()
     },
-    showPopover () {
+    showPopover() {
       this.show = true
       this.setPopoverPosition()
     },
-    hidePopover () {
+    hidePopover() {
       this.show = false
     },
-    handleMouseEnter () {
+    handleMouseEnter() {
       this.showPopover()
-      clearTimeout(this._timer)
+      clearTimeout(this.popoverTimer)
     },
-    handleMouseLeave () {
-      this._timer = setTimeout(() => {
+    handleMouseLeave() {
+      clearTimeout(this.popoverTimer)
+      this.popoverTimer = setTimeout(() => {
         this.hidePopover()
-      }, 200)
+      }, HIDE_DELAY)
     },
-    setPopoverPosition () {
+    setPopoverPosition() {
       this.$nextTick(() => {
         const popover = this.$refs.popover
         const trigger = this.$refs.trigger
+        if (!popover || !trigger) return
 
         switch (this.placement) {
-          case 'top' :
-            this.position.left = trigger.offsetLeft - (popover.offsetWidth / 2) + (trigger.offsetWidth / 2)
+          case 'top':
+            this.position.left =
+              trigger.offsetLeft - popover.offsetWidth / 2 + trigger.offsetWidth / 2
             this.position.top = trigger.offsetTop - popover.offsetHeight
             break
           case 'top-left':
@@ -81,7 +110,8 @@ export default {
             break
           case 'left':
             this.position.left = trigger.offsetLeft - popover.offsetWidth
-            this.position.top = trigger.offsetTop + (trigger.offsetHeight / 2) - (popover.offsetHeight / 2)
+            this.position.top =
+              trigger.offsetTop + trigger.offsetHeight / 2 - popover.offsetHeight / 2
             break
           case 'left-top':
             this.position.left = trigger.offsetLeft - popover.offsetWidth
@@ -93,7 +123,8 @@ export default {
             break
           case 'right':
             this.position.left = trigger.offsetLeft + trigger.offsetWidth
-            this.position.top = trigger.offsetTop + (trigger.offsetHeight / 2) - (popover.offsetHeight / 2)
+            this.position.top =
+              trigger.offsetTop + trigger.offsetHeight / 2 - popover.offsetHeight / 2
             break
           case 'right-top':
             this.position.left = trigger.offsetLeft + trigger.offsetWidth
@@ -104,7 +135,8 @@ export default {
             this.position.top = trigger.offsetTop + trigger.offsetHeight - popover.offsetHeight
             break
           case 'bottom':
-            this.position.left = trigger.offsetLeft - (popover.offsetWidth / 2) + (trigger.offsetWidth / 2)
+            this.position.left =
+              trigger.offsetLeft - popover.offsetWidth / 2 + trigger.offsetWidth / 2
             this.position.top = trigger.offsetTop + trigger.offsetHeight
             break
           case 'bottom-left':
@@ -117,7 +149,8 @@ export default {
             break
           default:
             // if user set wrong placement, then use default 'top'
-            this.position.left = trigger.offsetLeft - (popover.offsetWidth / 2) + (trigger.offsetWidth / 2)
+            this.position.left =
+              trigger.offsetLeft - popover.offsetWidth / 2 + trigger.offsetWidth / 2
             this.position.top = trigger.offsetTop - popover.offsetHeight
             break
         }
@@ -126,35 +159,36 @@ export default {
         popover.style.left = `${this.position.left}px`
       })
     },
-    doDestory () {
-      if (this._trigger) {
-        $(this._trigger).off()
-      }
-    }
+    addTriggerListener(el, event, handler) {
+      el.addEventListener(event, handler)
+      this.popoverListeners.push([el, event, handler])
+    },
+    removeTriggerListeners() {
+      this.popoverListeners.forEach(([el, event, handler]) => {
+        el.removeEventListener(event, handler)
+      })
+      this.popoverListeners = []
+    },
   },
-  mounted () {
+  mounted() {
     const trigger = this.$refs.trigger
-    // const parent = this.$refs.parent
-    // const events = {
-    //   hover: 'mouseenter mouseleave',
-    //   focus: 'focus blur'
-    // }
-    // let showEvent = events[this.trigger] || 'click'
 
     if (!trigger) {
       return console.error('Could not find trigger ref in your component that uses popovermixin')
     }
 
-    this._trigger = trigger
-
     if (this.trigger === 'click') {
-      $(trigger).on('click', this.toggle)
+      this.addTriggerListener(trigger, 'click', this.toggle)
     } else if (this.trigger === 'hover') {
-      $(trigger).on('mouseenter', this.handleMouseEnter)
-      $(trigger).on('mouseleave', this.handleMouseLeave)
+      this.addTriggerListener(trigger, 'mouseenter', this.handleMouseEnter)
+      this.addTriggerListener(trigger, 'mouseleave', this.handleMouseLeave)
     } else if (this.trigger === 'focus') {
-      $(trigger).on('focus', this.showPopover)
-      $(trigger).on('blur', this.hidePopover)
+      this.addTriggerListener(trigger, 'focus', this.showPopover)
+      this.addTriggerListener(trigger, 'blur', this.hidePopover)
     }
-  }
+  },
+  beforeUnmount() {
+    clearTimeout(this.popoverTimer)
+    this.removeTriggerListeners()
+  },
 }

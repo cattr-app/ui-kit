@@ -1,103 +1,84 @@
 <template>
-  <div class="at-collapse"
+  <div
+    class="at-collapse"
     :class="{
-      'at-collapse--simple': simple
-    }">
+      'at-collapse--simple': simple,
+    }"
+  >
     <slot></slot>
   </div>
 </template>
 
 <script>
+import { computed, reactive, ref, toRef, watch } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { CollapseContext } from './context'
+
+function normalize(value) {
+  if (value === undefined || value === null || value === '') return []
+  return (Array.isArray(value) ? value : [value]).map(String)
+}
+
 export default {
   name: 'AtCollapse',
   props: {
     accordion: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    value: {
-      type: [Array, String, Number]
+    modelValue: {
+      type: [Array, String, Number],
     },
     simple: {
       type: Boolean,
-      default: false
-    }
-  },
-  data () {
-    return {
-      currentValue: this.inputValueCheck(this.value)
-    }
-  },
-  watch: {
-    value (val) {
-      this.currentValue = this.inputValueCheck(val)
+      default: false,
     },
-    currentValue () {
-      this.setActive()
-    }
   },
-  methods: {
-    setActive () {
-      const activeKey = this.getActiveKey()
-      const accordion = this.accordion
+  emits: ['update:modelValue', 'on-change'],
+  setup(props, { emit }) {
+    const { children, register, unregister } = useChildren()
+    const currentValue = ref(normalize(props.modelValue))
 
-      this.$children.forEach((item, index) => {
-        const name = item.name || index.toString()
+    // `deep`: in-place mutations of the bound array (`active.push('b')`, `splice`) must sync too,
+    // as the Vue 2 array watcher did; `normalize()` keeps a separate copy in `currentValue`.
+    watch(
+      () => props.modelValue,
+      value => {
+        currentValue.value = normalize(value)
+      },
+      { deep: true },
+    )
 
-        if (accordion) {
-          item.isActive = activeKey[0] === name
-        } else {
-          item.isActive = activeKey.indexOf(name) >= 0
-        }
+    const activeKeys = computed(() =>
+      props.accordion ? currentValue.value.slice(0, 1) : currentValue.value,
+    )
 
-        item.index = index
-      })
-    },
-    getActiveKey () {
-      let activeKey = this.currentValue || []
+    function toggle(name) {
+      const key = String(name)
+      const active = activeKeys.value.includes(key)
+      let next
 
-      if (!Array.isArray(activeKey)) {
-        activeKey = [activeKey]
-      }
-
-      if (this.accordion && activeKey.length > 1) {
-        activeKey = [activeKey[0].toString()]
+      if (props.accordion) {
+        next = active ? [] : [key]
       } else {
-        let i = activeKey.length
-        while (i--) {
-          activeKey[i] = activeKey[i].toString()
-        }
+        next = active ? activeKeys.value.filter(k => k !== key) : [...activeKeys.value, key]
       }
 
-      return activeKey
-    },
-    toggle (itemData) {
-      const name = itemData.name.toString()
-      let newActiveKey = []
-
-      if (this.accordion && !itemData.isActive) {
-        newActiveKey.push(name)
-      } else {
-        const activeKey = this.getActiveKey()
-        const nameIndex = activeKey.indexOf(name)
-
-        if (itemData.isActive && nameIndex >= 0) {
-          activeKey.splice(nameIndex, 1)
-        } else if (nameIndex < 0) {
-          activeKey.push(name)
-        }
-        newActiveKey = activeKey
-      }
-
-      this.currentValue = newActiveKey
-      this.$emit('on-change', this.currentValue)
-    },
-    inputValueCheck (val) {
-      return typeof val === 'number' ? `${val}` : val
+      currentValue.value = next
+      emit('update:modelValue', next)
+      emit('on-change', next)
     }
+
+    CollapseContext.provide(
+      reactive({
+        activeKeys,
+        accordion: toRef(props, 'accordion'),
+        children,
+        register,
+        unregister,
+        toggle,
+      }),
+    )
   },
-  mounted () {
-    this.setActive()
-  }
 }
 </script>

@@ -1,12 +1,13 @@
 <template>
   <transition name="fade">
     <div
+      v-show="show"
       class="at-loading-bar"
       :class="{
-        [`at-loading-bar--${status}`]: status
+        [`at-loading-bar--${status}`]: status,
       }"
       :style="barStyle"
-      v-show="show">
+    >
       <div class="at-loading-bar__inner" :style="{ width: percent + '%' }"></div>
     </div>
   </transition>
@@ -15,20 +16,18 @@
 <script>
 export default {
   name: 'AtLoadingBar',
-  data () {
-    return {
-      show: false,
-      status: 'success',
-      percent: 0,
-      width: 2
-    }
+  props: {
+    percent: { type: Number, default: 0 },
+    status: { type: String, default: 'success' },
+    show: { type: Boolean, default: false },
+    width: { type: Number, default: 2 },
   },
   computed: {
-    barStyle () {
+    barStyle() {
       return {
-        height: `${(this.width | 0) || 2}px`
+        height: `${this.width | 0 || 2}px`,
       }
-    }
-  }
+    },
+  },
 }
 </script>

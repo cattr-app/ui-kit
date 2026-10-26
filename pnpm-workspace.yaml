@@ -1,11 +1,10 @@
-allowBuilds:
-  '@parcel/watcher': true
-  core-js: false
-  ejs: false
-  es5-ext: true
-  highlight.js: true
-  nodemon: true
-  phantomjs-prebuilt: true
-  uglifyjs-webpack-plugin: true
 packages:
   - src/stylesheet
+# sass-embedded falls back to the pure-JS `sass` on platforms without a native binary
+# (sass-embedded-all-unknown / -unknown-all). pnpm still puts that `sass` into the graph
+# and links it as Vite's optional peer, which drags in `sass`'s optional watcher with an
+# install script (ERR_PNPM_IGNORED_BUILDS). Linux/macOS/Windows/Android binaries are
+# unaffected by dropping the fallback.
+ignoredOptionalDependencies:
+  - sass-embedded-all-unknown
+  - sass-embedded-unknown-all

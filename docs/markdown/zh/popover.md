@@ -56,13 +56,13 @@
 
 ## 嵌套内容
 
-除了可以使用属性 `title` 和 `content` 设置弹出框的内容，还可以使用 `slot="title"` 和 `slot="content"` 的方式设置弹出框的嵌套内容
+除了可以使用属性 `title` 和 `content` 设置弹出框的内容，还可以使用插槽 `#title` 和 `#content` 的方式设置弹出框的嵌套内容。弹出框的显示状态可以通过 `v-model` 双向绑定
 
 :::demo
 ```html
-<at-popover placement="top" v-model="show" @toggle="toggleShow">
+<at-popover v-model="show" placement="top" @toggle="toggleShow">
   <at-button size="small">删除</at-button>
-  <template slot="content">
+  <template #content>
     <p>这是一段内容，确定删除吗？</p>
     <div style="text-align: right; margin-top: 8px;">
       <at-button size="smaller" @click="show = false">取消</at-button>
@@ -81,6 +81,24 @@
 | content | 提示文字 | String | - | - |
 | trigger | 触发的事件类型 | String | `hover`, `focus`, `click` | `click` |
 | placement | 弹出框的位置 | String | `top`, `top-left`, `top-right`, `left`, `left-top`, `left-bottom`, `right`, `right-top`, `right-bottom`, `bottom`, `bottom-left`, `bottom-right` | `top` |
+| modelValue | 是否显示弹出框，可使用 `v-model` 双向绑定 | Boolean | - | false |
+
+`title` 和 `content` 以 HTML 的形式插入（`v-html`），请勿传入未经转义的不可信字符串，或改用插槽。
+
+## Popover 事件
+
+| 事件名称      | 说明          | 返回值  |
+|---------- |-------------- |---------- |
+| update:modelValue | 弹出框显示或隐藏时触发（用于 `v-model`） | 是否显示 |
+| toggle | 以 `click` 方式触发时，点击切换显示状态后触发 | 是否显示 |
+
+## Popover slot
+
+| 名称      | 说明 |
+|----------|-------- |
+| title | 弹出框的标题（仅在设置了 `title` 属性时显示） |
+| content | 弹出框的内容 |
+| - | 触发弹出框的元素 |
 
 <style lang="scss" scoped>
 .at-popover + .at-popover {

@@ -1,20 +1,18 @@
 <template>
-  <div
-    class="at-step"
-    :class="stepStatusClass"
-    :style="stepStyle">
+  <div class="at-step" :class="stepStatusClass" :style="stepStyle">
     <div v-if="!isLastStep" class="at-step__line"></div>
     <div class="at-step__head">
-      <div class="at-step__label"
+      <div
+        class="at-step__label"
         :class="{
-          'at-step__icon': icon
-        }">
+          'at-step__icon': icon,
+        }"
+      >
         <div v-if="icon">
           <i :class="['icon', `${icon}`]"></i>
         </div>
         <template v-else>
-          <div v-if="['process', 'wait'].indexOf(finalStatus) > -1"
-            class="at-step__order">
+          <div v-if="['process', 'wait'].indexOf(finalStatus) > -1" class="at-step__order">
             {{ index + 1 }}
           </div>
           <div v-if="finalStatus === 'finish'">
@@ -28,12 +26,15 @@
     </div>
     <div class="at-step__main">
       <div class="at-step__title">{{ title }}</div>
-      <div class="at-step__description" v-if="description">{{ description }}</div>
+      <div v-if="description" class="at-step__description">{{ description }}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { useChild } from '../../../composables/useChildren'
+import { StepsContext } from './context'
+
 export default {
   name: 'AtStep',
   props: {
@@ -42,34 +43,51 @@ export default {
     description: String,
     status: {
       type: String,
-      validator: val => ['wait', 'process', 'finish', 'error'].indexOf(val) > -1
-    }
+      validator: val => ['wait', 'process', 'finish', 'error'].indexOf(val) > -1,
+    },
   },
-  data () {
-    return {
-      index: -1,
-      internalStatus: '',
-      nextError: false
-    }
+  emits: [],
+  setup() {
+    const steps = StepsContext.inject(null)
+    const { index } = useChild(steps)
+    return { steps, index }
   },
   computed: {
-    stepStyle () {
+    stepStyle() {
       const style = {}
-      if (this.$parent.direction !== 'vertical') {
-        style.width = `${1 / this.stepsTotal * 100}%`
+      if (this.steps && this.steps.direction !== 'vertical' && this.stepsTotal > 0) {
+        style.width = `${(1 / this.stepsTotal) * 100}%`
       }
       return style
     },
-    stepsTotal () {
-      return this.$parent.steps.length
+    stepsTotal() {
+      return this.steps ? this.steps.children.length : 0
     },
-    finalStatus () {
+    internalStatus() {
+      if (!this.steps || this.index < 0) return ''
+      const { current, status } = this.steps
+      if (this.index === current) return status === 'error' ? 'error' : 'process'
+      return this.index < current ? 'finish' : 'wait'
+    },
+    finalStatus() {
       return this.status || this.internalStatus
     },
-    isLastStep () {
+    nextError() {
+      // 1.x: the step before the current one is marked when Steps has `status="error"`
+      // and the current step does not override it with its own `status`.
+      if (!this.steps || this.index < 0) return false
+      const next = this.steps.children[this.index + 1]
+      return (
+        !!next &&
+        this.index + 1 === this.steps.current &&
+        this.steps.status === 'error' &&
+        next.exposed.finalStatus === 'error'
+      )
+    },
+    isLastStep() {
       return this.index === this.stepsTotal - 1
     },
-    stepStatusClass () {
+    stepStatusClass() {
       const className = {}
 
       switch (this.finalStatus) {
@@ -92,18 +110,7 @@ export default {
       }
 
       return className
-    }
+    },
   },
-  beforeCreate () {
-    this.$parent.steps.push(this)
-  },
-  beforeDestroy () {
-    const steps = this.$parent.steps
-    const index = steps.indexOf(this)
-
-    if (index >= 0) {
-      steps.splice(index, 1)
-    }
-  }
 }
 </script>

@@ -51,12 +51,27 @@
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | name | 原生属性 | String | - | - |
-| value | 文本域的值，可通过 `v-model` 绑定 | String | - | - |
+| modelValue | 文本域的值，可通过 `v-model` 绑定 | String | - | - |
 | autosize | 是否自动调整输入框高度 | Boolean | - | false |
 | placeholder | 占位文本（原生属性） | String | - | - |
 | disabled | 是否禁用（原生属性） | Boolean | - | false |
 | autofocus | 是否自动获取焦点（原生属性） | Boolean | - | false |
 | resize | 是否能被用户缩放 | String | `none`, `both`, `horizontal`, `vertical`  | `vertical` |
+| rows | 文本域的行数（原生属性） | Number | - | 2 |
+| minRows | 开启 `autosize` 时的最小行数 | Number / String | - | - |
+| maxRows | 开启 `autosize` 时的最大行数 | Number / String | - | - |
+| readonly | 是否只读（原生属性） | Boolean | - | false |
+| maxlength | 最大长度（原生属性） | Number | - | - |
+| minlength | 最小长度（原生属性） | Number | - | - |
+
+## Textarea 事件
+
+| 事件名称      | 说明          | 返回值  |
+|---------- |-------------- |---------- |
+| update:modelValue | 输入时触发（用于 `v-model`） | 文本域的值 |
+| change | 输入时触发 | 文本域的值 |
+| focus | 获得焦点时触发 | event |
+| blur | 失去焦点时触发 | event |
 
 <script>
 export default {

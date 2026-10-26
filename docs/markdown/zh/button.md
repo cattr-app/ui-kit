@@ -158,8 +158,11 @@
 | size | 按钮的大小 | String | `large`, `small`, `smaller` | - |
 | hollow | 是否为空心按钮 | Boolean | - | false |
 | icon | 按钮的图标类名，填入图标的 `classname` | String | 见文档 `Icon 图标` | - |
-| loading | 设置按钮的载入状态 | Boolean | - | false |
+| disabled | 是否禁用按钮（原生属性） | Boolean | - | false |
+| loading | 设置按钮的载入状态（不会阻止点击，需要时请同时设置 `disabled`） | Boolean | - | false |
 | circle | 设置圆形图标按钮 | Boolean | - | false |
+
+点击事件直接使用 `@click` 监听（原生 `MouseEvent`），Vue 3 中无需 `native` 修饰符。
 
 ## Button Group 参数
 

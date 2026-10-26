@@ -1,7 +1,7 @@
 /**
  * Popover
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-popover {
   display: inline-block;

@@ -1,49 +1,56 @@
 <template>
-  <div class="at-tabs__pane" v-show="show">
+  <div v-show="show" class="at-tabs__pane">
     <slot></slot>
   </div>
 </template>
 
 <script>
+import { computed, reactive, toRef } from 'vue'
+import { useChild } from '../../../composables/useChildren'
+import { TabsContext } from './context'
+
 export default {
   name: 'AtTabPane',
   props: {
     name: {
-      type: String
+      type: String,
     },
     label: {
-      type: String
+      type: String,
     },
     icon: {
-      type: String
+      type: String,
     },
     disabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
     closable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
-    return {
-      currentName: this.name,
-      show: true
-    }
+  setup(props) {
+    const tabs = TabsContext.inject(null)
+    let index = null
+    // Panes without `name` are named by their DOM index among the panes of their AtTabs ('0', '1', …).
+    const currentName = computed(() => props.name || String(index.value))
+    const item = reactive({
+      name: currentName,
+      ownName: toRef(props, 'name'),
+      label: toRef(props, 'label'),
+      icon: toRef(props, 'icon'),
+      disabled: toRef(props, 'disabled'),
+      closable: computed(() => props.closable && !!tabs?.closable),
+    })
+    ;({ index } = useChild(tabs, item))
+
+    return { tabs, currentName }
   },
   computed: {
-    isClosable () {
-      return this.closable ? this.$parent.closable : false
-    }
+    show() {
+      return !this.tabs || this.tabs.animated || this.tabs.activeKey === this.currentName
+    },
   },
-  watch: {
-    name () {
-      this.currentName = this.name
-    }
-  },
-  mounted () {
-    this.$parent.updateNav()
-  }
 }
 </script>

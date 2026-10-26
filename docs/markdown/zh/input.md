@@ -40,42 +40,42 @@
 
 ## 前置 / 后置标签型输入框
 
-设置 `slot="prepend"` 或者 `slot="append"` ，可自定义复合型输入框
+使用插槽 `#prepend` 或者 `#append` ，可自定义复合型输入框
 
 :::demo
 ```html
 <at-input v-model="inputValue4" placeholder="请输入内容">
-  <template slot="prepend">
+  <template #prepend>
     <span>Https://</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容" size="small">
-  <template slot="append">
-    <span>@aotu.io</span>
+  <template #append>
+    <span>@cattr.app</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容">
-  <template slot="prepend">
+  <template #prepend>
     <i class="icon icon-link"></i>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容" prepend-button>
-  <template slot="prepend">
+  <template #prepend>
     <span>搜索</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容" append-button>
-  <template slot="append">
+  <template #append>
     <span>搜索</span>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容" prepend-button>
-  <template slot="prepend">
+  <template #prepend>
     <i class="icon icon-search"></i>
   </template>
 </at-input>
 <at-input v-model="inputValue4" placeholder="请输入内容" append-button>
-  <template slot="append">
+  <template #append>
     <i class="icon icon-search"></i>
   </template>
 </at-input>
@@ -98,9 +98,9 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| type | 输入框类型，原生属性 | String | - | - |
+| type | 输入框类型，原生属性 | String | - | `text` |
 | name | 原生属性 | String | - | - |
-| value | 绑定的值 | String / Number | - | - |
+| modelValue | 绑定的值，可使用 `v-model` 双向绑定 | String / Number | - | - |
 | placeholder | 占位文本（原生属性） | String | - | - |
 | disabled | 是否禁用（原生属性） | Boolean | - | false |
 | readonly | 是否只读（原生属性） | Boolean | - | false |
@@ -113,6 +113,9 @@
 | status | 输入框类型 | String | success, error, warning, info | - |
 | prependButton | 前置元素是否包含可点击的按钮，用于复合型输入框 | Boolean | - | false |
 | appendButton | 后置元素是否包含可点击的按钮，用于复合型输入框 | Boolean | - | false |
+| icon | 输入框后面显示的图标的类名 | String | - | - |
+
+未声明为参数的属性和监听器（如 `id`、`autocomplete`、`aria-*`、`@keyup.enter`）会绑定到内部的原生 `<input>` 上，`class` 和 `style` 保留在外层元素上。Vue 3 中已移除 `native` 修饰符，直接监听即可。
 
 ## Input slot
 
@@ -125,6 +128,8 @@
 
 | 事件名称 | 说明          | 返回参数  |
 |---------- |-------------- |---------- |
+| update:modelValue | 输入值改变时触发（用于 `v-model`） | 输入框的值 |
+| change | 输入值改变时触发 | 输入框的值 |
 | focus | 获得焦点时触发 | event |
 | blur | 失去焦点时触发 | event |
 

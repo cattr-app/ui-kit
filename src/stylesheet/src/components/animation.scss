@@ -1,6 +1,8 @@
 /**
  * Animations
  */
+@use '../variables' as *;
+@use '../mixins' as *;
 
 @mixin vue-anim($class-name, $keyframe-name) {
   .#{$class-name}-enter-active {

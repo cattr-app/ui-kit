@@ -18,17 +18,17 @@
 
 ## 内嵌文字或图标
 
-开关内部内容可自定义，例如插入文字或图标，增强视觉效果。通过 `slot="checkedText"` 和 `slot="unCheckedText"` 完成
+开关内部内容可自定义，例如插入文字或图标，增强视觉效果。通过插槽 `#checkedText` 和 `#unCheckedText` 完成
 
 :::demo
 ```html
 <at-switch>
-  <span slot="checkedText">开</span>
-  <span slot="unCheckedText">关</span>
+  <template #checkedText><span>开</span></template>
+  <template #unCheckedText><span>关</span></template>
 </at-switch>
 <at-switch>
-  <span slot="checkedText"><i class="icon icon-left-arrow"></i></span>
-  <span slot="unCheckedText"><i class="icon icon-right-arrow"></i></span>
+  <template #checkedText><span><i class="icon icon-left-arrow"></i></span></template>
+  <template #unCheckedText><span><i class="icon icon-right-arrow"></i></span></template>
 </at-switch>
 ```
 :::
@@ -39,13 +39,13 @@
 
 :::demo
 ```html
-<at-switch disabled :value="true">
-  <span slot="checkedText">开</span>
-  <span slot="unCheckedText">关</span>
+<at-switch disabled :model-value="true">
+  <template #checkedText><span>开</span></template>
+  <template #unCheckedText><span>关</span></template>
 </at-switch>
 <at-switch disabled>
-  <span slot="checkedText">开</span>
-  <span slot="unCheckedText">关</span>
+  <template #checkedText><span>开</span></template>
+  <template #unCheckedText><span>关</span></template>
 </at-switch>
 <at-switch disabled></at-switch>
 ```
@@ -60,25 +60,25 @@
 <div>
   <at-switch size="small"></at-switch>
   <at-switch size="small">
-    <span slot="checkedText">开</span>
-    <span slot="unCheckedText">关</span>
+    <template #checkedText><span>开</span></template>
+    <template #unCheckedText><span>关</span></template>
   </at-switch>
   <at-switch size="small" disabled></at-switch>
 </div>
 <div style="margin-top: 8px;">
   <at-switch></at-switch>
   <at-switch>
-    <span slot="checkedText">开</span>
-    <span slot="unCheckedText">关</span>
+    <template #checkedText><span>开</span></template>
+    <template #unCheckedText><span>关</span></template>
   </at-switch>
   <at-switch disabled></at-switch>
 </div>
 <div style="margin-top: 8px;">
   <at-switch size="large"></at-switch>
   <at-switch size="large">
-    <span slot="checkedText">开</span>
-    <span slot="unCheckedText">关</span>
-  </at-switch size="large">
+    <template #checkedText><span>开</span></template>
+    <template #unCheckedText><span>关</span></template>
+  </at-switch>
   <at-switch size="large" disabled></at-switch>
 </div>
 ```
@@ -88,8 +88,8 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | Switch 状态值 | Boolean | - | false |
-| size | 开关的尺寸大小 | String | `small`, `normal`, `large` | normal |
+| modelValue | Switch 状态值，可使用 `v-model` 双向绑定 | Boolean | - | false |
+| size | 开关的尺寸大小 | String | `small`, `large` | - |
 | disabled | 是否禁用按钮 | Boolean | — | false |
 
 ## Switch Slots
@@ -103,6 +103,7 @@
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
+| update:modelValue | 开关状态变化时触发（用于 `v-model`） | 开关的状态 |
 | change | 开关状态变化时触发 | 开关的状态 |
 
 <script>

@@ -80,7 +80,7 @@ Click the buttons below to see the transition of progress.
 
 | Event Name      | Description          | Return Value  |
 |------------- |-------------- |---------- |
-| on-status-success | Emitted when the percentage of Progress achieved `100%` | event |
+| on-status-success | Emitted when the percentage of Progress achieved `100%` | percent |
 
 <style lang="scss" scoped>
 .at-progress {

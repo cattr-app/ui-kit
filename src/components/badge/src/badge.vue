@@ -1,19 +1,18 @@
 <template>
   <span
     class="at-badge"
-    :class="[
-      status ? `at-badge--${status}` : '',
-      { 'at-badge--alone': !$slots.default }
-    ]">
+    :class="[status ? `at-badge--${status}` : '', { 'at-badge--alone': !$slots.default }]"
+  >
     <slot></slot>
     <sup
+      v-show="show"
       class="at-badge__content"
       :class="{
         'at-badge--corner': $slots.default,
-        'at-badge--dot': dot
+        'at-badge--dot': dot,
       }"
-      v-show="show"
-      v-text="content"></sup>
+      v-text="content"
+    ></sup>
   </span>
 </template>
 
@@ -23,27 +22,28 @@ export default {
   props: {
     value: {
       type: [String, Number],
-      default: ''
+      default: '',
     },
     maxNum: {
       type: Number,
-      default: 99
+      default: 99,
     },
     dot: {
       type: Boolean,
-      default: false
+      default: false,
     },
     show: {
       type: Boolean,
-      default: true
+      default: true,
     },
     status: {
       type: String,
-      default: 'error'
-    }
+      default: 'error',
+    },
   },
+  emits: [],
   computed: {
-    content () {
+    content() {
       if (this.dot) return
 
       const value = this.value
@@ -54,7 +54,7 @@ export default {
       }
 
       return value
-    }
-  }
+    },
+  },
 }
 </script>

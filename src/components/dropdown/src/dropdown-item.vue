@@ -3,37 +3,40 @@
     class="at-dropdown-menu__item"
     :class="{
       'at-dropdown-menu__item--disabled': disabled,
-      'at-dropdown-menu__item--divided': divided
+      'at-dropdown-menu__item--divided': divided,
     }"
-    @click.stop="handleClick">
+    @click.stop="handleClick"
+  >
     <slot></slot>
   </li>
 </template>
 
 <script>
-  import Emitter from 'at-ui/src/mixins/emitter'
+import { DropdownContext } from './context'
 
-  export default {
-    name: 'AtDropdownItem',
-    mixins: [Emitter],
-    props: {
-      name: {
-        type: [String, Number]
-      },
-      disabled: {
-        type: Boolean,
-        default: false
-      },
-      divided: {
-        type: Boolean,
-        default: false
-      }
+export default {
+  name: 'AtDropdownItem',
+  props: {
+    name: {
+      type: [String, Number],
     },
-    methods: {
-      handleClick (evt) {
-        if (this.disabled) return
-        this.dispatch('AtDropdown', 'menu-item-click', this.name)
-      }
-    }
-  }
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    divided: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  setup() {
+    return { dropdown: DropdownContext.inject(null) }
+  },
+  methods: {
+    handleClick() {
+      if (this.disabled) return
+      this.dropdown?.onItemClick(this.name)
+    },
+  },
+}
 </script>

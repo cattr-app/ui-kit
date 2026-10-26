@@ -24,13 +24,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      # Corepack must be enabled before setup-node so that `cache: pnpm` finds pnpm.
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-
-      - name: Enable Corepack
-        run: corepack enable
+          cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -44,7 +46,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: dist
+          path: dist-docs
 
       - name: Deploy to GitHub Pages
         id: deployment

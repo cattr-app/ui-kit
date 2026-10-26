@@ -1,35 +1,37 @@
-import Vue from 'vue'
 import LoadingBarVue from './loading-bar.vue'
+import { mountService } from '../../../utils/mount-service.js'
 
-const LoadingBarConstructor = Vue.extend(LoadingBarVue)
-let instance
+const STATE_KEYS = ['percent', 'status', 'show', 'width']
 
+const pick = options => {
+  const patch = {}
+  for (const key of STATE_KEYS) {
+    if (options[key] !== undefined) patch[key] = options[key]
+  }
+  return patch
+}
+
+/**
+ * A single loading bar element mounted into `document.body`.
+ * `options`: initial `{ percent, status, show, width }` (props of `AtLoadingBar`).
+ */
 class LoadingBar {
-  constructor (options) {
-    options = options || {}
-
-    instance = new LoadingBarConstructor({
-      data: options
-    })
-
-    instance.vm = instance.$mount()
-    document.body.appendChild(instance.vm.$el)
+  constructor(options = {}) {
+    // `null` without a DOM (SSR): update/destroy become no-ops.
+    this.service = mountService(LoadingBarVue, pick(options))
   }
 
-  update (newOptions) {
-    if (newOptions.percent) {
-      instance.percent = newOptions.percent
-    }
-    if (newOptions.status) {
-      instance.status = newOptions.status
-    }
-    if (newOptions.show) {
-      instance.show = newOptions.show
-    }
+  get el() {
+    return this.service?.el ?? null
   }
 
-  destroy () {
-    document.body.removeChild(instance.vm.$el)
+  update(newOptions = {}) {
+    this.service?.update(pick(newOptions))
+  }
+
+  destroy() {
+    this.service?.unmount()
+    this.service = null
   }
 }
 

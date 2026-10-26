@@ -2,7 +2,7 @@
 
 ----
 
-Unified color matching can improve brand recognition. Besides the need for brand unity, the use of color also needs to achieve the purpose of information transmission, interactive feedback and so on. `AT-UI` is created by [AOTU Labs](https://github.com/o2team), which the brand color is `Blue`. Therefore, the overall color scheme of `AT-UI` is also based on `Brand Blue #6190E8`.
+Unified color matching can improve brand recognition. Besides the need for brand unity, the use of color also needs to achieve the purpose of information transmission, interactive feedback and so on. The brand color of `Cattr UI` is `Blue`. Therefore, the overall color scheme of `Cattr UI` is also based on `Brand Blue #6190E8`.
 
 ## Main Color
 
@@ -22,7 +22,7 @@ Used to identify brand colors.
 Used to identify the state of Button
 
 <div class="row no-gutter">
-  <div class="col-sm-12 col-md-6 col-lg-5">
+  <div class="col-sm-12 col-md-6 col-lg-5">
     <div class="at-color-container" style="background-color: #13CE66;">
       <p class="color-name">Green - Positive</p>
       <p class="color-value">#13CE66</p>

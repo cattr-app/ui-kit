@@ -1,99 +1,95 @@
 <template>
   <ul
     class="at-menu"
-    :class="[
-      theme ? `at-menu--${theme}` : '',
-      mode ? `at-menu--${mode}` : ''
-    ]"
-    :style="ulStyle"><slot></slot></ul>
+    :class="[theme ? `at-menu--${theme}` : '', mode ? `at-menu--${mode}` : '']"
+    :style="ulStyle"
+  >
+    <slot></slot>
+  </ul>
 </template>
 
 <script>
-  import Emitter from 'at-ui/src/mixins/emitter'
-  import { findComponentsDownward } from 'at-ui/src/utils/util'
+import { getCurrentInstance, reactive, ref, toRef, watch } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { MenuContext } from './context'
 
-  export default {
-    name: 'AtMenu',
-    mixins: [Emitter],
-    props: {
-      mode: {
-        type: String,
-        default: 'inline',
-        validator: val => ['inline', 'horizontal', 'vertical'].indexOf(val) > -1
-      },
-      theme: {
-        type: String,
-        default: 'light',
-        validator: val => ['light', 'dark'].indexOf(val) > -1
-      },
-      activeName: [String, Number],
-      inlineCollapsed: {
-        type: Boolean,
-        default: false
-      },
-      width: {
-        type: String,
-        default: '240px'
-      },
-      router: {
-        type: Boolean,
-        default: false
-      }
+function normalize(name) {
+  return typeof name === 'undefined' ? -1 : name
+}
+
+export default {
+  name: 'AtMenu',
+  props: {
+    mode: {
+      type: String,
+      default: 'inline',
+      validator: val => ['inline', 'horizontal', 'vertical'].indexOf(val) > -1,
     },
-    data () {
-      return {
-        currentActiveName: this.activeName
-      }
+    theme: {
+      type: String,
+      default: 'light',
+      validator: val => ['light', 'dark'].indexOf(val) > -1,
     },
-    computed: {
-      ulStyle () {
-        const style = {}
-
-        if (this.mode === 'inline' || this.mode === 'vertical') {
-          style.width = this.width
-        }
-
-        return style
-      }
+    activeName: [String, Number],
+    inlineCollapsed: {
+      type: Boolean,
+      default: false,
     },
-    watch: {
-      activeName (val) {
-        this.currentActiveName = val
+    width: {
+      type: String,
+      default: '240px',
+    },
+    router: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['on-select'],
+  setup(props, { emit }) {
+    const { children, register, unregister } = useChildren()
+    const currentActiveName = ref(normalize(props.activeName))
+    const { proxy } = getCurrentInstance()
+
+    watch(
+      () => props.activeName,
+      value => {
+        currentActiveName.value = normalize(value)
       },
-      currentActiveName () {
-        this.updateActiveName()
-      }
-    },
-    methods: {
-      updateActiveName () {
-        if (typeof this.currentActiveName === 'undefined') {
-          this.currentActiveName = -1
-        }
+    )
 
-        const submenus = findComponentsDownward(this, 'AtSubmenu')
+    function select(item) {
+      currentActiveName.value = normalize(item.name)
+      emit('on-select', item.name)
 
-        if (submenus && submenus.length) {
-          submenus.forEach(submenu => {
-            submenu.$emit('on-update-active', false)
-          })
-        }
-        this.broadcast('AtMenuItem', 'on-update-active', this.currentActiveName)
-      },
-      routeToMenuItem (item) {
+      if (props.router) {
         const route = item.to || {}
-        item.replace ? this.$router.replace(route) : this.$router.push(route)
+        item.replace ? proxy.$router.replace(route) : proxy.$router.push(route)
       }
-    },
-    mounted () {
-      this.updateActiveName()
-      this.$on('on-menu-item-select', item => {
-        this.currentActiveName = item.name
-        this.$emit('on-select', item.name)
-
-        if (this.router) {
-          this.routeToMenuItem(item)
-        }
-      })
     }
-  }
+
+    MenuContext.provide(
+      reactive({
+        mode: toRef(props, 'mode'),
+        theme: toRef(props, 'theme'),
+        inlineCollapsed: toRef(props, 'inlineCollapsed'),
+        activeName: currentActiveName,
+        children,
+        register,
+        unregister,
+        select,
+      }),
+    )
+  },
+  computed: {
+    ulStyle() {
+      const style = {}
+
+      if (this.mode === 'inline' || this.mode === 'vertical') {
+        style.width = this.width
+      }
+
+      return style
+    },
+  },
+}
 </script>

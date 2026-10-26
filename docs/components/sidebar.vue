@@ -1,20 +1,34 @@
 <template>
   <div class="at-sidebar col-sm-24 col-md-6 col-lg-4">
     <nav class="at-nav">
-      <template v-for="item in data">
+      <template v-for="item in data" :key="item.title">
         <h2 class="at-nav__title">{{ item.title }}</h2>
         <ul class="at-nav__items">
           <template v-if="item.items">
-            <li class="at-nav__item" v-for="navItem in item.items">
-              <router-link class="at-nav__page" :to="navItem.name.toLowerCase()">{{ navItem.title }}</router-link>
+            <li v-for="navItem in item.items" :key="navItem.name" class="at-nav__item">
+              <router-link class="at-nav__page" :to="{ name: `${navItem.name}-${lang}` }">{{
+                navItem.title
+              }}</router-link>
             </li>
           </template>
-          <li class="at-nav__item active" v-for="group in item.groups">
-            <a class="at-nav__group" @click="toggleMenu">{{ group.title }}<i class="icon icon-chevron-down"></i></a>
+          <li v-for="group in item.groups" :key="group.title" class="at-nav__item active">
+            <a class="at-nav__group" @click="toggleMenu"
+              >{{ group.title }}<i class="icon icon-chevron-down"></i
+            ></a>
             <ul class="at-nav__child-items">
-              <li class="at-nav__child-item" v-for="navItem in group.items">
-                <router-link v-if="lang === 'zh'" class="at-nav__component" :to="navItem.name.toLowerCase()">{{ navItem.name }}<span>{{ navItem.title }}</span></router-link>
-                <router-link v-else class="at-nav__component" :to="navItem.name.toLowerCase()">{{ navItem.title }}</router-link>
+              <li v-for="navItem in group.items" :key="navItem.name" class="at-nav__child-item">
+                <router-link
+                  v-if="lang === 'zh'"
+                  class="at-nav__component"
+                  :to="{ name: `${navItem.name}-${lang}` }"
+                  >{{ navItem.name }}<span>{{ navItem.title }}</span></router-link
+                >
+                <router-link
+                  v-else
+                  class="at-nav__component"
+                  :to="{ name: `${navItem.name}-${lang}` }"
+                  >{{ navItem.title }}</router-link
+                >
               </li>
             </ul>
           </li>
@@ -29,36 +43,36 @@ export default {
   props: {
     data: {
       type: Array,
-      default: []
-    }
+      default: () => [],
+    },
   },
   computed: {
-    lang () {
+    lang() {
       return this.$route.path.split('/')[1] || 'zh'
-    }
+    },
   },
   methods: {
-    toggleMenu (event) {
+    toggleMenu(event) {
       const parentNode = event.target.parentNode
       if (parentNode.classList.contains('active')) {
         parentNode.classList.remove('active')
       } else {
         parentNode.classList.add('active')
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss">
-@import '~stylesheet/src/variables/index.scss';
+@use '../../src/stylesheet/src/variables' as *;
 
 .at-sidebar {
   display: inline-block;
   margin: 32px 0;
   padding: 0;
   // max-width: 264px;
-  color: #3F536E;
+  color: #3f536e;
   background-color: #fff;
   border-right: 1px solid $grey-100;
   z-index: 99;
@@ -72,7 +86,7 @@ export default {
 
   &__title {
     padding: 0 24px 8px;
-    color: #8DABC4;
+    color: #8dabc4;
     font-size: 12px;
     font-weight: bold;
     letter-spacing: 1px;
@@ -82,7 +96,7 @@ export default {
     display: block;
     position: relative;
     padding: 6px 0 6px 24px;
-    color: #2C405A;
+    color: #2c405a;
     font-weight: normal;
 
     &:hover {
@@ -93,9 +107,9 @@ export default {
       top: 50%;
       right: 16px;
       margin-top: -7px;
-      color: #A8C6DF;
+      color: #a8c6df;
       font-size: 14px;
-      transition: all .3s;
+      transition: all 0.3s;
     }
     .active & {
       font-weight: bold;
@@ -124,7 +138,7 @@ export default {
     display: block;
     position: relative;
     padding: 8px 24px;
-    color: #3F536E;
+    color: #3f536e;
     font-weight: normal;
     line-height: 1.5;
     cursor: pointer;
@@ -137,24 +151,25 @@ export default {
       left: 0;
       width: 5px;
       height: 100%;
-      background: #6190E8;
+      background: #6190e8;
       border-top-right-radius: 4px;
       border-bottom-right-radius: 4px;
-      box-shadow: 1px 0 12px 0 #6190E8;
+      box-shadow: 1px 0 12px 0 #6190e8;
     }
 
     &:hover {
       color: $brand-blue-400;
       background-color: rgba(236, 242, 252, 0.25);
     }
-    &.active, &.router-link-active {
+    &.active,
+    &.router-link-active {
       background-color: rgba(236, 242, 252, 0.2);
 
       &:after {
         display: inline-block;
       }
       &:hover {
-        color: #3F536E;
+        color: #3f536e;
       }
     }
   }
@@ -173,23 +188,24 @@ export default {
       left: 0;
       width: 6px;
       height: 100%;
-      background: #6190E8;
+      background: #6190e8;
       border-top-right-radius: 4px;
       border-bottom-right-radius: 4px;
-      box-shadow: 1px 0 12px 0 #6190E8;
+      box-shadow: 1px 0 12px 0 #6190e8;
     }
     &:hover {
       color: $brand-blue-400;
       background-color: rgba(236, 242, 252, 0.25);
     }
-    &.active, &.router-link-active {
+    &.active,
+    &.router-link-active {
       background-color: rgba(236, 242, 252, 0.2);
 
       &:after {
         display: inline-block;
       }
       &:hover {
-        color: #3F536E;
+        color: #3f536e;
       }
     }
     span {
@@ -205,7 +221,7 @@ export default {
   top: 18px;
   right: 12px;
   width: 16px;
-  opacity: .25;
+  opacity: 0.25;
   margin: -4px 0 0;
 
   .active & {
@@ -219,5 +235,4 @@ export default {
 .at-nsc:visited {
   color: #fff;
 }
-
 </style>

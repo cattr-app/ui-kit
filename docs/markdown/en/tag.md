@@ -35,7 +35,7 @@ Tag with color tendency gives different types. Set property `color`. It also pro
 
 | Property      | Description          | Type      | Accepted values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| name | the name of tag used for close event | Boolean | — | false |
+| name | the name of tag, passed to the `on-close` event | String / Number | — | - |
 | color | type | String / Hex | Hex value or `default`, `primary`, `success`, `error`, `warning`, `info` | default |
 | closable | can be closed | Boolean | — | false |
 
@@ -43,7 +43,7 @@ Tag with color tendency gives different types. Set property `color`. It also pro
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
-| on-close | Emitted when closed | event |
+| on-close | Emitted when the close icon is clicked | `(event, name)`; `name` only when the `name` prop is set |
 
 <script>
   export default {

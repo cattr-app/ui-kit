@@ -2,47 +2,63 @@
   <div
     class="at-table"
     :class="{
-      'at-table--fixHeight': this.height,
-      'at-table--stripe': this.stripe,
-      [`at-table--${this.size}`]: this.size,
-      [`at-table--border`]: this.border
+      'at-table--fixHeight': height,
+      'at-table--stripe': stripe,
+      [`at-table--${size}`]: size,
+      [`at-table--border`]: border,
     }"
-    :style="tableStyles">
-
+    :style="tableStyles"
+  >
     <!-- S Content -->
     <div class="at-table__content" :style="contentStyle">
       <!-- S Header -->
-      <div class="at-table__header" v-if="height">
+      <div v-if="height" class="at-table__header">
         <table>
           <colgroup>
-            <col v-for="(column, index) in columnsData" :width="setCellWidth(column, index)" :key="index">
+            <col
+              v-for="(column, index) in columnsData"
+              :key="index"
+              :width="setCellWidth(column, index)"
+            />
           </colgroup>
-          <thead class="at-table__thead" ref="header">
+          <thead ref="header" class="at-table__thead">
             <tr>
               <!-- S Checkbox -->
               <th v-if="optional" class="at-table__cell at-table__column-selection">
-                <at-checkbox v-model="isSelectAll" @click.native="handleSelectAll"></at-checkbox>
+                <at-checkbox
+                  :model-value="isSelectAll"
+                  @click.prevent="handleSelectAll"
+                ></at-checkbox>
               </th>
               <!-- E Checkbox -->
               <!-- S Column th -->
               <th
                 v-for="(column, index) in columnsData"
-                class="at-table__cell at-table__column"
                 :key="index"
+                class="at-table__cell at-table__column"
                 :class="column.className"
                 :style="{
-                  cursor: column.sortType ? 'pointer' : 'text'
+                  cursor: column.sortType ? 'pointer' : 'text',
                 }"
-                @click="column.sortType && handleSort(index)">
+                @click="column.sortType && handleSort(index)"
+              >
                 {{ column.title }}
                 <template v-if="column.sortType">
-                  <div class="at-table__column-sorter"
+                  <div
+                    class="at-table__column-sorter"
                     :class="{
                       'sort-asc': column._sortType === 'asc',
-                      'sort-desc': column._sortType === 'desc'
-                    }">
-                    <span class="at-table__column-sorter-up" @click.stop="handleSort(index, 'asc')"><i class="icon icon-chevron-up"></i></span>
-                    <span class="at-table__column-sorter-down" @click.stop="handleSort(index, 'desc')"><i class="icon icon-chevron-down"></i></span>
+                      'sort-desc': column._sortType === 'desc',
+                    }"
+                  >
+                    <span class="at-table__column-sorter-up" @click.stop="handleSort(index, 'asc')"
+                      ><i class="icon icon-chevron-up"></i
+                    ></span>
+                    <span
+                      class="at-table__column-sorter-down"
+                      @click.stop="handleSort(index, 'desc')"
+                      ><i class="icon icon-chevron-down"></i
+                    ></span>
                   </div>
                 </template>
               </th>
@@ -57,34 +73,50 @@
       <div class="at-table__body" :style="bodyStyle">
         <table>
           <colgroup>
-            <col v-for="(column, index) in columnsData" :width="setCellWidth(column, index)" :key="index">
+            <col
+              v-for="(column, index) in columnsData"
+              :key="index"
+              :width="setCellWidth(column, index)"
+            />
           </colgroup>
-          <thead class="at-table__thead" v-if="!height" ref="header">
+          <thead v-if="!height" ref="header" class="at-table__thead">
             <tr>
               <!-- S Checkbox -->
               <th v-if="optional" class="at-table__cell at-table__column-selection">
-                <at-checkbox v-model="isSelectAll" @click.native.prevent="handleSelectAll"></at-checkbox>
+                <at-checkbox
+                  :model-value="isSelectAll"
+                  @click.prevent="handleSelectAll"
+                ></at-checkbox>
               </th>
               <!-- E Checkbox -->
               <!-- S Column th -->
               <th
                 v-for="(column, index) in columnsData"
-                class="at-table__cell at-table__column"
                 :key="index"
+                class="at-table__cell at-table__column"
                 :class="column.className"
                 :style="{
-                  cursor: column.sortType ? 'pointer' : 'text'
+                  cursor: column.sortType ? 'pointer' : 'text',
                 }"
-                @click="column.sortType && handleSort(index)">
+                @click="column.sortType && handleSort(index)"
+              >
                 {{ column.title }}
                 <template v-if="column.sortType">
-                  <div class="at-table__column-sorter"
+                  <div
+                    class="at-table__column-sorter"
                     :class="{
                       'sort-asc': column._sortType === 'asc',
-                      'sort-desc': column._sortType === 'desc'
-                    }">
-                    <span class="at-table__column-sorter-up" @click.stop="handleSort(index, 'asc')"><i class="icon icon-chevron-up"></i></span>
-                    <span class="at-table__column-sorter-down" @click.stop="handleSort(index, 'desc')"><i class="icon icon-chevron-down"></i></span>
+                      'sort-desc': column._sortType === 'desc',
+                    }"
+                  >
+                    <span class="at-table__column-sorter-up" @click.stop="handleSort(index, 'asc')"
+                      ><i class="icon icon-chevron-up"></i
+                    ></span>
+                    <span
+                      class="at-table__column-sorter-down"
+                      @click.stop="handleSort(index, 'desc')"
+                      ><i class="icon icon-chevron-down"></i
+                    ></span>
                   </div>
                 </template>
               </th>
@@ -92,15 +124,27 @@
             </tr>
           </thead>
 
-          <tbody class="at-table__tbody" v-if="sortData.length" ref="body">
-            <template v-for="(item, index) in sortData">
-              <tr :key="index" @click="$emit('rowClick', $event)">
+          <tbody v-if="sortData.length" ref="body" class="at-table__tbody">
+            <template v-for="(item, rowIndex) in sortData" :key="item.index">
+              <tr @click="$emit('rowClick', $event)">
                 <td v-if="optional" class="at-table__cell at-table__column-selection">
-                  <at-checkbox v-model="objData[index].isChecked" @on-change="changeRowSelection"></at-checkbox>
+                  <at-checkbox
+                    v-model="objData[item.index].isChecked"
+                    @on-change="changeRowSelection"
+                  ></at-checkbox>
                 </td>
-                <td v-for="(column, index) in columns" class="at-table__cell" :key="index">
+                <td
+                  v-for="(column, columnIndex) in columns"
+                  :key="columnIndex"
+                  class="at-table__cell"
+                >
                   <template v-if="column.render">
-                    <Cell :item="item" :column="column" :index="index" :render="column.render"></Cell>
+                    <Cell
+                      :item="item"
+                      :column="column"
+                      :index="rowIndex"
+                      :render="column.render"
+                    ></Cell>
                   </template>
                   <template v-else>
                     {{ item[column.key] }}
@@ -110,9 +154,12 @@
             </template>
           </tbody>
 
-          <tbody class="at-table__tbody" v-else>
+          <tbody v-else class="at-table__tbody">
             <tr>
-              <td class="at-table__cell at-table__cell--nodata" :colspan="optional ? columns.length + 1 : columns.length">
+              <td
+                class="at-table__cell at-table__cell--nodata"
+                :colspan="optional ? columns.length + 1 : columns.length"
+              >
                 <slot name="emptyText">{{ t('at.table.emptyText') }}</slot>
               </td>
             </tr>
@@ -124,7 +171,7 @@
     <!-- E Content -->
 
     <!-- S Pagination -->
-    <div v-if="pagination && total" class="at-table__footer" ref="footer">
+    <div v-if="pagination && total" ref="footer" class="at-table__footer">
       <at-pagination
         :current="currentPage"
         :size="size"
@@ -134,81 +181,90 @@
         :show-sizer="showPageSizer"
         :show-quickjump="showPageQuickjump"
         @page-change="pageChange"
-        @pagesize-change="pageSizeChange"></at-pagination>
+        @pagesize-change="pageSizeChange"
+      ></at-pagination>
     </div>
     <!-- E Pagination -->
   </div>
 </template>
 
 <script>
-import Locale from 'at-ui/src/mixins/locale'
-import { getStyle, deepCopy } from 'at-ui/src/utils/util'
+import Locale from '../../../mixins/locale'
+import { getStyle, deepCopy } from '../../../utils/util'
+import AtCheckbox from '../../checkbox'
+import AtPagination from '../../pagination'
 import Cell from './render'
-import Checkbox from 'at-ui/src/components/checkbox'
-import Pagination from 'at-ui/src/components/pagination'
 
 export default {
   name: 'AtTable',
   components: {
-    Checkbox,
-    Pagination,
-    Cell
+    AtCheckbox,
+    AtPagination,
+    Cell,
   },
   mixins: [Locale],
   props: {
     size: {
       type: String,
-      default: 'normal'
+      default: 'normal',
     },
     stripe: {
       type: Boolean,
-      default: false
+      default: false,
     },
     border: {
       type: Boolean,
-      default: false
+      default: false,
     },
     data: {
       type: Array,
-      default () {
+      default() {
         return []
-      }
+      },
     },
     columns: {
       type: Array,
-      default () {
+      default() {
         return []
-      }
+      },
     },
     optional: {
       type: Boolean,
-      default: false
+      default: false,
     },
     pagination: {
       type: Boolean,
-      default: false
+      default: false,
     },
     pageSize: {
       type: Number,
-      default: 10
+      default: 10,
     },
     showPageTotal: {
       type: Boolean,
-      default: true
+      default: true,
     },
     showPageSizer: {
       type: Boolean,
-      default: false
+      default: false,
     },
     showPageQuickjump: {
       type: Boolean,
-      default: false
+      default: false,
     },
     height: {
-      type: [Number, String]
-    }
+      type: [Number, String],
+    },
   },
-  data () {
+  emits: [
+    'rowClick',
+    'on-select-all',
+    'on-selection-change',
+    'on-sort-change',
+    'on-page-change',
+    'on-page-size-change',
+  ],
+  data() {
     return {
       objData: this.makeObjData(), // use for checkbox to select all
       sortData: [], // use for sort or paginate
@@ -218,40 +274,20 @@ export default {
       bodyHeight: 0,
       pageCurSize: this.pageSize,
       columnsWidth: {},
-      currentPage: 1
-    }
-  },
-  watch: {
-    height () {
-      this.calculateBodyHeight()
-    },
-    allData () {
-      this.total = this.allData.length
-    },
-    sortData () {
-      this.handleResize()
-    },
-    pageCurSize () {
-      this.sortData = this.makeDataWithPaginate()
-    },
-    data () {
-      this.sortData = this.makeDataWithSortAndPage()
+      currentPage: 1,
     }
   },
   computed: {
-    tableStyles () {
+    tableStyles() {
       const styles = {}
 
       if (this.height) {
         styles.height = `${this.height}px`
       }
-      if (this.width) {
-        styles.width = `${this.width}px`
-      }
 
       return styles
     },
-    isSelectAll () {
+    isSelectAll() {
       let isAll = true
       if (!this.sortData.length) {
         isAll = false
@@ -265,7 +301,7 @@ export default {
 
       return isAll
     },
-    bodyStyle () {
+    bodyStyle() {
       const styles = {}
       if (this.bodyHeight !== 0) {
         const headerHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
@@ -274,17 +310,48 @@ export default {
       }
       return styles
     },
-    contentStyle () {
+    contentStyle() {
       const styles = {}
       if (this.bodyHeight !== 0) {
         const headerHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
         styles.height = `${this.bodyHeight + headerHeight}px`
       }
       return styles
-    }
+    },
+  },
+  watch: {
+    height() {
+      this.calculateBodyHeight()
+    },
+    allData() {
+      this.total = this.allData.length
+    },
+    sortData() {
+      this.handleResize()
+    },
+    pageCurSize() {
+      this.sortData = this.makeDataWithPaginate()
+    },
+    data: {
+      deep: true,
+      handler() {
+        this.objData = this.makeObjData()
+        this.sortData = this.makeDataWithSortAndPage()
+      },
+    },
+  },
+  created() {
+    this.sortData = this.makeDataWithSortAndPage()
+  },
+  mounted() {
+    this.calculateBodyHeight()
+    window.addEventListener('resize', this.handleResize)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize)
   },
   methods: {
-    calculateBodyHeight () {
+    calculateBodyHeight() {
       if (this.height) {
         this.$nextTick(() => {
           const headerHeight = parseInt(getStyle(this.$refs.header, 'height')) || 0
@@ -296,7 +363,7 @@ export default {
         this.bodyHeight = 0
       }
     },
-    makeColumns () {
+    makeColumns() {
       const columns = deepCopy(this.columns)
       columns.forEach((column, idx) => {
         column._index = idx
@@ -304,19 +371,18 @@ export default {
 
         if (column.sortType) {
           column._sortType = column.sortType
-          column.sortType = column.sortType
         }
       })
       return columns
     },
-    makeData () {
+    makeData() {
       const data = deepCopy(this.data)
       data.forEach((row, idx) => {
         row.index = idx
       })
       return data
     },
-    makeObjData () {
+    makeObjData() {
       const rowData = {}
 
       this.data.forEach((row, index) => {
@@ -329,21 +395,18 @@ export default {
 
       return rowData
     },
-    makeDataWithSortAndPage (pageNum) {
-      let data = []
-      let allData = []
-
-      allData = this.makeDataWithSort()
+    makeDataWithSortAndPage(pageNum) {
+      const allData = this.makeDataWithSort()
       this.allData = allData
 
-      data = this.makeDataWithPaginate(pageNum)
+      const data = this.makeDataWithPaginate(pageNum)
       return data
     },
-    makeDataWithPaginate (page) {
+    makeDataWithPaginate(page) {
       page = page || 1
       const pageStart = (page - 1) * this.pageCurSize
       const pageEnd = pageStart + this.pageCurSize
-      let pageData = []
+      let pageData
 
       if (this.pagination) {
         pageData = this.allData.slice(pageStart, pageEnd)
@@ -352,7 +415,7 @@ export default {
       }
       return pageData
     },
-    makeDataWithSort () {
+    makeDataWithSort() {
       let data = this.makeData()
       let sortType = 'normal'
       let sortIndex = -1
@@ -371,7 +434,7 @@ export default {
 
       return data
     },
-    handleSelectAll () {
+    handleSelectAll() {
       const status = !this.isSelectAll
 
       for (const data of this.sortData) {
@@ -383,7 +446,7 @@ export default {
       status && this.$emit('on-select-all', selection)
       this.$emit('on-selection-change', selection)
     },
-    handleSort (index, type) {
+    handleSort(index, type) {
       const key = this.columnsData[index].key
       const sortType = this.columnsData[index]._sortType
       const sortNameArr = ['normal', 'desc', 'asc']
@@ -392,7 +455,7 @@ export default {
         if (!type) {
           const tmpIdx = sortNameArr.indexOf(sortType)
           if (tmpIdx >= 0) {
-            type = sortNameArr[(tmpIdx + 1) > 2 ? 0 : tmpIdx + 1]
+            type = sortNameArr[tmpIdx + 1 > 2 ? 0 : tmpIdx + 1]
           }
         }
         if (type === 'normal') {
@@ -406,10 +469,10 @@ export default {
       this.$emit('on-sort-change', {
         column: JSON.parse(JSON.stringify(this.columns[this.columnsData[index]._index])),
         order: type,
-        key
+        key,
       })
     },
-    sort (data, type, index) {
+    sort(data, type, index) {
       const key = this.columnsData[index].key
       data.sort((a, b) => {
         if (this.columnsData[index].sortMethod) {
@@ -421,29 +484,31 @@ export default {
       })
       return data
     },
-    getSelection () {
+    getSelection() {
       const selectionIndexArray = []
       for (const i in this.objData) {
         if (this.objData[i].isChecked) {
           selectionIndexArray.push(i | 0)
         }
       }
-      return JSON.parse(JSON.stringify(this.data.filter((data, index) => selectionIndexArray.indexOf(index) > -1)))
+      return JSON.parse(
+        JSON.stringify(this.data.filter((data, index) => selectionIndexArray.indexOf(index) > -1)),
+      )
     },
-    changeRowSelection () {
+    changeRowSelection() {
       const selection = this.getSelection()
       this.$emit('on-selection-change', selection)
     },
-    pageChange (page) {
+    pageChange(page) {
       this.$emit('on-page-change', page)
       this.currentPage = page
       this.sortData = this.makeDataWithPaginate(page)
     },
-    pageSizeChange (size) {
+    pageSizeChange(size) {
       this.$emit('on-page-size-change', size)
       this.pageCurSize = size
     },
-    handleResize () {
+    handleResize() {
       this.$nextTick(() => {
         const columnsWidth = {}
 
@@ -466,7 +531,7 @@ export default {
         this.columnsWidth = columnsWidth
       })
     },
-    setCellWidth (column, index) {
+    setCellWidth(column) {
       let width = ''
 
       if (column.width) {
@@ -477,17 +542,7 @@ export default {
 
       width = width === '0' ? '' : width
       return width
-    }
+    },
   },
-  created () {
-    this.sortData = this.makeDataWithSortAndPage()
-  },
-  mounted () {
-    this.calculateBodyHeight()
-    window.addEventListener('resize', this.handleResize)
-  },
-  beforeDestory () {
-    window.removeEventListener('resize', this.handleResize)
-  }
 }
 </script>

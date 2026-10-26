@@ -2,11 +2,11 @@ export default {
   at: {
     select: {
       placeholder: '선택',
-      notFoundText: '찾는 데이터가 없습니다'
+      notFoundText: '찾는 데이터가 없습니다',
     },
     modal: {
       okText: '확인',
-      cancelText: '취소'
+      cancelText: '취소',
     },
     pagination: {
       prevText: '이전 페이지',
@@ -18,10 +18,10 @@ export default {
       goto: '이동',
       pageText: '',
       prev5Text: '이전 5 페이지',
-      next5Text: '다음 5 페이지'
+      next5Text: '다음 5 페이지',
     },
     table: {
-      emptyText: '데이터가 없습니다'
-    }
-  }
+      emptyText: '데이터가 없습니다',
+    },
+  },
 }

@@ -50,25 +50,25 @@
 
 ## 自定义时间轴点
 
-接受一个 `slot` 来自定义轴点的内容，比如一个图标。
+通过插槽 `#dot` 来自定义轴点的内容，比如一个图标。
 
 :::demo
 ```html
 <at-timeline>
   <at-timeline-item color="blue">
-    <i slot="dot" class="icon icon-github"></i>
+    <template #dot><i class="icon icon-github"></i></template>
     <p>刷牙洗脸</p>
   </at-timeline-item>
   <at-timeline-item color="green">
-    <i slot="dot" class="icon icon-zap"></i>
+    <template #dot><i class="icon icon-zap"></i></template>
     <p>吃早餐</p>
   </at-timeline-item>
   <at-timeline-item color="red">
-    <i slot="dot" class="icon icon-award"></i>
+    <template #dot><i class="icon icon-award"></i></template>
     <p>上班</p>
   </at-timeline-item>
   <at-timeline-item color="yellow">
-    <i slot="dot" class="icon icon-watch"></i>
+    <template #dot><i class="icon icon-watch"></i></template>
     <p>睡觉</p>
   </at-timeline-item>
 </at-timeline>

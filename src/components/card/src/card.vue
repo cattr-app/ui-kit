@@ -1,14 +1,16 @@
 <template>
-  <div class="at-card"
+  <div
+    class="at-card"
     :class="{
       'at-card--bordered': bordered,
-      'at-card--no-hover': noHover
-    }">
-    <div class="at-card__head" v-if="!(!$slots.title && !$slots.extra)">
-      <div class="at-card__title" v-if="$slots.title">
+      'at-card--no-hover': noHover,
+    }"
+  >
+    <div v-if="!(!$slots.title && !$slots.extra)" class="at-card__head">
+      <div v-if="$slots.title" class="at-card__title">
         <slot name="title"></slot>
       </div>
-      <div class="at-card__extra" v-if="$slots.extra">
+      <div v-if="$slots.extra" class="at-card__extra">
         <slot name="extra"></slot>
       </div>
     </div>
@@ -48,20 +50,19 @@ export default {
   props: {
     bordered: {
       type: Boolean,
-      default: true
+      default: true,
     },
     noHover: {
       type: Boolean,
-      default: false
+      default: false,
     },
     loading: {
       type: Boolean,
-      default: false
+      default: false,
     },
     bodyStyle: {
-      type: Object
-    }
-  }
+      type: Object,
+    },
+  },
 }
 </script>
-

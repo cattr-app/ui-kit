@@ -1,27 +1,38 @@
 <template>
-  <div class="at-timeline"
+  <div
+    class="at-timeline"
     :class="{
-      'at-timeline--pending': pending
-    }">
+      'at-timeline--pending': pending,
+    }"
+  >
     <slot></slot>
   </div>
 </template>
 
 <script>
+import { reactive, toRef } from 'vue'
+import { useChildren } from '../../../composables/useChildren'
+import { TimelineContext } from './context'
+
 export default {
   name: 'AtTimeline',
   props: {
     pending: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  watch: {
-    pending () {
-      this.$children.forEach(child => {
-        child.checkForLast()
-      })
-    }
-  }
+  emits: [],
+  setup(props) {
+    const { children, register, unregister } = useChildren()
+    TimelineContext.provide(
+      reactive({
+        pending: toRef(props, 'pending'),
+        children,
+        register,
+        unregister,
+      }),
+    )
+  },
 }
 </script>

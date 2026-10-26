@@ -66,7 +66,7 @@
 
 ## 附加内容
 
-设置 slot `extra` 可以在页签右侧添加附加操作。
+使用插槽 `#extra` 可以在页签右侧添加附加操作。
 
 :::demo
 ```html
@@ -80,9 +80,11 @@
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">额外内容</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">额外内容</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -103,9 +105,11 @@
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">额外内容</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">额外内容</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -126,9 +130,11 @@
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">额外内容</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">额外内容</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -149,9 +155,11 @@
   <at-tab-pane label="Tab3" name="name3">
     <p>Content of Tab Pane 3</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small">额外内容</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small">额外内容</at-button>
+    </div>
+  </template>
 </at-tabs>
 ```
 :::
@@ -182,15 +190,17 @@
 
 :::demo
 ```html
-<at-tabs :animated="false" value="tab6" closable @on-tab-remove="removeHandle">
+<at-tabs :animated="false" model-value="tab6" closable @on-tab-remove="removeHandle">
   <at-tab-pane
     v-for="(item, index) in tabList" :key="index"
-    :label="item.label" :name="item.name" :unclosable="index === 0 ? true : false">
+    :label="item.label" :name="item.name" :closable="index !== 0">
     <p>{{ item.content }}</p>
   </at-tab-pane>
-  <div slot="extra">
-    <at-button size="small" @click="addHandle">添加</at-button>
-  </div>
+  <template #extra>
+    <div>
+      <at-button size="small" @click="addHandle">添加</at-button>
+    </div>
+  </template>
 </at-tabs>
 
 <script>
@@ -247,7 +257,7 @@
 ## Tabs 参数
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | 当前激活 tab 面板的 name，可以使用 v-model 双向绑定数据 | String | - | 第一项的 `name` |
+| modelValue | 当前激活 tab 面板的 name，可以使用 `v-model` 双向绑定数据 | String | - | 第一项的 `name` |
 | type | 标签的样式类型 | String | `line` `card` | `line` |
 | size | 标签的尺寸 | String | `default` `small` | `default` |
 | closable | 标签是否可关闭 | Boolean | - | false |
@@ -257,25 +267,26 @@
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| on-change | 切换 tab 时触发 | 当前标签的 `{index, name}` |
-| on-tab-remove | 删除 tab 时触发 | 被删除标签的 `{index, name}` |
+| update:modelValue | 用户切换 tab（点击或关闭当前激活的标签）时触发（用于 `v-model`） | 当前标签的 `name` |
+| on-change | 用户切换 tab（点击或关闭当前激活的标签）时触发，挂载时和外部修改 `modelValue` 时不触发 | 当前标签的 `{index, name}` |
+| on-tab-remove | 点击关闭按钮时触发，需在回调中自行删除对应的 `at-tab-pane` | 被删除标签的 `{index, name}` |
 
 ## Tabs slot
 
 | 名称      | 说明 |
 |----------|-------- |
 | extra | 标签右侧的附件内容 |
-| - | tab-pane 组件 和 slot extra 内容 |
+| - | tab-pane 组件 |
 
 ## TabPane 参数
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| name | 用于标识当前标签 | String / Number | - | 当前标签的序列号 |
+| name | 用于标识当前标签 | String | - | 当前标签的序号字符串（`'0'`, `'1'`, …） |
 | label | 标签的标题 | String | - | - |
 | icon | 标签的图标 | String | - | - |
 | disabled | 是否禁用该标签 | Boolean | - | false |
-| closable | 是否可以关闭该标签，优先级高于 Tabs 的 `closable` | Boolean | - | true |
+| closable | 是否可以关闭该标签，仅在 Tabs 设置了 `closable` 时有效，设为 `false` 时该标签不可关闭 | Boolean | - | true |
 
 ## TabPane slot
 

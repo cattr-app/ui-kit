@@ -1,7 +1,7 @@
 /**
  * Tabs Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-tabs {
   overflow: hidden;

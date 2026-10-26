@@ -5,52 +5,30 @@
 </template>
 
 <script>
-import { findComponentsDownward } from 'at-ui/src/utils/util'
-import Emitter from 'at-ui/src/mixins/emitter'
+import { reactive, toRef } from 'vue'
+import { CheckboxGroupContext } from './context'
 
 export default {
   name: 'AtCheckboxGroup',
-  mixins: [Emitter],
   props: {
-    value: {
+    modelValue: {
       type: Array,
-      default () {
+      default() {
         return []
-      }
-    }
-  },
-  data () {
-    return {
-      currentValue: this.value,
-      childrens: []
-    }
-  },
-  watch: {
-    value (value) {
-      this.updateModel()
-    }
-  },
-  methods: {
-    updateModel () {
-      const value = this.value
-      this.childrens = findComponentsDownward(this, 'AtCheckbox')
-
-      if (this.childrens) {
-        this.childrens.forEach(child => {
-          child.model = value
-          child.currentValue = value.indexOf(child.label) >= 0
-          child.isGroup = true
-        })
-      }
+      },
     },
-    change (data) {
-      this.currentValue = data
-      this.$emit('input', data)
-      this.$emit('on-change', data)
-    }
   },
-  mounted () {
-    this.updateModel()
-  }
+  emits: ['update:modelValue', 'on-change'],
+  setup(props, { emit }) {
+    CheckboxGroupContext.provide(
+      reactive({
+        modelValue: toRef(props, 'modelValue'),
+        update(value) {
+          emit('update:modelValue', value)
+          emit('on-change', value)
+        },
+      }),
+    )
+  },
 }
 </script>

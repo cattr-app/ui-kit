@@ -1,7 +1,7 @@
 /**
  * Checkbox Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-checkbox {
   position: relative;

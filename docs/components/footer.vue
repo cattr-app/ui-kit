@@ -1,25 +1,26 @@
 <template>
   <footer class="footer">
     <div class="container">
-      <div class="footer-logo"></div>
       <div class="footer-desc">
-        <div class="footer-copyright">© 2017 Created by<a href="//aotu.io" target="_blank"> 凹凸实验室</a></div>
+        <div class="footer-copyright">© Cattr Team</div>
       </div>
-      <div class="github-logo"><a href="https://github.com/o2team" target="_blank">Github</a></div>
+      <div class="github-logo">
+        <a href="https://github.com/cattr-app/ui-kit" target="_blank">Github</a>
+      </div>
     </div>
   </footer>
 </template>
 
 <style lang="scss">
-@import '~stylesheet/src/variables/index.scss';
-@import '../assets/style/mixin';
+@use '../../src/stylesheet/src/variables' as *;
+@use '../assets/style/mixin' as *;
 
 /**
  * Footer
  */
 .footer {
   padding: 30px 0 30px;
-  color: #6190E8;
+  color: #6190e8;
   text-align: center;
   background-color: #fff;
 
@@ -27,24 +28,17 @@
     position: relative;
     width: 90%;
   }
-  &-logo {
-    margin: 10px 0 14px;
-    width: 198px;
-    height: 40px;
-    @include image2x-background('o2logo');
-    background-size: 100% auto;
-  }
   &-desc {
     text-align: left;
     font-size: 12px;
-    color: #6190E8;
+    color: #6190e8;
   }
   &-copyright {
     letter-spacing: 1px;
     font-weight: 300;
 
     a {
-      color: #6190E8;
+      color: #6190e8;
       text-decoration: none;
     }
   }
@@ -55,7 +49,7 @@
     width: 42px;
     height: 42px;
     @include image2x-background('github');
-    transition: transform .3s;
+    transition: transform 0.3s;
 
     &:hover {
       transform: scale(1.1);
@@ -73,11 +67,6 @@
   .footer {
     padding: 20px 0;
 
-    &-logo {
-      margin: 8px 0;
-      height: 20px;
-      width: 100px;
-    }
     &-desc {
       font-size: 10px;
     }

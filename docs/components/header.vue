@@ -1,16 +1,10 @@
 <template>
-  <header
-    class="page-header"
-    :class="[
-      collapse ? 'collapse' : ''
-    ]"
-    id="J-page-header">
+  <header id="J-page-header" class="page-header" :class="[collapse ? 'collapse' : '']">
     <div class="nav-container">
       <div class="nav-left">
         <div class="logo">
           <router-link :to="{ name: lang === 'en' ? 'Home-en' : 'Home' }">
-            <img class="logo-img" src="../assets/logo-at@2x.png" preload="">
-            <span>AT UIKIT</span>
+            <span>Cattr UI</span>
           </router-link>
         </div>
         <i class="icon icon-menu nav-icon" @click="toggleMenu"></i>
@@ -36,35 +30,42 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n'
+import { LANGUAGE_KEY } from '../i18n.js'
+
 export default {
   props: {
     collapse: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
-  data () {
+  setup() {
+    const { locale } = useI18n({ useScope: 'global' })
+    return { locale }
+  },
+  data() {
     return {
-      isOpen: false
+      isOpen: false,
     }
   },
   computed: {
-    lang () {
+    lang() {
       return this.$route.path.split('/')[1] || 'zh'
-    }
+    },
   },
-  mounted () {
+  mounted() {
     if (!this.collapse) {
       window.addEventListener('scroll', this.headerCollapse)
     } else {
       window.removeEventListener('scroll', this.headerCollapse)
     }
   },
-  destroyed () {
+  unmounted() {
     window.removeEventListener('scroll', this.headerCollapse)
   },
   methods: {
-    toggleMenu () {
+    toggleMenu() {
       const header = document.getElementById('J-page-header')
 
       if (this.isOpen) {
@@ -75,7 +76,7 @@ export default {
         header.classList.add('open')
       }
     },
-    headerCollapse () {
+    headerCollapse() {
       const header = document.getElementById('J-page-header')
       const offsetTop = window.scrollY || 0
 
@@ -85,24 +86,28 @@ export default {
         header.classList.remove('collapse')
       }
     },
-    switchLang (targetLang) {
+    switchLang(targetLang) {
       if (this.lang === targetLang) return
 
-      this.$i18n.locale = targetLang
-      localStorage.setItem('at-ui-language', targetLang)
+      this.locale = targetLang
+      try {
+        localStorage.setItem(LANGUAGE_KEY, targetLang)
+      } catch {
+        // storage may be unavailable (private mode); the URL still carries the language
+      }
 
       if (this.$route.name === 'Home') {
         this.$router.push({ name: 'Home-en' })
       } else {
         this.$router.push(this.$route.path.replace(this.lang, targetLang))
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
 <style lang="scss">
-@import '~stylesheet/src/variables/index.scss';
+@use '../../src/stylesheet/src/variables' as *;
 
 $header-height: 80px;
 
@@ -113,7 +118,7 @@ $header-height: 80px;
   width: 100%;
   height: $header-height;
   background-color: transparent;
-  transition: all .3s;
+  transition: all 0.3s;
   z-index: 100;
 
   &.collapse {
@@ -128,7 +133,7 @@ $header-height: 80px;
 .nav-container {
   margin: 0 auto;
   width: 90%;
-  color: #1D1D1F;
+  color: #1d1d1f;
 
   .nav-left {
     float: left;
@@ -138,15 +143,7 @@ $header-height: 80px;
       height: $header-height;
       line-height: $header-height;
 
-      img {
-        position: absolute;
-        top: 50%;
-        margin-top: -15px;
-        width: 30px;
-        height: 30px;
-      }
       span {
-        margin-left: 40px;
         color: #3473e7;
         font-weight: bold;
         font-size: 16px;
@@ -175,7 +172,7 @@ $header-height: 80px;
 
       a {
         display: inline-block;
-        color: #1D1D1F;
+        color: #1d1d1f;
 
         &::after {
           content: '';
@@ -185,7 +182,7 @@ $header-height: 80px;
           left: 0;
           height: 2px;
           width: 100%;
-          background-color: #6190E8;
+          background-color: #6190e8;
         }
         &.router-link-active {
           color: $brand-blue-500;
@@ -200,7 +197,7 @@ $header-height: 80px;
         display: inline-block;
         margin: 0 24px;
         cursor: pointer;
-        transition: color .3s;
+        transition: color 0.3s;
 
         &:hover {
           color: $brand-blue-500;
@@ -210,7 +207,7 @@ $header-height: 80px;
           }
         }
         &.disabled {
-          color: #C9C9C9;
+          color: #c9c9c9;
           cursor: not-allowed;
         }
       }
@@ -219,10 +216,12 @@ $header-height: 80px;
       display: inline-block;
       margin: 0 24px;
       padding: 2px 12px;
-      border: 1px solid #1D1D1F;
+      border: 1px solid #1d1d1f;
       border-radius: 2px;
       cursor: pointer;
-      transition: color .3s, border .3s;
+      transition:
+        color 0.3s,
+        border 0.3s;
 
       &:hover {
         color: $brand-blue-500;
@@ -266,7 +265,7 @@ $header-height: 80px;
       text-align: center;
       background-color: #fff;
       box-shadow: 0 10px 60px 0 rgba(29, 29, 31, 0.07);
-      transition: all .3s;
+      transition: all 0.3s;
       overflow: hidden;
 
       .navbar {

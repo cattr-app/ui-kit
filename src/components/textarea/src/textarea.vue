@@ -2,11 +2,13 @@
   <div
     class="at-textarea"
     :class="{
-      'at-textarea--disabled': disabled
-    }">
+      'at-textarea--disabled': disabled,
+    }"
+  >
     <textarea
-      class="at-textarea__original"
+      ref="textarea"
       v-model="store"
+      class="at-textarea__original"
       :name="name"
       :placeholder="placeholder"
       :disabled="disabled"
@@ -19,85 +21,84 @@
       @input="handleInput"
       @focus="handleFocus"
       @blur="handleBlur"
-      ref="textarea"
     ></textarea>
   </div>
 </template>
 
 <script>
-import Emitter from 'at-ui/src/mixins/emitter'
 import { calcTextareaHeight } from './utils'
 
 export default {
   name: 'AtTextarea',
-  mixins: [Emitter],
   props: {
-    value: String,
+    modelValue: String,
     name: String,
     placeholder: String,
     readonly: Boolean,
     disabled: Boolean,
     rows: {
       type: Number,
-      default: 2
+      default: 2,
     },
     minlength: Number,
     maxlength: Number,
     autofocus: Boolean,
     autosize: {
       type: Boolean,
-      default: false
+      default: false,
     },
     minRows: [Number, String],
     maxRows: [Number, String],
     resize: {
       type: String,
-      default: 'vertical' // none, both, horizontal, vertical
-    }
+      default: 'vertical', // none, both, horizontal, vertical
+    },
   },
-  data () {
+  emits: ['update:modelValue', 'change', 'focus', 'blur'],
+  data() {
     return {
-      store: this.value,
-      calculateStyle: {}
+      store: this.modelValue,
+      calculateStyle: {},
     }
   },
   computed: {
-    textareaStyle () {
+    textareaStyle() {
       return Object.assign({}, this.calculateStyle, {
-        resize: this.resize
+        resize: this.resize,
       })
-    }
+    },
   },
   watch: {
-    value (value) {
+    modelValue(value) {
       this.store = value
     },
-    store (value) {
+    store() {
       this.$nextTick(() => {
         this.resizeTextarea()
       })
-      this.$emit('input', value)
-      this.$emit('change', value)
-    }
+    },
+  },
+  mounted() {
+    this.resizeTextarea()
   },
   methods: {
-    handleFocus (evt) {
+    handleFocus(evt) {
       this.$emit('focus', evt)
     },
-    handleBlur (evt) {
+    handleBlur(evt) {
       this.$emit('blur', evt)
     },
-    handleInput (evt) {
+    // user input only: an external modelValue change syncs `store` without events (as Input)
+    handleInput(evt) {
       this.store = evt.target.value
+      this.$emit('update:modelValue', this.store)
+      this.$emit('change', this.store)
     },
-    resizeTextarea () {
+    resizeTextarea() {
       if (!this.autosize && !this.minRows && !this.maxRows) return
 
       this.calculateStyle = calcTextareaHeight(this.$refs.textarea, this.minRows, this.maxRows)
-    }
+    },
   },
-  mounted () {
-    this.resizeTextarea()
-  }
 }
 </script>

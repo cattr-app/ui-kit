@@ -1,66 +1,59 @@
 <template>
   <label
     class="at-radio-button"
-    :class="[
-      size ? `at-radio-button--${size}` : '',
-      { 'at-radio--checked': store === label }
-    ]">
+    :class="[size ? `at-radio-button--${size}` : '', { 'at-radio--checked': checked }]"
+  >
     <input
       type="radio"
       class="at-radio-button__original"
-      v-model="store"
       :value="label"
       :name="name"
-      :disabled="disabled">
-    <span
-      class="at-radio-button__inner"
-      :style="store === label ? activeStyle : null">
+      :checked="checked"
+      :disabled="disabled"
+      @change="select"
+    />
+    <span class="at-radio-button__inner" :style="checked ? activeStyle : null">
       <slot></slot>
     </span>
   </label>
 </template>
 
 <script>
+import { computed } from 'vue'
+import { useRadio } from './context'
+
 export default {
   name: 'AtRadioButton',
   props: {
+    modelValue: [String, Number],
     name: String,
     label: {
       type: [String, Number],
-      required: true
+      required: true,
     },
     disabled: {
       type: Boolean,
-      default: false
-    }
-  },
-  data () {
-    return {
-      size: this.$parent.size
-    }
-  },
-  computed: {
-    store: {
-      get () {
-        return this.$parent.value
-      },
-      set (newValue) {
-        this.$parent.$emit('input', newValue)
-      }
+      default: false,
     },
-    activeStyle () {
+  },
+  emits: ['update:modelValue'],
+  setup(props, { emit }) {
+    const { group, checked, select } = useRadio(props, emit)
+
+    const size = computed(() => group?.size)
+    const activeStyle = computed(() => {
       const styles = {}
-
-      if (this.$parent.fill) {
-        styles.backgroundColor = this.$parent.fill
-        styles.borderColor = this.$parent.fill
+      if (group?.fill) {
+        styles.backgroundColor = group.fill
+        styles.borderColor = group.fill
       }
-      if (this.$parent.textColor) {
-        styles.color = this.$parent.textColor
+      if (group?.textColor) {
+        styles.color = group.textColor
       }
-
       return styles
-    }
-  }
+    })
+
+    return { checked, select, size, activeStyle }
+  },
 }
 </script>

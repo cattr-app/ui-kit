@@ -47,7 +47,7 @@ Support select half star.
   <at-rate
     :allow-half="true"
     :show-text="true"
-    :value="value1"
+    :model-value="value1"
     @on-change="changeHandle">
   </at-rate>
 </div>
@@ -64,7 +64,7 @@ Read only，can't use mouse to interact.
   <at-rate
     :allow-half="true"
     :show-text="true"
-    :value="value1"
+    :model-value="value1"
     :disabled="true">
   </at-rate>
 </div>
@@ -77,16 +77,17 @@ Read only，can't use mouse to interact.
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | count | star count | Number | - | 5 |
-| value | current value | String | - | 0 |
+| modelValue (v-model) | current value | Number | - | 0 |
 | allow-half | whether to allow semi selection | Boolean | - | `false` |
 | disabled | read only, unable to interact | Boolean | - | `false` |
-| icon | to specify the icon | String | - | `icon-star` |
+| icon | to specify the icon | String | - | `icon-star-on` |
 | show-text | whether to display a copywriting | Boolean | - | `false` |
 
 ## Rate Events
 
 | Event Name      | Description          | Return Value  |
 |---------- |-------------- |---------- |
+| update:modelValue | Emitted when the user selects a value, used by `v-model` | value |
 | on-change | callback when select value | value |
 | on-hover-change | callback when hover item | value |
 

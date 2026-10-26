@@ -9,17 +9,25 @@
         'at-input--disabled': disabled,
         'at-input--prepend': $slots.prepend,
         'at-input--append': $slots.append,
-        'at-input--icon': icon
-      }
-    ]">
+        'at-input--icon': icon,
+      },
+      $attrs.class,
+    ]"
+    :style="$attrs.style"
+  >
     <!-- S prepend element -->
-    <div class="at-input-group__prepend" :class="{ 'at-input-group--button': prependButton }" v-if="$slots.prepend">
+    <div
+      v-if="$slots.prepend"
+      class="at-input-group__prepend"
+      :class="{ 'at-input-group--button': prependButton }"
+    >
       <slot name="prepend"></slot>
     </div>
     <!-- E prepend element -->
 
     <!-- S input -->
     <input
+      v-bind="inputAttrs()"
       class="at-input__original"
       :type="type"
       :name="name"
@@ -34,15 +42,20 @@
       :autofocus="autofocus"
       @focus="handleFocus"
       @blur="handleBlur"
-      @input="handleInput">
+      @input="handleInput"
+    />
     <!-- E input -->
 
     <!-- S icon -->
-    <i class="at-input__icon icon" :class="iconClass" v-if="icon"></i>
+    <i v-if="icon" class="at-input__icon icon" :class="iconClass"></i>
     <!-- E icon -->
 
     <!-- S append element -->
-    <div class="at-input-group__append" :class="{ 'at-input-group--button': appendButton }" v-if="$slots.append">
+    <div
+      v-if="$slots.append"
+      class="at-input-group__append"
+      :class="{ 'at-input-group--button': appendButton }"
+    >
       <slot name="append"></slot>
     </div>
     <!-- E append element -->
@@ -50,81 +63,85 @@
 </template>
 
 <script>
-  import Emitter from 'at-ui/src/mixins/emitter'
-
-  export default {
-    name: 'AtInput',
-    mixins: [Emitter],
-    props: {
-      type: {
-        type: String,
-        default: 'text'
-      },
-      value: [String, Number],
-      name: String,
-      placeholder: String,
-      size: String,
-      status: String,
-      icon: String,
-      prependButton: {
-        type: Boolean,
-        default: false
-      },
-      appendButton: {
-        type: Boolean,
-        default: false
-      },
-      readonly: {
-        type: Boolean,
-        default: false
-      },
-      disabled: {
-        type: Boolean,
-        default: false
-      },
-      autofocus: {
-        type: Boolean,
-        default: false
-      },
-      maxlength: Number,
-      minlength: Number,
-      max: Number,
-      min: Number
+export default {
+  name: 'AtInput',
+  inheritAttrs: false,
+  props: {
+    type: {
+      type: String,
+      default: 'text',
     },
-    computed: {
-      iconClass () {
-        const name = this.icon || this.status
-        return name ? `icon-${name}` : ''
-      }
+    modelValue: [String, Number],
+    name: String,
+    placeholder: String,
+    size: String,
+    status: String,
+    icon: String,
+    prependButton: {
+      type: Boolean,
+      default: false,
     },
-    data () {
-      return {
-        currentValue: this.value
-      }
+    appendButton: {
+      type: Boolean,
+      default: false,
     },
-    watch: {
-      value (val) {
-        this.setCurrentValue(val)
-      }
+    readonly: {
+      type: Boolean,
+      default: false,
     },
-    methods: {
-      handleFocus (evt) {
-        this.$emit('focus', evt)
-      },
-      handleBlur (evt) {
-        this.$emit('blur', evt)
-        this.dispatch('AtFormItem', 'on-form-item-blur', this.currentValue)
-      },
-      handleInput (evt) {
-        const value = evt.target.value
-        this.$emit('input', value)
-        this.$emit('change', value)
-      },
-      setCurrentValue (val) {
-        if (val === this.currentValue) return
-        this.currentValue = val
-        this.dispatch('AtFormItem', 'on-form-item-change', this.currentValue)
-      }
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
+    autofocus: {
+      type: Boolean,
+      default: false,
+    },
+    maxlength: Number,
+    minlength: Number,
+    max: Number,
+    min: Number,
+  },
+  emits: ['update:modelValue', 'change', 'focus', 'blur'],
+  data() {
+    return {
+      currentValue: this.modelValue,
     }
-  }
+  },
+  computed: {
+    iconClass() {
+      const name = this.icon || this.status
+      return name ? `icon-${name}` : ''
+    },
+  },
+  watch: {
+    modelValue(val) {
+      this.setCurrentValue(val)
+    },
+  },
+  methods: {
+    // Everything except class/style goes to the native <input>: listeners
+    // (@keyup.enter, @keydown, @paste…) and attributes (autocomplete, id, aria-*).
+    inputAttrs() {
+      // eslint-disable-next-line no-unused-vars
+      const { class: _class, style: _style, ...rest } = this.$attrs
+      return rest
+    },
+    handleFocus(evt) {
+      this.$emit('focus', evt)
+    },
+    handleBlur(evt) {
+      this.$emit('blur', evt)
+    },
+    handleInput(evt) {
+      const value = evt.target.value
+      this.$emit('update:modelValue', value)
+      this.$emit('change', value)
+    },
+    setCurrentValue(val) {
+      if (val === this.currentValue) return
+      this.currentValue = val
+    },
+  },
+}
 </script>

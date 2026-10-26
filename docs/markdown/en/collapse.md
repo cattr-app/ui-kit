@@ -9,7 +9,7 @@ You can expand multiple items.
 
 :::demo
 ```html
-<at-collapse :value="[0, 1]">
+<at-collapse v-model="basicActive">
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title" :disabled="item.disabled">
@@ -27,7 +27,7 @@ In accordion mode, only one item can be expanded at once.
 
 :::demo
 ```html
-<at-collapse accordion :value="0">
+<at-collapse v-model="accordionActive" accordion>
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -45,7 +45,7 @@ Collapse is nested inside the Collapse.
 
 :::demo
 ```html
-<at-collapse @on-change="changeHandle" value="0">
+<at-collapse v-model="nestingActive" @on-change="changeHandle">
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -68,17 +68,17 @@ Besides using the title attribute, you can customize item title with named slots
 
 :::demo
 ```html
-<at-collapse accordion :value="value">
+<at-collapse v-model="value" accordion>
   <at-collapse-item name="collapse1">
-    <div slot="title">Title 1 <i class="icon icon-info"></div>
+    <template #title><div>Title 1 <i class="icon icon-info"></i></div></template>
     <div>content 1</div>
   </at-collapse-item>
   <at-collapse-item name="collapse2">
-    <div slot="title">Title 2 <i class="icon icon-box"></div>
+    <template #title><div>Title 2 <i class="icon icon-box"></i></div></template>
     <div>content 2</div>
   </at-collapse-item>
   <at-collapse-item>
-    <div slot="title">Title 3 <i class="icon icon-calendar"></div>
+    <template #title><div>Title 3 <i class="icon icon-calendar"></i></div></template>
     <div>content 3</div>
   </at-collapse-item>
 </at-collapse>
@@ -91,7 +91,7 @@ Set `simple` property to use a simple collapse.
 
 :::demo
 ```html
-<at-collapse simple accordion :value="0">
+<at-collapse v-model="simpleActive" simple accordion>
   <at-collapse-item
     v-for="(item, index) in list" :key="index"
     :title="item.title">
@@ -108,21 +108,22 @@ Set `simple` property to use a simple collapse.
 | Property  | Description   | Type      | Accepted Values         | Default |
 |---------- |-------------- |---------- |-----------------------  |-------- |
 | accordion | whether to open the accordion mode (ie, expand at most one item) | Boolean | - | false |
-| value | the value of the currently activated item's `name` | Array / String / Number | - | - |
+| modelValue (v-model) | `name` of the active item(s); values are converted to strings | Array / String / Number | - | - |
 | simple | whether to use simple mode | Boolean | - | false |
 
 ## Collapse Events
 
 | Event Name| Description   | Return Value  |
 |---------- |-------------- |-------------- |
-| on-change | emit when item is switched | Return the key of the spread item(s) in an array |
+| update:modelValue | emitted when the user expands or collapses an item (used by `v-model`) | array of the active item names (strings) |
+| on-change | emitted when the user expands or collapses an item | array of the active item names (strings); in `accordion` mode one element or empty |
 
 ## CollapseItem Props
 
 | Property  | Description   | Type      | Accepted Values                  | Default |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | title | title of the item (you can customize item title with named slots) | String | - | - |
-| name | the name of current item, corresponds with `value` of Collapse. Index value will be used if not filled | String / Object | - | - |
+| name | the name of current item, corresponds with `modelValue` of Collapse. If omitted, the index of the item inside its Collapse is used (`'0'`, `'1'`, …) | String | - | - |
 | disabled | users cannot change opening status of a disabled item | Boolean | - | false |
 
 ## CollapseItem slot
@@ -141,6 +142,10 @@ Set `simple` property to use a simple collapse.
           { title: 'title 2', content: 'content 2' },
           { title: 'title 3', content: 'content 3', disabled: true }
         ],
+        basicActive: ['0', '1'],
+        accordionActive: '0',
+        nestingActive: '0',
+        simpleActive: '0',
         value: 'collapse1'
       }
     },

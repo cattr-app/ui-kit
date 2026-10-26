@@ -1,36 +1,36 @@
 {
-  "name": "at-ui-style",
+  "name": "cattr-ui-style",
+  "private": true,
   "version": "1.5.1",
-  "description": "The StyleSheet for AT-UI",
+  "description": "Stylesheet for Cattr UI",
   "scss": "src/index.scss",
   "main": "css/at.css",
   "style": "css/at.css",
   "scripts": {
-    "build": "npm run build-clean && npm run copy && npm run build-scss && npm run build-scss-minify && npm run build-autoprefix",
-    "build-clean": "rimraf css",
-    "build-scss": "sass --style=expanded --source-map src/index.scss css/at.css",
-    "build-scss-minify": "sass --style=compressed --source-map src/index.scss css/at.min.css",
-    "build-autoprefix": "postcss --use autoprefixer -c postcss.json css/*.css -d css/",
-    "copy": "copyfiles -f src/core/fonts/*.* css/fonts/",
-    "prepublish": "npm run build",
+    "build": "pnpm run build:clean && pnpm run build:scss && pnpm run build:scss-minify && pnpm run build:autoprefix",
+    "build:clean": "node scripts/clean.mjs",
+    "build:scss": "sass --style=expanded --source-map src/index.scss css/at.css",
+    "build:scss-minify": "sass --style=compressed --source-map src/index.scss css/at.min.css",
+    "build:autoprefix": "postcss css/at.css css/at.min.css --dir css/ --map",
     "start": "sass --watch --style=expanded --source-map src/index.scss:css/at.css"
   },
   "keywords": [
-    "at",
-    "at-ui",
-    "at-ui-style",
+    "cattr",
+    "cattr-ui",
     "css",
     "scss",
     "framework"
   ],
-  "author": "Koppt Ho <kopptsoft@gmail.com>",
+  "author": "Cattr Team <hi@cattr.app>",
   "license": "MIT",
+  "browserslist": [
+    "last 2 versions",
+    "not dead"
+  ],
   "devDependencies": {
-    "autoprefixer": "^7.1.1",
-    "copyfiles": "^1.2.0",
-    "eslint-config-o2team": "^0.1.6",
-    "sass": "^1.105.1",
-    "postcss-cli": "^4.1.0",
-    "rimraf": "^2.6.1"
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.31",
+    "postcss-cli": "^12.0.0",
+    "sass-embedded": "^1.106.1"
   }
 }

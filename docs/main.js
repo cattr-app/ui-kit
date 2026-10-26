@@ -1,52 +1,25 @@
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
+import { createApp } from 'vue'
 
-import App from './App'
-import router from './router'
-import DemoBox from './components/demobox'
-import IconList from './components/iconlist'
-import VueClipboard from './directives/clipboard'
-import AtUI from 'at-ui-lib'
-import zhLocale from 'at-ui-locale-zh'
-import enLocale from 'at-ui-locale-en'
-import 'at-ui-style'
+import 'highlight.js/styles/atom-one-light.css'
+import '../src/stylesheet/src/index.scss'
 
-Vue.use(VueI18n)
-Vue.use(AtUI)
-Vue.use(VueClipboard)
-Vue.component('demo-box', DemoBox)
-Vue.component('icon-list', IconList)
+import CattrUI from '../src/index.js'
+import App from './App.vue'
+import router from './router/index.js'
+import i18n from './i18n.js'
+import DemoBox from './components/demobox.vue'
+import IconList from './components/iconlist.vue'
+import clipboard from './directives/clipboard.js'
 
-const matchArr = window.location.href.match(/#\/(zh|en)/)
-const urlLang = matchArr && matchArr[1]
-let navigatorLang = window.navigator.language.slice(0, 2)
+const app = createApp(App)
 
-if (['en', 'zh'].indexOf(navigatorLang) <= -1) {
-  navigatorLang = ''
-}
+app
+  .use(router)
+  .use(i18n)
+  .use(CattrUI, { i18n: (key, values) => i18n.global.t(key, values) })
 
-const userLang = urlLang || window.localStorage.getItem('at-ui-language') || navigatorLang || 'zh'
+app.component('DemoBox', DemoBox)
+app.component('IconList', IconList)
+app.directive('clipboard', clipboard)
 
-const i18n = new VueI18n({
-  locale: userLang,
-  fallbackLocale: 'en',
-  messages: {
-    'en': {
-      ...enLocale
-    },
-    'zh': {
-      ...zhLocale
-    }
-  }
-})
-
-AtUI.i18n((key, value) => i18n.t(key, value))
-
-Vue.config.debug = process.env.NODE_ENV !== 'production'
-
-new Vue({ // eslint-disable-line
-  el: '#app',
-  router,
-  i18n,
-  ...App
-})
+app.mount('#app')

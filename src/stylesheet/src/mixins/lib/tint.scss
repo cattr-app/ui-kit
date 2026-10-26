@@ -15,10 +15,11 @@
  *     background-color: #a8dfc9;
  *   }
  */
+@use 'sass:color';
 
 @function tint(
     $color,
     $percent
   ) {
-  @return mix(#FFF, $color, $percent);
+  @return color.mix(#FFF, $color, $percent);
 }

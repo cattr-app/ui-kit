@@ -77,7 +77,7 @@
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
-| value | 输入框的值，可通过 `v-model` 绑定 | Number | - | - |
+| modelValue | 输入框的值，可通过 `v-model` 绑定 | Number | - | 0 |
 | size | 输入框尺寸 | String | `small`, `normal`, `large` | normal |
 | step | 每次递增或递减的数目 | Number | - | 1 |
 | min | 最小值 | Number | - | -Infinity |
@@ -86,13 +86,16 @@
 | readonly | 是否设置成只读 | Boolean | - | false |
 | autofocus | 是否自动聚焦到输入框 | Boolean | - | false |
 
+未声明为参数的属性和监听器（如 `id`、`placeholder`、`@keyup`）会绑定到内部的原生 `<input>` 上，`class` 和 `style` 保留在外层元素上。Vue 3 中已移除 `native` 修饰符，直接监听即可。
+
 ## InputNumber 事件
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
 | focus | 获得焦点时触发 | event |
 | blur | 失去焦点时触发 | event |
-| change | 绑定的值有变化时触发 | 输入框的值 |
+| update:modelValue | 绑定的值有变化时触发（用于 `v-model`） | 输入框的值 |
+| change | 绑定的值有变化时触发（点击 +/- 或输入后失焦、回车），外部修改 `modelValue` 时不触发 | 输入框的值 |
 
 <script>
 export default {

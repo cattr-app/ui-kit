@@ -51,12 +51,27 @@ Automatically adjusted the height of textarea according to the number of lines w
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | name | same as native textarea | String | - | - |
-| value | the value of textarea, use `v-model` to enable a two-way binding | String | - | - |
+| modelValue (v-model) | the value of textarea | String | - | - |
+| rows | same as native textarea | Number | - | 2 |
 | autosize | adaptive text height | Boolean | - | false |
+| minRows | minimum number of rows for adaptive height | Number / String | - | - |
+| maxRows | maximum number of rows for adaptive height | Number / String | - | - |
 | placeholder | the text of placeholder | String | - | - |
 | disabled | whether the textarea is disabled | Boolean | - | false |
+| readonly | same as native textarea | Boolean | - | false |
+| minlength | same as native textarea | Number | - | - |
+| maxlength | same as native textarea | Number | - | - |
 | autofocus | same as native textarea | Boolean | - | false |
 | resize | whether to be resize by the user | String | `none`, `both`, `horizontal`, `vertical`  | `vertical` |
+
+## Textarea Events
+
+| Event Name      | Description          | Return Value  |
+|---------- |-------------- |---------- |
+| update:modelValue | Emitted when the value changes, used by `v-model` | the value (String) |
+| change | Emitted when the value changes | the value (String) |
+| focus | Emitted when focus | native `Event` |
+| blur | Emitted when blur | native `Event` |
 
 <script>
 export default {

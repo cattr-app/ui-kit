@@ -49,7 +49,7 @@
   <at-radio-button label="北京">北京</at-radio-button>
   <at-radio-button label="上海" disabled>上海</at-radio-button>
   <at-radio-button label="深圳">深圳</at-radio-button>
-  <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+  <at-radio-button label="Cattr">Cattr</at-radio-button>
 </at-radio-group>
 ```
 :::
@@ -66,7 +66,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <p class="demo-desc">更换字体颜色</p>
@@ -75,7 +75,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 ```
@@ -92,7 +92,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <div class="row">
@@ -100,7 +100,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 <div class="row">
@@ -108,7 +108,7 @@
     <at-radio-button label="北京">北京</at-radio-button>
     <at-radio-button label="上海" disabled>上海</at-radio-button>
     <at-radio-button label="深圳">深圳</at-radio-button>
-    <at-radio-button label="凹凸实验室">凹凸实验室</at-radio-button>
+    <at-radio-button label="Cattr">Cattr</at-radio-button>
   </at-radio-group>
 </div>
 ```
@@ -119,14 +119,23 @@
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 | :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
 | label | 指定当前组件的 value 值 | String / Number | - | - |
-| value | 用于跟 label 比较，判断是否选中（只在单独使用时有效） | String / Number | - | - |
+| modelValue | 用于跟 label 比较，判断是否选中（只在单独使用时有效），可通过 `v-model` 绑定 | String / Number | - | - |
+| name | 原生 `name` 属性 | String | - | - |
 | disabled | 是否禁用当前项 |Boolean | - | false |
+
+## Radio 事件
+
+| 事件名称      | 说明          | 返回值  |
+|---------- |-------------- |---------- |
+| update:modelValue | 单独使用时，选中时触发（用于 `v-model`）；在单选框组中不触发，请监听组的事件 | 选中的 `label` 值 |
 
 ## Radio Button 参数
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 | :---------- | :-------------- | :---------- | :-----------------------------  | :-------- |
 | label | 指定当前组件的 value 值 | String / Number | - | - |
+| modelValue | 单独使用（不在单选框组中）时的选中值，可通过 `v-model` 绑定 | String / Number | - | - |
+| name | 原生 `name` 属性 | String | - | - |
 | disabled | 是否禁用当前项 |Boolean | - | false |
 
 ## Radio Group 参数
@@ -134,7 +143,7 @@
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
 |---------- |-------------- |---------- |--------------------------------  |-------- |
 | size | 按钮尺寸，仅适用于单选按钮样式 | String | small, normal, large | normal |
-| value | 组合按钮的选中值，通常使用 `v-model` 绑定 | String / Number | - | - |
+| modelValue | 组合按钮的选中值，通常使用 `v-model` 绑定 | String / Number | - | - |
 | fill | 选中按钮的背景色 | String，颜色的 Hex 值 | - | - |
 | textColor | 选中按钮的字体颜色 | String，颜色的 Hex 值 | - | - |
 
@@ -142,7 +151,8 @@
 
 | 事件名称      | 说明          | 返回值  |
 |---------- |-------------- |---------- |
-| radio-group-change | 绑定的值变化时触发 | 选择的按钮的 value 值 |
+| update:modelValue | 用户选择时触发（用于 `v-model`） | 选择的按钮的 `label` 值 |
+| radio-group-change | 仅在用户选择时触发，程序修改 `modelValue` 时不触发；选择已选中或禁用的项也不触发 | 选择的按钮的 `label` 值 |
 
 <style lang="scss" scoped>
   .row + .row {

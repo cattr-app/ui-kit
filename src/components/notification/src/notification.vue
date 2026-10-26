@@ -1,91 +1,94 @@
 <template>
-  <transition name="notification-fade" @after-leave="doDestory">
+  <transition name="notification-fade" @after-leave="$emit('destroy')">
     <div
+      v-show="visible"
       class="at-notification"
       :class="{
         [`at-notification--${type}`]: type,
-        'at-notification--with-message': message,
-        'at-notification--hover': !showClose
+        'at-notification--with-message': hasMessage,
+        'at-notification--hover': !showClose,
       }"
-      :style="{ top: top ? top + 'px' : 'auto' }"
-      v-show="isShow"
-      @click="!showClose && handleClose()"
+      :style="{
+        top: top ? `${top}px` : 'auto',
+        zIndex,
+      }"
+      @click="!showClose && close()"
       @mouseleave="startTimer"
-      @mouseenter="clearTimer">
-      <i class="icon at-notification__icon" :class="iconClass" v-if="showIcon"></i>
+      @mouseenter="clearTimer"
+    >
+      <i v-if="iconClass" class="icon at-notification__icon" :class="iconClass"></i>
       <div class="at-notification__content">
-        <p class="at-notification__title" v-if="title" v-text="title"></p>
-        <p class="at-notification__message" v-if="message" v-text="message"></p>
+        <p v-if="title" class="at-notification__title">{{ title }}</p>
+        <p v-if="hasMessage" class="at-notification__message">{{ message }}</p>
       </div>
-      <i class="icon icon-x at-notification__close" v-show="showClose" @click="handleClose"></i>
+      <i v-show="showClose" class="icon icon-x at-notification__close" @click="close"></i>
     </div>
   </transition>
 </template>
 
 <script>
+const iconClasses = {
+  success: 'icon-check-circle',
+  error: 'icon-x-circle',
+  warning: 'icon-alert-circle',
+  info: 'icon-info',
+}
+
 export default {
-  data () {
-    return {
-      type: '',
-      title: '',
-      message: '',
-      isShow: false,
-      duration: 4000,
-      icon: '',
-      showClose: true,
-      onClose: null,
-      top: null,
-      timer: null,
-      closed: false
-    }
+  props: {
+    title: { type: [String, Number], default: '' },
+    message: { type: [String, Number], default: '' },
+    type: { type: String, default: '' },
+    icon: { type: String, default: '' },
+    duration: { type: Number, default: 4000 },
+    showClose: { type: Boolean, default: true },
+    top: { type: Number, default: null },
+    zIndex: { type: Number, default: null },
   },
-  watch: {
-    closed (val) {
-      if (val) {
-        this.isShow = false
-      }
+  emits: ['close', 'destroy'],
+  data() {
+    return {
+      visible: false,
+      closed: false,
+      timer: null,
     }
   },
   computed: {
-    iconClass () {
-      const classArr = {
-        'success': 'icon-check-circle',
-        'error': 'icon-x-circle',
-        'warning': 'icon-alert-circle',
-        'info': 'icon-info'
-      }
-      return classArr[this.type] || this.icon
+    hasMessage() {
+      return this.message !== '' && this.message != null
     },
-    showIcon () {
-      return this.type
-    }
+    iconClass() {
+      return this.icon || iconClasses[this.type] || ''
+    },
+  },
+  mounted() {
+    // Shown after mount so the `notification-fade` enter transition plays.
+    this.visible = true
+    this.startTimer()
+  },
+  beforeUnmount() {
+    this.clearTimer()
   },
   methods: {
-    doDestory () {
-      this.$destroy(true)
-      this.$el.parentNode.removeChild(this.$el)
-    },
-    handleClose () {
+    close() {
+      if (this.closed) return
       this.closed = true
-      if (typeof this.onClose === 'function') {
-        this.onClose()
+      this.visible = false
+      this.clearTimer()
+      this.$emit('close')
+    },
+    startTimer() {
+      this.clearTimer()
+      if (this.duration > 0 && !this.closed) {
+        this.timer = setTimeout(() => this.close(), this.duration)
       }
     },
-    startTimer () {
-      if (this.duration > 0) {
-        this.timer = setTimeout(() => {
-          if (!this.closed) {
-            this.handleClose()
-          }
-        }, this.duration)
+    clearTimer() {
+      if (this.timer) {
+        clearTimeout(this.timer)
+        this.timer = null
       }
     },
-    clearTimer () {
-      clearTimeout(this.timer)
-    }
   },
-  mounted () {
-    this.startTimer()
-  }
 }
 </script>

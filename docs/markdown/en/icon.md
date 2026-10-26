@@ -2,7 +2,7 @@
 
 ----
 
-For semantic vector graphics, `AT-UI` use the open source [Feather](https://feathericons.com/) as the ICON library, and make `Icon Font`. `Feather` use `24x24` sizes, with rounded corners, consistent stroke widths.
+For semantic vector graphics, `Cattr UI` use the open source [Feather](https://feathericons.com/) as the ICON library, and make `Icon Font`. `Feather` use `24x24` sizes, with rounded corners, consistent stroke widths.
 
 ## How To Use
 

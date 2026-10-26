@@ -90,9 +90,9 @@ Set `simple` property to use a simple pagination.
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
 |---------- |-------------- |---------- |-----------------------------  |-------- |
-| current | current page number | Number | - | 1 |
+| current | current page number, supports `v-model:current` | Number | - | 1 |
 | total | total number of data | Number | - | 0 |
-| page-size | amount shown in each page | Number | - | 10 |
+| page-size | amount shown in each page, supports `v-model:page-size` | Number | - | 10 |
 | page-size-opts | The configuration of switching the amount of data shown in each page | Array | - | [10, 20, 30, 40] |
 | show-total | to display the total number and range | Boolean | - | false |
 | show-sizer | determine whether `page-size` can be changed | Boolean | - | false |
@@ -106,6 +106,8 @@ Set `simple` property to use a simple pagination.
 |---------- |-------------- |---------- |
 | page-change | Emitted when the page was changed | page number |
 | pagesize-change | Emitted when the page sizer was changed | page size |
+| update:current | Emitted when the page is changed inside the component (click, prev/next, jump, quick jumper, arrow keys), used by `v-model:current` | page number |
+| update:pageSize | Emitted when the page size is changed by the sizer, used by `v-model:page-size` | page size |
 
 <style lang="scss" scoped>
   .at-pagination + .at-pagination {

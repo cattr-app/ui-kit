@@ -1,7 +1,7 @@
 /**
  * LoadingBar Style
  */
-@import '../variables/index.scss';
+@use '../variables' as *;
 
 .at-loading-bar {
   position: fixed;
@@ -9,7 +9,7 @@
   left: 0;
   right: 0;
   width: 100%;
-  height: 4px!important;
+  height: 4px;
   z-index: $zindex-loading-bar;
 
   /* element */

@@ -10,8 +10,8 @@
 :::demo
 ```html
 <at-card style="width: 300px;">
-  <h4 slot="title">Card Title</h4>
-  <div slot="extra"><a>Extra</a></div>
+  <template #title><h4>Card Title</h4></template>
+  <template #extra><a>Extra</a></template>
   <div>
     Card Content
   </div>
@@ -26,8 +26,8 @@
 :::demo
 ```html
 <at-card style="width: 300px;" :bordered="false">
-  <h4 slot="title">Card Title</h4>
-  <div slot="extra"><a>Extra</a></div>
+  <template #title><h4>Card Title</h4></template>
+  <template #extra><a>Extra</a></template>
   <div>
     Card Content
   </div>
@@ -41,8 +41,8 @@
 :::demo
 ```html
 <at-card style="width: 300px;" :no-hover="true">
-  <h4 slot="title">Card Title</h4>
-  <div slot="extra"><a>Extra</a></div>
+  <template #title><h4>Card Title</h4></template>
+  <template #extra><a>Extra</a></template>
   <div>
     Card Content
   </div>
@@ -58,9 +58,8 @@
 ```html
 <at-card style="width: 300px;" :body-style="{ padding: 0 }">
   <div>
-    <img style="width: 100%" src="https://misc.aotu.io/koppthe/at-ui/cover.jpg">
     <div style="padding: 14px;">
-      <p>AT-UI</p>
+      <p>Cattr UI</p>
     </div>
   </div>
 </at-card>
@@ -75,8 +74,8 @@
 :::demo
 ```html
 <at-card :loading="loading" :style="{ width: '300px' }">
-  <h4 slot="title">Card Title</h4>
-  <div slot="extra"><a>Extra</a></div>
+  <template #title><h4>Card Title</h4></template>
+  <template #extra><a>Extra</a></template>
   <div>
     Card Content
   </div>
@@ -91,9 +90,9 @@
 :::demo
 ```html
 <at-card :loading="loading" style="width: 300px">
-  <h4 slot="title">Card Title</h4>
-  <div slot="extra"><a>Extra</a></div>
-  <div slot="loading">加载中...</div>
+  <template #title><h4>Card Title</h4></template>
+  <template #extra><a>Extra</a></template>
+  <template #loading>加载中...</template>
   <div>
     Card Content
   </div>

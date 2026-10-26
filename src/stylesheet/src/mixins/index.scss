@@ -3,10 +3,10 @@
  */
 
 /* library */
-@import './lib/bem';
-@import './lib/clearfix';
-@import './lib/ellipsis';
-@import './lib/hide-text';
-@import './lib/size';
-@import './lib/tint';
-@import './lib/shade';
+@forward 'lib/bem';
+@forward 'lib/clearfix';
+@forward 'lib/ellipsis';
+@forward 'lib/hide-text';
+@forward 'lib/size';
+@forward 'lib/tint';
+@forward 'lib/shade';
