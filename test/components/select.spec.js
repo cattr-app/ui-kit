@@ -99,6 +99,19 @@ describe('AtSelect + AtOption', () => {
     expect(wrapper.findAll('.at-tag')).toHaveLength(1)
   })
 
+  it('follows in-place mutations of the bound array in multiple mode', async () => {
+    await mountSelect('multiple', ['1'])
+    expect(wrapper.findAll('.at-tag__text').map(t => t.text())).toEqual(['Shenzhen'])
+
+    wrapper.vm.value.push('2')
+    await nextTick()
+    expect(wrapper.findAll('.at-tag__text').map(t => t.text())).toEqual(['Shenzhen', 'Guangzhou'])
+
+    wrapper.vm.value.splice(0, 1)
+    await nextTick()
+    expect(wrapper.findAll('.at-tag__text').map(t => t.text())).toEqual(['Guangzhou'])
+  })
+
   it('filters options by query and shows notFound text', async () => {
     await mountSelect('filterable not-found-text="Nothing"')
     const input = wrapper.find('.at-select__input')

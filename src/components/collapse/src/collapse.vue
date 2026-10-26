@@ -39,11 +39,14 @@ export default {
     const { children, register, unregister } = useChildren()
     const currentValue = ref(normalize(props.modelValue))
 
+    // `deep`: in-place mutations of the bound array (`active.push('b')`, `splice`) must sync too,
+    // as the Vue 2 array watcher did; `normalize()` keeps a separate copy in `currentValue`.
     watch(
       () => props.modelValue,
       value => {
         currentValue.value = normalize(value)
       },
+      { deep: true },
     )
 
     const activeKeys = computed(() =>

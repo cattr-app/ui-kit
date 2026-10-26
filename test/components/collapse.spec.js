@@ -52,6 +52,23 @@ describe('AtCollapse + AtCollapseItem', () => {
     expect(wrapper.vm.value).toEqual(['a'])
   })
 
+  it('follows in-place mutations of the bound array', async () => {
+    const wrapper = await mountCollapse('', ['b'])
+    expect(activeOf(wrapper)).toEqual([false, true, false])
+
+    wrapper.vm.value.push('a')
+    await nextTick()
+    expect(activeOf(wrapper)).toEqual([true, true, false])
+
+    wrapper.vm.value.splice(0, 1)
+    await nextTick()
+    expect(activeOf(wrapper)).toEqual([true, false, false])
+
+    // the next click starts from the parent's state, not from a stale copy
+    await wrapper.findAll('.at-collapse__header')[1].trigger('click')
+    expect(wrapper.vm.value).toEqual(['a', 'b'])
+  })
+
   it('keeps a single item open in accordion mode', async () => {
     const wrapper = await mountCollapse('accordion')
 
