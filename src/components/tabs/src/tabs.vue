@@ -126,7 +126,8 @@ export default {
       },
     )
 
-    // Panes in DOM order: `reactive({ name, label, icon, disabled, closable })` from each AtTabPane.
+    // Panes in DOM order: `reactive({ name, ownName, label, icon, disabled, closable })` from each
+    // AtTabPane (`ownName` is the `name` prop, `name` falls back to the pane index).
     const navList = computed(() => children.map(child => child.exposed))
     const activeKey = computed(() => currentValue.value || navList.value[0]?.name)
     const activeIndex = computed(() =>
@@ -136,8 +137,8 @@ export default {
       ),
     )
 
-    function select(name, index) {
-      if (name === activeKey.value) return
+    function select(name, index, force = false) {
+      if (name === activeKey.value && !force) return
       currentValue.value = name
       emit('update:modelValue', name)
       emit('on-change', { index, name })
@@ -159,15 +160,20 @@ export default {
 
       if (tab.name !== activeKey.value) return
 
-      const rest = list.filter((item, i) => i !== index)
       const next =
         list.slice(index + 1).find(item => !item.disabled) ||
         list
           .slice(0, index)
           .reverse()
           .find(item => !item.disabled)
+      if (!next) return
 
-      if (next) select(next.name, rest.indexOf(next))
+      // Index and name the pane will have once the closed one is gone: panes without
+      // `name` are named by their index, which shifts for the panes after the removed one.
+      const nextIndex = list.indexOf(next)
+      const restIndex = nextIndex > index ? nextIndex - 1 : nextIndex
+      // forced: the post-removal name may equal the closed pane's name ('1' -> '1')
+      select(next.ownName || String(restIndex), restIndex, true)
     }
 
     TabsContext.provide(

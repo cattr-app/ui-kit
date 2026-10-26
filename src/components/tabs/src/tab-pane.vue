@@ -37,6 +37,7 @@ export default {
     const currentName = computed(() => props.name || String(index.value))
     const item = reactive({
       name: currentName,
+      ownName: toRef(props, 'name'),
       label: toRef(props, 'label'),
       icon: toRef(props, 'icon'),
       disabled: toRef(props, 'disabled'),
