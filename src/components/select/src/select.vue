@@ -317,6 +317,18 @@ export default {
     handleKeydown(evt) {
       if (!this.visible) return
 
+      // focus moved to another field (e.g. Tab): leave its keys alone and close the dropdown
+      const active = document.activeElement
+      if (
+        active &&
+        active !== document.body &&
+        active !== document.documentElement &&
+        !this.$el.contains(active)
+      ) {
+        this.hideMenu()
+        return
+      }
+
       switch (evt.key) {
         case 'Escape':
           evt.preventDefault()
