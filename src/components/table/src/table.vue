@@ -176,7 +176,7 @@
         :current="currentPage"
         :size="size"
         :total="total"
-        :page-size="pageSize"
+        :page-size="pageCurSize"
         :show-total="showPageTotal"
         :show-sizer="showPageSizer"
         :show-quickjump="showPageQuickjump"
@@ -333,8 +333,26 @@ export default {
     sortData() {
       this.handleResize()
     },
+    pageSize(size) {
+      this.pageCurSize = size
+    },
     pageCurSize() {
-      this.sortData = this.makeDataWithPaginate()
+      this.clampCurrentPage()
+      this.sortData = this.makeDataWithPaginate(this.currentPage)
+    },
+    columns: {
+      deep: true,
+      handler() {
+        // Keep the active sort while its column is still sortable, otherwise back to the original order
+        const sorted = this.columns.some(item => item.sortType && item.key === this.sortKey)
+        if (!sorted) {
+          this.sortKey = null
+          this.sortOrder = 'normal'
+        }
+        this.columnsData = this.makeColumns()
+        this.allData = this.makeDataWithSort()
+        this.sortData = this.makeDataWithPaginate(this.currentPage)
+      },
     },
     data: {
       deep: true,

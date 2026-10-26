@@ -152,6 +152,16 @@ describe('AtTable', () => {
     })
   })
 
+  it('updates the header when columns change', async () => {
+    const wrapper = mountTable()
+
+    await wrapper.setProps({ columns: [{ title: 'Age', key: 'age' }] })
+
+    expect(wrapper.findAll('thead th').map(th => th.text())).toEqual(['Age'])
+    expect(cellTexts(wrapper)).toEqual([['30'], ['20'], ['40']])
+    wrapper.unmount()
+  })
+
   describe('pagination', () => {
     const rows = n => Array.from({ length: n }, (_, i) => ({ name: `r${i}`, age: i }))
     const shownAges = wrapper => cellTexts(wrapper).map(row => Number(row[1]))
@@ -176,6 +186,25 @@ describe('AtTable', () => {
       await wrapper.setProps({ data: rows(5) })
       expect(activePage(wrapper)).toBe('1')
       expect(shownAges(wrapper)).toEqual(range(0, 4))
+      wrapper.unmount()
+    })
+
+    it('pages by a changed pageSize', async () => {
+      const wrapper = mountTable({ data: rows(25), pagination: true })
+      await nextTick()
+
+      await wrapper.setProps({ pageSize: 5 })
+      expect(shownAges(wrapper)).toEqual(range(0, 4))
+      expect(wrapper.findAll('.at-pagination__item').map(li => li.text())).toEqual([
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+      ])
+
+      await goToPage(wrapper, 2)
+      expect(shownAges(wrapper)).toEqual(range(5, 9))
       wrapper.unmount()
     })
   })
