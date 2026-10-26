@@ -83,6 +83,57 @@ describe('AtTable', () => {
     wrapper.unmount()
   })
 
+  describe('sorting', () => {
+    const numColumns = [{ title: 'N', key: 'n', sortType: 'normal' }]
+    // 0..n-1, rotated so that the original order is not sorted
+    const rows = n => Array.from({ length: n }, (_, i) => ({ n: (i + (n >> 1)) % n }))
+    const shown = wrapper => cellTexts(wrapper).map(row => Number(row[0]))
+    const range = (from, to) =>
+      Array.from({ length: Math.abs(to - from) + 1 }, (_, i) => (from > to ? from - i : from + i))
+    const goToPage = (wrapper, page) =>
+      wrapper
+        .findAll('.at-pagination__item')
+        .find(li => li.text() === String(page))
+        .trigger('click')
+
+    it('sorts the whole data set, not only the current page', async () => {
+      const wrapper = mountTable({ columns: numColumns, data: rows(25), pagination: true })
+
+      await wrapper.find('.at-table__column-sorter-down').trigger('click')
+      expect(shown(wrapper)).toEqual(range(24, 15))
+
+      await goToPage(wrapper, 2)
+      expect(shown(wrapper)).toEqual(range(14, 5))
+      wrapper.unmount()
+    })
+
+    it('keeps the selected sort when data changes', async () => {
+      const wrapper = mountTable({ columns: numColumns, data: rows(5) })
+
+      await wrapper.find('.at-table__column-sorter-down').trigger('click')
+      await wrapper.setProps({ data: rows(7) })
+
+      expect(shown(wrapper)).toEqual(range(6, 0))
+      expect(wrapper.find('.at-table__column-sorter').classes()).toContain('sort-desc')
+      wrapper.unmount()
+    })
+
+    it('applies an initial sortType and restores the original order on normal', async () => {
+      const wrapper = mountTable({
+        columns: [{ title: 'N', key: 'n', sortType: 'asc' }],
+        data: [{ n: 2 }, { n: 3 }, { n: 1 }],
+      })
+      expect(shown(wrapper)).toEqual([1, 2, 3])
+
+      // asc -> normal
+      await wrapper.find('thead th').trigger('click')
+      expect(shown(wrapper)).toEqual([2, 3, 1])
+      expect(wrapper.find('.at-table__column-sorter').classes()).not.toContain('sort-asc')
+      expect(wrapper.emitted('on-sort-change')[0][0].order).toBe('normal')
+      wrapper.unmount()
+    })
+  })
+
   it('emits on-selection-change with selected rows from row and select-all checkboxes', async () => {
     const wrapper = mountTable({ optional: true })
 

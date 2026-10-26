@@ -269,7 +269,11 @@ export default {
       objData: this.makeObjData(), // use for checkbox to select all
       sortData: [], // use for sort or paginate
       allData: [],
-      columnsData: this.makeColumns(),
+      // Active sort, set once from the columns' initial `sortType`, then by the header:
+      // the column `key` and its order; `normal` (key null) is the original data order.
+      sortKey: null,
+      sortOrder: 'normal',
+      columnsData: [],
       total: 0,
       bodyHeight: 0,
       pageCurSize: this.pageSize,
@@ -341,6 +345,8 @@ export default {
     },
   },
   created() {
+    this.initSort()
+    this.columnsData = this.makeColumns()
     this.sortData = this.makeDataWithSortAndPage()
   },
   mounted() {
@@ -363,15 +369,21 @@ export default {
         this.bodyHeight = 0
       }
     },
+    initSort() {
+      const column = this.columns.find(item => item.sortType && item.sortType !== 'normal')
+      if (column) {
+        this.sortKey = column.key
+        this.sortOrder = column.sortType
+      }
+    },
     makeColumns() {
       const columns = deepCopy(this.columns)
       columns.forEach((column, idx) => {
         column._index = idx
-        column._sortType = 'normal'
-
-        if (column.sortType) {
-          column._sortType = column.sortType
-        }
+        column._sortType =
+          column.sortType && this.sortKey != null && column.key === this.sortKey
+            ? this.sortOrder
+            : 'normal'
       })
       return columns
     },
@@ -416,20 +428,11 @@ export default {
       return pageData
     },
     makeDataWithSort() {
-      let data = this.makeData()
-      let sortType = 'normal'
-      let sortIndex = -1
+      const data = this.makeData()
 
-      for (let i = 0, len = this.columnsData.length; i < len; i++) {
-        if (this.columnsData[i].sortType && this.columnsData[i].sortType !== 'normal') {
-          sortType = this.columnsData[i].sortType
-          sortIndex = i
-          break
-        }
-      }
-
-      if (sortType !== 'normal') {
-        data = this.sort(data, sortType, sortIndex)
+      if (this.sortOrder !== 'normal') {
+        const column = this.columnsData.find(item => item.sortType && item.key === this.sortKey)
+        if (column) this.sort(data, this.sortOrder, column)
       }
 
       return data
@@ -458,13 +461,14 @@ export default {
             type = sortNameArr[tmpIdx + 1 > 2 ? 0 : tmpIdx + 1]
           }
         }
-        if (type === 'normal') {
-          this.sortData = this.makeDataWithSortAndPage(this.currentPage)
-        } else {
-          this.sortData = this.sort(this.sortData, type, index)
-        }
+        // Sort the whole data set (not only the current page), `normal` restores the original order
+        this.sortKey = type === 'normal' ? null : key
+        this.sortOrder = type === 'normal' ? 'normal' : type
+        this.columnsData[index]._sortType = type
+        this.sortData = this.makeDataWithSortAndPage(this.currentPage)
+      } else {
+        this.columnsData[index]._sortType = type
       }
-      this.columnsData[index]._sortType = type
 
       this.$emit('on-sort-change', {
         column: JSON.parse(JSON.stringify(this.columns[this.columnsData[index]._index])),
@@ -472,11 +476,11 @@ export default {
         key,
       })
     },
-    sort(data, type, index) {
-      const key = this.columnsData[index].key
+    sort(data, type, column) {
+      const key = column.key
       data.sort((a, b) => {
-        if (this.columnsData[index].sortMethod) {
-          return this.columnsData[index].sortMethod(a[key], b[key], type)
+        if (column.sortMethod) {
+          return column.sortMethod(a[key], b[key], type)
         } else if (type === 'asc') {
           return a[key] > b[key] ? 1 : -1
         }
