@@ -106,6 +106,30 @@ describe('AtMenu + AtMenuItem + AtSubmenu', () => {
     expect(second.classes()).toContain('at-menu__submenu--opened')
   })
 
+  it('keeps the ancestor open when a nested submenu title is clicked with inline-collapsed', async () => {
+    const wrapper = mount({
+      template: `
+        <at-menu inline-collapsed>
+          <at-submenu opened>
+            <template #title>Outer</template>
+            <at-submenu>
+              <template #title>Inner</template>
+              <at-menu-item name="1">One</at-menu-item>
+            </at-submenu>
+          </at-submenu>
+        </at-menu>`,
+    })
+    await nextTick()
+    const [outer, inner] = submenus(wrapper)
+
+    await inner.find('.at-menu__submenu-title').trigger('click')
+
+    expect([outer, inner].map(s => s.classes().includes('at-menu__submenu--opened'))).toEqual([
+      true,
+      true,
+    ])
+  })
+
   it('opens the submenu popup on hover in horizontal mode and closes it on select', async () => {
     vi.useFakeTimers()
     const wrapper = await mountMenu('mode="horizontal"')

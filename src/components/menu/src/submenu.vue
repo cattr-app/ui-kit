@@ -142,7 +142,8 @@ export default {
       if (this.disabled || this.mode !== 'inline') return
 
       const opened = this.isOpen
-      if (this.inlineCollapsed && this.menu) {
+      // only top-level submenus close each other: a nested one must not close its own ancestor
+      if (this.inlineCollapsed && this.menu && !this.parentSubmenu) {
         this.menu.children.forEach(child => child.exposed.close())
       }
       this.isOpen = !opened
