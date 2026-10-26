@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { h } from 'vue'
+import { h, nextTick } from 'vue'
 import { mount } from '../helpers/mount.js'
 import AtTable from '../../src/components/table'
 
@@ -81,6 +81,157 @@ describe('AtTable', () => {
       ['age', 'desc'],
     ])
     wrapper.unmount()
+  })
+
+  describe('sorting', () => {
+    const numColumns = [{ title: 'N', key: 'n', sortType: 'normal' }]
+    // 0..n-1, rotated so that the original order is not sorted
+    const rows = n => Array.from({ length: n }, (_, i) => ({ n: (i + (n >> 1)) % n }))
+    const shown = wrapper => cellTexts(wrapper).map(row => Number(row[0]))
+    const range = (from, to) =>
+      Array.from({ length: Math.abs(to - from) + 1 }, (_, i) => (from > to ? from - i : from + i))
+    const goToPage = (wrapper, page) =>
+      wrapper
+        .findAll('.at-pagination__item')
+        .find(li => li.text() === String(page))
+        .trigger('click')
+
+    it('sorts the whole data set, not only the current page', async () => {
+      const wrapper = mountTable({ columns: numColumns, data: rows(25), pagination: true })
+
+      await wrapper.find('.at-table__column-sorter-down').trigger('click')
+      expect(shown(wrapper)).toEqual(range(24, 15))
+
+      await goToPage(wrapper, 2)
+      expect(shown(wrapper)).toEqual(range(14, 5))
+      wrapper.unmount()
+    })
+
+    it('keeps the selected sort when data changes', async () => {
+      const wrapper = mountTable({ columns: numColumns, data: rows(5) })
+
+      await wrapper.find('.at-table__column-sorter-down').trigger('click')
+      await wrapper.setProps({ data: rows(7) })
+
+      expect(shown(wrapper)).toEqual(range(6, 0))
+      expect(wrapper.find('.at-table__column-sorter').classes()).toContain('sort-desc')
+      wrapper.unmount()
+    })
+
+    it('applies an initial sortType and restores the original order on normal', async () => {
+      const wrapper = mountTable({
+        columns: [{ title: 'N', key: 'n', sortType: 'asc' }],
+        data: [{ n: 2 }, { n: 3 }, { n: 1 }],
+      })
+      expect(shown(wrapper)).toEqual([1, 2, 3])
+
+      // asc -> normal
+      await wrapper.find('thead th').trigger('click')
+      expect(shown(wrapper)).toEqual([2, 3, 1])
+      expect(wrapper.find('.at-table__column-sorter').classes()).not.toContain('sort-asc')
+      expect(wrapper.emitted('on-sort-change')[0][0].order).toBe('normal')
+      wrapper.unmount()
+    })
+
+    it('shows the sort arrow only on the last sorted column', async () => {
+      const wrapper = mountTable({
+        columns: [
+          { title: 'Name', key: 'name', sortType: 'normal' },
+          { title: 'Age', key: 'age', sortType: 'normal' },
+        ],
+      })
+      const sorters = () => wrapper.findAll('.at-table__column-sorter')
+
+      await sorters()[0].find('.at-table__column-sorter-up').trigger('click')
+      await sorters()[1].find('.at-table__column-sorter-down').trigger('click')
+
+      expect(sorters()[0].classes()).not.toContain('sort-asc')
+      expect(sorters()[1].classes()).toContain('sort-desc')
+      expect(cellTexts(wrapper).map(row => row[1])).toEqual(['40', '30', '20'])
+      wrapper.unmount()
+    })
+  })
+
+  it('updates the header when columns change', async () => {
+    const wrapper = mountTable()
+
+    await wrapper.setProps({ columns: [{ title: 'Age', key: 'age' }] })
+
+    expect(wrapper.findAll('thead th').map(th => th.text())).toEqual(['Age'])
+    expect(cellTexts(wrapper)).toEqual([['30'], ['20'], ['40']])
+    wrapper.unmount()
+  })
+
+  it('gives the selection column its own col, data column widths stay in place', async () => {
+    // happy-dom does no layout: measured cell widths come from getComputedStyle
+    const measured = ['40px', '300px', '120px']
+    const getComputedStyle = window.getComputedStyle
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((el, pseudo) =>
+      el.tagName === 'TD' ? { width: measured[el.cellIndex] } : getComputedStyle(el, pseudo),
+    )
+    const wrapper = mountTable({
+      columns: [
+        { title: 'Name', key: 'name', width: 300 },
+        { title: 'Age', key: 'age' },
+      ],
+      optional: true,
+    })
+    await nextTick()
+    await nextTick()
+
+    const cols = wrapper.findAll('col')
+    expect(cols).toHaveLength(3)
+    expect(cols[0].classes()).toContain('at-table__col-selection')
+    expect(cols.map(col => col.attributes('width'))).toEqual([undefined, '300', '120'])
+    wrapper.unmount()
+    window.getComputedStyle.mockRestore()
+  })
+
+  describe('pagination', () => {
+    const rows = n => Array.from({ length: n }, (_, i) => ({ name: `r${i}`, age: i }))
+    const shownAges = wrapper => cellTexts(wrapper).map(row => Number(row[1]))
+    const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i)
+    const activePage = wrapper => wrapper.find('.at-pagination__item--active').text()
+    const goToPage = (wrapper, page) =>
+      wrapper
+        .findAll('.at-pagination__item')
+        .find(li => li.text() === String(page))
+        .trigger('click')
+
+    it('keeps the current page on data change while it exists, else goes to page 1', async () => {
+      const wrapper = mountTable({ data: rows(30), pagination: true })
+      await nextTick()
+      await goToPage(wrapper, 3)
+      expect(shownAges(wrapper)).toEqual(range(20, 29))
+
+      await wrapper.setProps({ data: rows(31) })
+      expect(activePage(wrapper)).toBe('3')
+      expect(shownAges(wrapper)).toEqual(range(20, 29))
+
+      await wrapper.setProps({ data: rows(5) })
+      expect(activePage(wrapper)).toBe('1')
+      expect(shownAges(wrapper)).toEqual(range(0, 4))
+      wrapper.unmount()
+    })
+
+    it('pages by a changed pageSize', async () => {
+      const wrapper = mountTable({ data: rows(25), pagination: true })
+      await nextTick()
+
+      await wrapper.setProps({ pageSize: 5 })
+      expect(shownAges(wrapper)).toEqual(range(0, 4))
+      expect(wrapper.findAll('.at-pagination__item').map(li => li.text())).toEqual([
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+      ])
+
+      await goToPage(wrapper, 2)
+      expect(shownAges(wrapper)).toEqual(range(5, 9))
+      wrapper.unmount()
+    })
   })
 
   it('emits on-selection-change with selected rows from row and select-all checkboxes', async () => {

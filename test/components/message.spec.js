@@ -121,6 +121,20 @@ describe('Message', () => {
     expect(messages()[0].textContent).toContain('b')
   })
 
+  it('removes a message closed in the same tick it was opened', async () => {
+    const close = Message('a')
+    close()
+    Message('b')
+    Message.closeAll()
+    await flush()
+
+    expect(document.body.querySelectorAll('.at-message__wrapper')).toHaveLength(0)
+
+    Message.closeAll()
+    await flush()
+    expect(document.body.querySelectorAll('.at-message__wrapper')).toHaveLength(0)
+  })
+
   it('closeAll() removes every message', async () => {
     Message({ message: 'a', duration: 0 })
     Message({ message: 'b', duration: 0 })

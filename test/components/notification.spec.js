@@ -126,6 +126,20 @@ describe('Notification', () => {
     expect(notices()[0].textContent).toContain('b')
   })
 
+  it('removes a notification closed in the same tick it was opened', async () => {
+    const close = Notification('a')
+    close()
+    Notification('b')
+    Notification.closeAll()
+    await flush()
+
+    expect(notices()).toHaveLength(0)
+
+    Notification.closeAll()
+    await flush()
+    expect(notices()).toHaveLength(0)
+  })
+
   it('closeAll() removes every notification', async () => {
     Notification({ title: 'a', duration: 0 })
     Notification({ title: 'b', duration: 0 })

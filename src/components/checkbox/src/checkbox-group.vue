@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { reactive, toRef } from 'vue'
+import { computed, reactive } from 'vue'
 import { CheckboxGroupContext } from './context'
 
 export default {
@@ -22,7 +22,8 @@ export default {
   setup(props, { emit }) {
     CheckboxGroupContext.provide(
       reactive({
-        modelValue: toRef(props, 'modelValue'),
+        // `v-model` may be null/undefined (e.g. a cleared form field): treat it as no selection
+        modelValue: computed(() => (Array.isArray(props.modelValue) ? props.modelValue : [])),
         update(value) {
           emit('update:modelValue', value)
           emit('on-change', value)
