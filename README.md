@@ -1,27 +1,27 @@
 # Cattr UI
 
-UI-библиотека Cattr на Vue 3 и Vite. Проект является форком [AT UI](https://github.com/at-ui/at-ui) и сохраняет его API, дополняя оригинальную библиотеку стилями, темой и исправлениями, необходимыми Cattr.
+Cattr's UI component library for Vue 3 and Vite. The project is a fork of [AT UI](https://github.com/at-ui/at-ui) that keeps its API and extends the original library with the styles, theme and fixes Cattr needs.
 
-> Это внутренняя библиотека Cattr, а не официальный релиз оригинальной библиотеки.
+> This is an internal Cattr library, not an official release of the original library.
 
-## Отличия от оригинала
+## Differences from the original
 
-- пакет публикуется как `@amazingcat/cattr-ui` и поставляется как ESM, peer-зависимость — `vue` `^3.5`;
-- в пакете есть готовый CSS (`@amazingcat/cattr-ui/style.css`) и исходники стилей SCSS (`src/stylesheet`) для своей темы, отдельный пакет стилей не нужен;
-- переменные, сетка, шрифты и стили компонентов адаптированы под интерфейс Cattr;
-- поддерживается импорт отдельных компонентов;
-- добавлено событие `rowClick` для строк таблицы;
-- включены исправления поведения `InputNumber`, `Tabs`, `Table` и других компонентов, используемых в Cattr.
+- the package is published as `@amazingcat/cattr-ui` and shipped as ESM, with `vue` `^3.5` as a peer dependency;
+- the package contains a prebuilt CSS (`@amazingcat/cattr-ui/style.css`) and the SCSS sources (`src/stylesheet`) for a custom theme, so no separate style package is needed;
+- variables, grid, fonts and component styles are adapted to the Cattr interface;
+- individual components can be imported;
+- the `rowClick` event was added to table rows;
+- behaviour fixes for `InputNumber`, `Tabs`, `Table` and other components used in Cattr are included.
 
-## Установка
+## Installation
 
 ```bash
 pnpm add @amazingcat/cattr-ui
 ```
 
-## Подключение
+## Setup
 
-Подключение всей библиотеки:
+Registering the whole library:
 
 ```js
 import { createApp } from 'vue'
@@ -32,15 +32,15 @@ import App from './App.vue'
 createApp(App).use(CattrUI).mount('#app')
 ```
 
-`style.css` — готовый CSS с темой по умолчанию (есть и `style.min.css`), шрифты иконок подтягиваются сборщиком из пакета; Sass для него не нужен. После этого компоненты доступны глобально:
+`style.css` is the prebuilt CSS with the default theme (`style.min.css` is available too); the icon fonts are pulled from the package by the bundler, so Sass is not needed for it. After that the components are available globally:
 
 ```vue
 <template>
-  <at-button type="primary">Сохранить</at-button>
+  <at-button type="primary">Save</at-button>
 </template>
 ```
 
-Для импорта отдельного компонента используйте именованный экспорт `At*`:
+To import a single component, use its named `At*` export:
 
 ```js
 import { createApp } from 'vue'
@@ -53,9 +53,9 @@ app.use(AtButton)
 app.mount('#app')
 ```
 
-Вместо `app.use(AtButton)` можно вызвать `app.component(AtButton.name, AtButton)`.
+Instead of `app.use(AtButton)` you can call `app.component(AtButton.name, AtButton)`.
 
-Своя тема: вместо `style.css` подключите собственный SCSS-вход, который загружает исходники стилей с переопределёнными переменными (`src/stylesheet/src/variables/default.scss`):
+Custom theme: instead of `style.css`, import your own SCSS entry that loads the style sources with overridden variables (`src/stylesheet/src/variables/default.scss`):
 
 ```scss
 // src/styles/cattr-ui.scss
@@ -68,7 +68,7 @@ app.mount('#app')
 import './styles/cattr-ui.scss'
 ```
 
-Для SCSS нужен Sass: `pnpm add -D sass-embedded` (рекомендуется; подойдёт и `sass`). С pnpm ≥ 10 добавьте в `pnpm-workspace.yaml` проекта, иначе `pnpm install` завершится ошибкой `ERR_PNPM_IGNORED_BUILDS` из-за `@parcel/watcher`:
+SCSS requires Sass: `pnpm add -D sass-embedded` (recommended; `sass` works too). With pnpm ≥ 10 add the following to the project's `pnpm-workspace.yaml`, otherwise `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS` because of `@parcel/watcher`:
 
 ```yaml
 ignoredOptionalDependencies:
@@ -76,9 +76,9 @@ ignoredOptionalDependencies:
   - sass-embedded-unknown-all
 ```
 
-Для `sass` вместо этого: `allowBuilds: { '@parcel/watcher': false }`. Подробности — раздел «Стили» в [`CHANGELOG.md`](CHANGELOG.md).
+For `sass` use `allowBuilds: { '@parcel/watcher': false }` instead. See the "Styles" section of [`CHANGELOG.md`](CHANGELOG.md) for details.
 
-Локали подключаются из `@amazingcat/cattr-ui/locale/<lang>` и передаются в плагин. Доступны `de`, `en-US` (по умолчанию), `fa-IR`, `ko-KR`, `pt-BR`, `zh-CN`:
+Locales are imported from `@amazingcat/cattr-ui/locale/<lang>` and passed to the plugin. Available: `de`, `en-US` (default), `fa-IR`, `ko-KR`, `pt-BR`, `zh-CN`:
 
 ```js
 import de from '@amazingcat/cattr-ui/locale/de'
@@ -86,26 +86,26 @@ import de from '@amazingcat/cattr-ui/locale/de'
 app.use(CattrUI, { locale: de })
 ```
 
-Подключение к vue-i18n (версия 11, `legacy: false`) через хук `i18n(key, values)`:
+Integration with vue-i18n (version 11, `legacy: false`) through the `i18n(key, values)` hook:
 
 ```js
 app.use(CattrUI, { i18n: (key, values) => i18n.global.t(key, values) })
 ```
 
-Если хук возвращает `null` или `undefined`, строка берётся из встроенной локали. У `i18n.global.t` для отсутствующего ключа вернётся сам ключ, поэтому fallback не сработает; в этом случае проверяйте `i18n.global.te(key)` или добавьте ключи `at.*` в сообщения vue-i18n.
+If the hook returns `null` or `undefined`, the string is taken from the built-in locale. `i18n.global.t` returns the key itself for a missing key, so the fallback will not trigger; in that case check `i18n.global.te(key)` or add the `at.*` keys to the vue-i18n messages.
 
-## Миграция с 1.x
+## Migrating from 1.x
 
-Пошаговое описание изменений с чеклистом миграции — в [`CHANGELOG.md`](CHANGELOG.md). Главное:
+The step-by-step list of changes with a migration checklist is in [`CHANGELOG.md`](CHANGELOG.md). The essentials:
 
-- `v-model` работает через prop `modelValue` и событие `update:modelValue`: `:value` и `@input` заменить на `:model-value` и `@update:model-value`;
-- установка плагина через глобальный `Vue` заменена на `app.use(...)` после `createApp`;
-- сигнатура `render` колонки таблицы изменилась: `render: (h, params)` стала `render: ({ item, column, index })`, VNode пишется в формате Vue 3;
-- модификатор `.native` удалён: `@click.native` → `@click`.
+- `v-model` works through the `modelValue` prop and the `update:modelValue` event: replace `:value` and `@input` with `:model-value` and `@update:model-value`;
+- plugin installation through the global `Vue` is replaced with `app.use(...)` after `createApp`;
+- the table column `render` signature changed: `render: (h, params)` became `render: ({ item, column, index })`, VNodes are written in the Vue 3 format;
+- the `.native` modifier is gone: `@click.native` → `@click`.
 
-## Разработка
+## Development
 
-Для разработки используются Node.js 24 (версия закреплена в `.nvmrc`) и pnpm (версия закреплена в поле `packageManager` `package.json`).
+Development uses Node.js 24 (pinned in `.nvmrc`) and pnpm (pinned in the `packageManager` field of `package.json`).
 
 ```bash
 corepack enable
@@ -113,26 +113,26 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Основные команды:
+Main commands:
 
-| Команда              | Назначение                                                                         |
-| -------------------- | ---------------------------------------------------------------------------------- |
-| `pnpm dev`           | Dev-сервер сайта документации на Vite с HMR (порт 7200)                            |
-| `pnpm build`         | Сборка библиотеки в `dist/` (Vite, library mode, ESM) и готового CSS в `dist/css/` |
-| `pnpm build:style`   | Сборка стилей (workspace-пакет `cattr-ui-style`)                                   |
-| `pnpm build:docs`    | `build:style` и статический сайт документации в `dist-docs/`                       |
-| `pnpm lint`          | Проверить JavaScript- и Vue-файлы линтером (ESLint)                                |
-| `pnpm lint:fix`      | Проверить линтером и исправить автоматически исправимые ошибки                     |
-| `pnpm format`        | Отформатировать файлы Prettier                                                     |
-| `pnpm format:check`  | Проверить форматирование Prettier без изменений                                    |
-| `pnpm test`          | Запустить тесты Vitest один раз                                                    |
-| `pnpm test:watch`    | Запустить тесты Vitest в режиме watch                                              |
-| `pnpm test:coverage` | Запустить тесты с отчётом покрытия (`coverage/`)                                   |
+| Command              | Purpose                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| `pnpm dev`           | Documentation site dev server on Vite with HMR (port 7200)                                     |
+| `pnpm build`         | Build the library into `dist/` (Vite, library mode, ESM) and the prebuilt CSS into `dist/css/` |
+| `pnpm build:style`   | Build the styles (the `cattr-ui-style` workspace package)                                      |
+| `pnpm build:docs`    | `build:style` plus the static documentation site in `dist-docs/`                               |
+| `pnpm lint`          | Lint JavaScript and Vue files (ESLint)                                                         |
+| `pnpm lint:fix`      | Lint and apply automatic fixes                                                                 |
+| `pnpm format`        | Format files with Prettier                                                                     |
+| `pnpm format:check`  | Check formatting with Prettier without changing files                                          |
+| `pnpm test`          | Run the Vitest tests once                                                                      |
+| `pnpm test:watch`    | Run the Vitest tests in watch mode                                                             |
+| `pnpm test:coverage` | Run the tests with a coverage report (`coverage/`)                                             |
 
-Dev-сервер документации: <http://localhost:7200/>.
+Documentation dev server: <http://localhost:7200/>.
 
-При push в ветку `main` GitHub Actions собирает документацию и публикует её на GitHub Pages.
+On push to the `main` branch GitHub Actions builds the documentation and publishes it to GitHub Pages.
 
-## Upstream и лицензия
+## Upstream and license
 
-Проект распространяется по лицензии [MIT](LICENSE).
+The project is distributed under the [MIT](LICENSE) license.
