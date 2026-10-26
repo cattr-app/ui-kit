@@ -93,10 +93,10 @@ export default {
   },
   computed: {
     upDisabled() {
-      return this.currentValue + Number(this.step) > this.max
+      return this.readonly || this.currentValue + Number(this.step) > this.max
     },
     downDisabled() {
-      return this.currentValue - Number(this.step) < this.min
+      return this.readonly || this.currentValue - Number(this.step) < this.min
     },
   },
   watch: {
@@ -134,16 +134,16 @@ export default {
     },
     increaseNum() {
       const value = this.currentValue || 0
-      if (value >= this.max || this.disabled) return
+      if (value >= this.max || this.disabled || this.readonly) return
       this.calculateStep('up')
     },
     decreaseNum() {
       const value = this.currentValue || 0
-      if (value <= this.min || this.disabled) return
+      if (value <= this.min || this.disabled || this.readonly) return
       this.calculateStep('down')
     },
     calculateStep(type) {
-      if (this.disabled) return
+      if (this.disabled || this.readonly) return
 
       let value = Number(this.currentValue)
       const stepNum = Number(this.step)

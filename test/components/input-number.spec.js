@@ -78,6 +78,26 @@ describe('AtInputNumber', () => {
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
   })
 
+  it('ignores buttons and arrow keys when readonly', async () => {
+    const wrapper = mount(AtInputNumber, { props: { modelValue: 1, readonly: true } })
+    const input = wrapper.find('input')
+    const up = wrapper.find('.at-input-number__up')
+    const down = wrapper.find('.at-input-number__down')
+
+    expect(input.element.readOnly).toBe(true)
+    expect(up.classes()).toContain('at-input-number__up--disabled')
+    expect(down.classes()).toContain('at-input-number__down--disabled')
+
+    await up.trigger('click')
+    await down.trigger('click')
+    await input.trigger('keydown', { key: 'ArrowUp' })
+    await input.trigger('keydown', { key: 'ArrowDown' })
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.emitted('change')).toBeUndefined()
+    expect(input.element.value).toBe('1')
+  })
+
   it('forwards consumer listeners/attrs to the native input, class/style to the wrapper', async () => {
     const wrapper = mount({
       data: () => ({ keys: 0 }),
