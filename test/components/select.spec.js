@@ -178,6 +178,17 @@ describe('AtSelect + AtOption', () => {
     expect(input.element.disabled).toBe(true)
   })
 
+  it('renders a numeric 0 label in the list and the caption', async () => {
+    await mountSelect(
+      '',
+      'zero',
+      '<at-option value="zero" :label="0" /><at-option value="one" :label="1" />',
+    )
+
+    expect(options().map(o => o.text())).toEqual(['0', '1'])
+    expect(wrapper.find('.at-select__selected').text()).toBe('0')
+  })
+
   it('handles keyboard: arrows move focus, Enter selects, Escape closes', async () => {
     await mountSelect()
     await open()
