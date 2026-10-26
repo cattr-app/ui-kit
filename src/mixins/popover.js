@@ -44,6 +44,8 @@ export default {
       // mark the change as coming from the parent so it is not echoed back
       this.popoverSyncing = true
       this.show = value
+      // the host renders the popover with `v-if`: position it once it is in the DOM
+      if (value) this.setPopoverPosition()
     },
     show(value) {
       if (this.popoverSyncing) {
