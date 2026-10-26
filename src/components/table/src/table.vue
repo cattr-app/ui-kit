@@ -340,7 +340,10 @@ export default {
       deep: true,
       handler() {
         this.objData = this.makeObjData()
-        this.sortData = this.makeDataWithSortAndPage()
+        this.allData = this.makeDataWithSort()
+        // Stay on the current page while it still exists, the pager keeps highlighting it
+        this.clampCurrentPage()
+        this.sortData = this.makeDataWithPaginate(this.currentPage)
       },
     },
   },
@@ -413,6 +416,12 @@ export default {
 
       const data = this.makeDataWithPaginate(pageNum)
       return data
+    },
+    clampCurrentPage() {
+      const pageCount = Math.max(1, Math.ceil(this.allData.length / this.pageCurSize))
+      if (this.currentPage > pageCount) {
+        this.currentPage = 1
+      }
     },
     makeDataWithPaginate(page) {
       page = page || 1

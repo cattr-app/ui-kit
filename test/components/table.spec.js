@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { h } from 'vue'
+import { h, nextTick } from 'vue'
 import { mount } from '../helpers/mount.js'
 import AtTable from '../../src/components/table'
 
@@ -148,6 +148,34 @@ describe('AtTable', () => {
       expect(sorters()[0].classes()).not.toContain('sort-asc')
       expect(sorters()[1].classes()).toContain('sort-desc')
       expect(cellTexts(wrapper).map(row => row[1])).toEqual(['40', '30', '20'])
+      wrapper.unmount()
+    })
+  })
+
+  describe('pagination', () => {
+    const rows = n => Array.from({ length: n }, (_, i) => ({ name: `r${i}`, age: i }))
+    const shownAges = wrapper => cellTexts(wrapper).map(row => Number(row[1]))
+    const range = (from, to) => Array.from({ length: to - from + 1 }, (_, i) => from + i)
+    const activePage = wrapper => wrapper.find('.at-pagination__item--active').text()
+    const goToPage = (wrapper, page) =>
+      wrapper
+        .findAll('.at-pagination__item')
+        .find(li => li.text() === String(page))
+        .trigger('click')
+
+    it('keeps the current page on data change while it exists, else goes to page 1', async () => {
+      const wrapper = mountTable({ data: rows(30), pagination: true })
+      await nextTick()
+      await goToPage(wrapper, 3)
+      expect(shownAges(wrapper)).toEqual(range(20, 29))
+
+      await wrapper.setProps({ data: rows(31) })
+      expect(activePage(wrapper)).toBe('3')
+      expect(shownAges(wrapper)).toEqual(range(20, 29))
+
+      await wrapper.setProps({ data: rows(5) })
+      expect(activePage(wrapper)).toBe('1')
+      expect(shownAges(wrapper)).toEqual(range(0, 4))
       wrapper.unmount()
     })
   })
