@@ -71,17 +71,20 @@ Notification.close = id => {
   if (index === -1) return
 
   const [removed] = instances.splice(index, 1)
-  if (typeof removed.onClose === 'function') {
-    removed.onClose(removed.vm)
-  }
-  // The closing notification is still visible (leave transition) — close() starts it.
-  removed.vm.close()
 
+  // Shift the rest up before `onClose`: a notification it opens is placed from the updated stack
+  // and must not be shifted again.
   const removedHeight = removed.el.offsetHeight
   for (let i = index; i < instances.length; i++) {
     instances[i].top -= removedHeight + GAP
     instances[i].update({ top: instances[i].top })
   }
+
+  if (typeof removed.onClose === 'function') {
+    removed.onClose(removed.vm)
+  }
+  // The closing notification is still visible (leave transition) — close() starts it.
+  removed.vm.close()
 }
 
 Notification.closeAll = () => {

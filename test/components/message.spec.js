@@ -61,6 +61,25 @@ describe('Message', () => {
     expect(parseInt(second.style.top)).toBeLessThan(before)
   })
 
+  it('places a message opened from onClose at the top of the stack', async () => {
+    const close = Message({
+      message: 'a',
+      duration: 0,
+      onClose: () => Message({ message: 'b', duration: 0 }),
+    })
+    await nextTick()
+    const first = document.body.querySelector('.at-message__wrapper')
+    expect(first.style.top).toBe('8px')
+
+    close()
+    await flush()
+
+    expect(messages()).toHaveLength(1)
+    expect(messages()[0].textContent).toContain('b')
+    const wrapper = document.body.querySelector('.at-message__wrapper')
+    expect(wrapper.style.top).toBe('8px')
+  })
+
   it('removes the element when the returned function is called', async () => {
     const onClose = vi.fn()
     const close = Message({ message: 'hi', duration: 0, onClose })

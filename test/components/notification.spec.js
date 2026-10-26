@@ -62,6 +62,23 @@ describe('Notification', () => {
     expect(parseInt(second.style.top)).toBeLessThan(before)
   })
 
+  it('places a notification opened from onClose at the top of the stack', async () => {
+    const close = Notification({
+      title: 'a',
+      duration: 0,
+      onClose: () => Notification({ title: 'b', duration: 0 }),
+    })
+    await nextTick()
+    expect(notices()[0].style.top).toBe('16px')
+
+    close()
+    await flush()
+
+    expect(notices()).toHaveLength(1)
+    expect(notices()[0].textContent).toContain('b')
+    expect(notices()[0].style.top).toBe('16px')
+  })
+
   it('removes the element and calls onClose when the returned function is called', async () => {
     const onClose = vi.fn()
     const close = Notification({ title: 'hi', duration: 0, onClose })
