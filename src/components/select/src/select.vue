@@ -390,7 +390,11 @@ export default {
     clearSingleSelect() {
       if (!this.showCloseIcon) return
       this.setModel('')
-      if (this.filterable) this.query = ''
+      if (this.filterable) {
+        // reset the active filter too: option visibility and `notFound` follow `filterQuery`
+        this.query = ''
+        this.filterQuery = ''
+      }
     },
     removeTag(value) {
       if (this.disabled) return

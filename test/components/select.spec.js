@@ -114,6 +114,22 @@ describe('AtSelect + AtOption', () => {
     expect(wrapper.find('.at-select__not-found').text()).toBe('Nothing')
   })
 
+  it('clearing a filterable single select also resets the active filter', async () => {
+    await mountSelect('filterable clearable not-found-text="Nothing"', '1')
+    const input = wrapper.find('.at-select__input')
+
+    await input.setValue('zzz')
+    expect(isOpen()).toBe(true)
+    expect(visibleLabels()).toEqual([])
+    expect(wrapper.find('.at-select__not-found').element.style.display).toBe('')
+
+    await wrapper.find('.at-select__clear').trigger('click')
+    expect(wrapper.vm.value).toBe('')
+    expect(input.element.value).toBe('')
+    expect(visibleLabels()).toHaveLength(options().length)
+    expect(wrapper.find('.at-select__not-found').element.style.display).toBe('none')
+  })
+
   it('clears the value with the clear icon and ignores disabled options', async () => {
     await mountSelect('clearable', '1')
 
