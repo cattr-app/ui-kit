@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { reactive, toRef } from 'vue'
+import { onUpdated, reactive, toRef } from 'vue'
 import { useChildren } from '../../../composables/useChildren'
 import { StepsContext } from './context'
 
@@ -41,7 +41,9 @@ export default {
   },
   emits: [],
   setup(props) {
-    const { children, register, unregister } = useChildren()
+    const { children, register, unregister, sort } = useChildren()
+    // keyed `v-for` reorders move children without remounting them: re-sort by DOM order
+    onUpdated(sort)
 
     StepsContext.provide(
       reactive({

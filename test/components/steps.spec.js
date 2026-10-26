@@ -72,4 +72,22 @@ describe('AtSteps + AtStep', () => {
 
     expect(statuses(wrapper)).toEqual(['process', 'finish', 'wait'])
   })
+
+  it('renumbers steps after a keyed reorder', async () => {
+    const wrapper = mount({
+      data: () => ({ titles: ['A', 'B', 'C'] }),
+      template: `
+        <at-steps :current="0">
+          <at-step v-for="t in titles" :key="t" :title="t"></at-step>
+        </at-steps>`,
+    })
+    await nextTick()
+
+    wrapper.vm.titles.reverse()
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.findAll('.at-step__title').map(t => t.text())).toEqual(['C', 'B', 'A'])
+    expect(wrapper.findAll('.at-step__order').map(o => o.text())).toEqual(['1', '2', '3'])
+  })
 })

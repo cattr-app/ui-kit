@@ -82,4 +82,23 @@ describe('AtTimeline + AtTimelineItem', () => {
     await nextTick()
     expect(flags(wrapper).map(f => f.last)).toEqual([false, false, true])
   })
+
+  it('marks the DOM-last item as last after a keyed reorder', async () => {
+    const wrapper = mount({
+      data: () => ({ items: ['A', 'B', 'C'] }),
+      template: `
+        <at-timeline>
+          <at-timeline-item v-for="i in items" :key="i">{{ i }}</at-timeline-item>
+        </at-timeline>`,
+    })
+    await nextTick()
+
+    wrapper.vm.items.reverse()
+    await nextTick()
+    await nextTick()
+
+    const items = wrapper.findAll('.at-timeline__item')
+    expect(items.map(i => i.text())).toEqual(['C', 'B', 'A'])
+    expect(flags(wrapper).map(f => f.last)).toEqual([false, false, true])
+  })
 })

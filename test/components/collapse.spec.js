@@ -101,4 +101,23 @@ describe('AtCollapse + AtCollapseItem', () => {
     await wrapper.findAll('.at-collapse__header')[2].trigger('click')
     expect(wrapper.vm.value).toEqual(['1', '2'])
   })
+
+  it('re-indexes items without name after a keyed reorder', async () => {
+    const wrapper = mount({
+      data: () => ({ value: ['0'], items: ['A', 'B', 'C'] }),
+      template: `
+        <at-collapse v-model="value">
+          <at-collapse-item v-for="i in items" :key="i" :title="i">{{ i }}</at-collapse-item>
+        </at-collapse>`,
+    })
+    await nextTick()
+    expect(activeOf(wrapper)).toEqual([true, false, false])
+
+    wrapper.vm.items.reverse()
+    await nextTick()
+    await nextTick()
+
+    expect(wrapper.findAll('.at-collapse__header').map(h => h.text())).toEqual(['C', 'B', 'A'])
+    expect(activeOf(wrapper)).toEqual([true, false, false])
+  })
 })
