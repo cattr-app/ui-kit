@@ -145,4 +145,24 @@ describe('AtPagination', () => {
     expect(wrapper.vm.page).toBe(2)
     expect(pagination.emitted('page-change')).toEqual([[3], [2]])
   })
+
+  it('quickjump keydown blocks only printable non-digit characters', () => {
+    const wrapper = mount(AtPagination, { props: { total: 50, showQuickjump: true } })
+    const input = wrapper.find('.at-pagination__quickjump input').element
+    const prevented = init => {
+      const evt = new KeyboardEvent('keydown', { cancelable: true, ...init })
+      input.dispatchEvent(evt)
+      return evt.defaultPrevented
+    }
+
+    expect(['a', ' ', '-', '.'].map(key => prevented({ key }))).toEqual([true, true, true, true])
+    expect(
+      ['1', 'Tab', 'Delete', 'Backspace', 'Home', 'End', 'ArrowLeft', 'Enter'].map(key =>
+        prevented({ key }),
+      ),
+    ).toEqual([false, false, false, false, false, false, false, false])
+    expect(prevented({ key: 'a', ctrlKey: true })).toBe(false)
+    expect(prevented({ key: 'c', ctrlKey: true })).toBe(false)
+    expect(prevented({ key: 'v', metaKey: true })).toBe(false)
+  })
 })
