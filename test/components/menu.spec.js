@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
+import { flushPromises } from '@vue/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { mount } from '../helpers/mount.js'
 import AtMenu from '../../src/components/menu'
 
@@ -129,5 +131,83 @@ describe('AtMenu + AtMenuItem + AtSubmenu', () => {
     expect(vi.getTimerCount()).toBe(1)
     wrapper.unmount()
     expect(vi.getTimerCount()).toBe(0)
+  })
+})
+
+describe('AtMenuItem navigation', () => {
+  const Page = { render: () => null }
+
+  async function mountRouted(attrs, items) {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: ['/', '/a', '/b'].map(path => ({ path, component: Page })),
+    })
+    router.push('/')
+    await router.isReady()
+    const push = vi.spyOn(router, 'push')
+    const replace = vi.spyOn(router, 'replace')
+    const wrapper = mount(
+      { template: `<at-menu ${attrs}>${items}</at-menu>` },
+      { global: { plugins: [router] } },
+    )
+    await flushPromises()
+    return { wrapper, router, push, replace }
+  }
+
+  it.each([
+    ['router', 'router mode'],
+    ['', 'plain mode'],
+  ])('navigates once per click (%s)', async attrs => {
+    const { wrapper, router, push, replace } = await mountRouted(
+      attrs,
+      '<at-menu-item name="a" to="/a">A</at-menu-item>',
+    )
+
+    await wrapper.find('a.at-menu__item-link').trigger('click')
+    await flushPromises()
+
+    expect(push).toHaveBeenCalledTimes(1)
+    expect(replace).not.toHaveBeenCalled()
+    expect(router.currentRoute.value.path).toBe('/a')
+    expect(wrapper.find('a.at-menu__item-link').attributes('href')).toBe('/a')
+    expect(wrapper.find('.at-menu__item').classes()).toContain('at-menu__item--active')
+  })
+
+  it.each([['router'], ['']])('honours replace with one replace and no push (%s)', async attrs => {
+    const { wrapper, router, push, replace } = await mountRouted(
+      attrs,
+      '<at-menu-item name="b" :to="{ path: \'/b\' }" replace>B</at-menu-item>',
+    )
+
+    await wrapper.find('a.at-menu__item-link').trigger('click')
+    await flushPromises()
+
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(push).not.toHaveBeenCalled()
+    expect(router.currentRoute.value.path).toBe('/b')
+  })
+
+  it.each([['router'], ['']])('does not navigate from a disabled item (%s)', async attrs => {
+    const { wrapper, router, push, replace } = await mountRouted(
+      attrs,
+      '<at-menu-item name="a" to="/a" disabled>A</at-menu-item>',
+    )
+
+    await wrapper.find('a.at-menu__item-link').trigger('click')
+    await flushPromises()
+
+    expect(push).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
+    expect(router.currentRoute.value.path).toBe('/')
+  })
+
+  it('does not throw in router mode without vue-router installed', async () => {
+    const wrapper = mount({
+      template: '<at-menu router><at-menu-item name="a">A</at-menu-item></at-menu>',
+    })
+
+    await wrapper.find('.at-menu__item').trigger('click')
+
+    expect(wrapper.getComponent(AtMenu).emitted('on-select')).toEqual([['a']])
   })
 })

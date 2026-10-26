@@ -4,15 +4,23 @@
     :class="[active ? 'at-menu__item--active' : '', disabled ? 'at-menu__item--disabled' : '']"
     @click="handleClick"
   >
-    <!-- resolved only in this branch: no "Failed to resolve component" warning without vue-router -->
+    <!-- resolved only in this branch: no "Failed to resolve component" warning without vue-router.
+         `custom`: the link only renders the `<a>`; the click is handled once, in `handleClick` -->
     <component
       :is="'router-link'"
-      v-if="Object.keys(to).length"
-      ref="link"
-      class="at-menu__item-link"
+      v-if="hasLink"
+      v-slot="{ href, isActive, isExactActive }"
       :to="to"
+      custom
     >
-      <slot></slot>
+      <a
+        ref="link"
+        class="at-menu__item-link"
+        :class="{ 'router-link-active': isActive, 'router-link-exact-active': isExactActive }"
+        :href="href"
+      >
+        <slot></slot>
+      </a>
     </component>
     <div v-else class="at-menu__item-link">
       <slot></slot>
@@ -59,6 +67,18 @@ export default {
 
     return { menu, submenu, routerActive, active }
   },
+  computed: {
+    // `$router` read from globalProperties: no "accessed during render" warning without vue-router
+    router() {
+      return this.$.appContext.config.globalProperties.$router || null
+    },
+    hasTo() {
+      return typeof this.to === 'string' ? this.to !== '' : Object.keys(this.to).length > 0
+    },
+    hasLink() {
+      return this.hasTo && !!this.router
+    },
+  },
   watch: {
     'menu.activeName'() {
       this.$nextTick(this.updateRouterActive)
@@ -69,7 +89,7 @@ export default {
   },
   methods: {
     updateRouterActive() {
-      const el = this.$refs.link && this.$refs.link.$el
+      const el = this.$refs.link
       this.routerActive = !!(el && el.classList && el.classList.contains('router-link-active'))
     },
     handleClick(evt) {
@@ -79,6 +99,14 @@ export default {
       if (this.submenu) this.submenu.select()
       if (this.menu) {
         this.menu.select({ name: this.name, to: this.to, replace: this.replace })
+      }
+
+      // the only navigation per click: `to` (as `router-link` did) or any item of `<at-menu router>`
+      const router = this.router
+      if (router && (this.hasTo || (this.menu && this.menu.router))) {
+        const route = this.to || {}
+        if (this.replace) router.replace(route)
+        else router.push(route)
       }
     },
   },
