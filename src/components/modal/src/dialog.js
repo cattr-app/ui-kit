@@ -77,8 +77,13 @@ const showNextModal = () => {
   }
   item.service = service
 
-  // Opened after mount so the `fade` enter transition plays.
-  nextTick(() => service.update({ modelValue: true }))
+  // Opened after mount so the `fade` enter transition plays. `Dialog.close()` called in the
+  // same tick marks the item closed and unmounts it itself: there is nothing to open then.
+  nextTick(() => {
+    if (item.closed) return
+    item.opened = true
+    service.update({ modelValue: true })
+  })
 }
 
 const Dialog = (options, callback) => {
@@ -106,9 +111,17 @@ const Dialog = (options, callback) => {
 /** Hide the current dialog and drop the queued ones (their promises stay pending, as in 1.x). */
 Dialog.close = () => {
   modalQueue = []
-  if (current) {
-    current.action = current.action || 'close'
-    current.service.update({ modelValue: false })
+  const item = current
+  if (!item || item.closed) return
+  item.closed = true
+  item.action = item.action || 'close'
+  if (item.opened) {
+    // leave transition → `onAfterLeave` unmounts and releases `current`
+    item.service.update({ modelValue: false })
+  } else {
+    // never shown: no leave transition will fire, release it right away
+    item.service.unmount()
+    current = null
   }
 }
 

@@ -68,6 +68,24 @@ describe('Dialog ($Modal)', () => {
     await expect(promise).resolves.toEqual({ value: 'a@b.c', action: 'confirm' })
   })
 
+  it('close() in the same tick as alert() keeps the dialog hidden and does not block the next one', async () => {
+    Dialog.alert('never shown')
+    Dialog.close()
+    await flush()
+
+    expect(modals()).toHaveLength(0)
+
+    const next = Dialog.alert('shown')
+    await flush()
+
+    expect(modals()).toHaveLength(1)
+    expect(modals()[0].textContent).toContain('shown')
+    expect(modals()[0].style.display).not.toBe('none')
+
+    confirmButton().click()
+    await expect(next).resolves.toBe('confirm')
+  })
+
   it('shows the queued dialog after the previous one has closed', async () => {
     const first = Dialog.alert('first')
     const second = Dialog.info({ content: 'second' })
