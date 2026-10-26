@@ -1,5 +1,49 @@
 # Changelog
 
+## 2.0.1 (2026-10-26)
+
+Bug-fix release: no public API changes. Every fix ships with a regression test.
+
+### Fixed
+
+**Table**
+
+- Sorting with `pagination` only sorted the current page; the whole data set is sorted and then paginated. The active sort is kept across `data` changes, `normal` restores the original order, and a column's initial `sortType` no longer sticks forever.
+- A `data` change showed page 1 while the pager still highlighted the old page; the current page is kept while it exists, otherwise page 1.
+- `columns` and `pageSize` prop changes are followed (header rebuilt, rows re-sliced); the pager uses the same page size as the body.
+- The selection column (`optional`) gets its own `<col>`, so column widths no longer shift one column to the left; resize measurement skips the selection cell.
+- Sorting a column clears the arrow of the previously sorted column.
+
+**CheckboxGroup** — a `v-model` bound to `null` crashed the render; a non-array value is treated as an empty selection.
+
+**Message, Notification** — closing in the same tick as opening (e.g. `Message('x')()` or an immediate `closeAll()`) left a hidden element in `document.body` forever.
+
+**CollapseTransition (Collapse, inline Submenu)** — re-opening while still closing saved the zeroed padding/overflow as the element's own styles and restored them permanently.
+
+**Rate** — with `allow-half`, a `null` v-model threw on render and on mouseleave; an integer initial value rendered half a star less.
+
+**InputNumber** — `readonly` is honoured by the +/- buttons and ArrowUp/ArrowDown; decimal steps no longer produce float artifacts (`0.14 + 0.01` → `0.15`).
+
+**Slider** — values were rounded to integers; fractional `step`/`min`/`max` now work (values snap to the `min + k·step` grid and stay within `[min, max]`).
+
+**Select** — a `disabled clearable` select no longer shows a working clear icon; the filter input is disabled with the select; a numeric `label` of `0` renders as `0`; keys typed into another field while the dropdown is open are no longer captured (the dropdown closes).
+
+**Menu** — with `router`, each click navigated twice, `replace` was ignored and a `disabled` item with `to` still navigated; `router` mode without vue-router threw. The item navigates once, honouring `replace`/`disabled`. With `inline-collapsed`, clicking a nested submenu title no longer closes its ancestor.
+
+**Steps, Timeline, Collapse, Submenu** — children re-ordered by a keyed `v-for` kept stale indexes; parents re-sort on update.
+
+**useChildren** — children deactivated by `<keep-alive>` are unregistered (and re-added on activate); `sort()` only orders nodes sharing a root, so it is idempotent.
+
+**Progress** — a `status` change without a `percent` change had no effect.
+
+**Modal, `$Modal`** — a throwing user `callback` left the promise pending forever (settled first, error reported); `Dialog()` without options threw; an `AtModal` mounted already open with `showInput` did not focus the input; Escape closed every open modal at once — now only the topmost one (if it has `close-on-press-esc="false"`, Escape does not reach the modal underneath).
+
+**Popover, Tooltip, Dropdown** — `trigger="focus"` did not react to inner inputs (now `focusin`/`focusout`); a `trigger` prop change after mount is applied.
+
+**Pagination** — `current` is clamped when `total`/`pageSize` shrink (emits `update:current` and `page-change`); the page inputs no longer block Tab, Delete, Home/End and Ctrl/Cmd shortcuts.
+
+**Docs** — `select.md`: `update:modelValue` carries the plain value even with `valueWithLabel`; only `on-change` carries `{ value, label }`.
+
 ## 2.0.0 — migration to Vue 3 (2026-10-24)
 
 Breaking release: the library has been moved to Vue 3.5 and the Vite build. This document is written for the frontend team.
