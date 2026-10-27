@@ -8,3 +8,6 @@ dist-docs/
 .history
 .idea
 coverage/
+# Playwright
+test-results/
+playwright-report/

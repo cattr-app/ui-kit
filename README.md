@@ -115,21 +115,46 @@ pnpm dev
 
 Main commands:
 
-| Command              | Purpose                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------- |
-| `pnpm dev`           | Documentation site dev server on Vite with HMR (port 7200)                                     |
-| `pnpm build`         | Build the library into `dist/` (Vite, library mode, ESM) and the prebuilt CSS into `dist/css/` |
-| `pnpm build:style`   | Build the styles (the `cattr-ui-style` workspace package)                                      |
-| `pnpm build:docs`    | `build:style` plus the static documentation site in `dist-docs/`                               |
-| `pnpm lint`          | Lint JavaScript and Vue files (ESLint)                                                         |
-| `pnpm lint:fix`      | Lint and apply automatic fixes                                                                 |
-| `pnpm format`        | Format files with Prettier                                                                     |
-| `pnpm format:check`  | Check formatting with Prettier without changing files                                          |
-| `pnpm test`          | Run the Vitest tests once                                                                      |
-| `pnpm test:watch`    | Run the Vitest tests in watch mode                                                             |
-| `pnpm test:coverage` | Run the tests with a coverage report (`coverage/`)                                             |
+| Command                | Purpose                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| `pnpm dev`             | Documentation site dev server on Vite with HMR (port 7200)                                     |
+| `pnpm build`           | Build the library into `dist/` (Vite, library mode, ESM) and the prebuilt CSS into `dist/css/` |
+| `pnpm build:style`     | Build the styles (the `cattr-ui-style` workspace package)                                      |
+| `pnpm build:docs`      | `build:style` plus the static documentation site in `dist-docs/`                               |
+| `pnpm lint`            | Lint JavaScript and Vue files (ESLint)                                                         |
+| `pnpm lint:fix`        | Lint and apply automatic fixes                                                                 |
+| `pnpm format`          | Format files with Prettier                                                                     |
+| `pnpm format:check`    | Check formatting with Prettier without changing files                                          |
+| `pnpm test`            | Run the Vitest tests once                                                                      |
+| `pnpm test:watch`      | Run the Vitest tests in watch mode                                                             |
+| `pnpm test:coverage`   | Run the tests with a coverage report (`coverage/`)                                             |
+| `pnpm test:e2e`        | Run the Playwright browser tests against the documentation site (`test/e2e/`)                  |
+| `pnpm test:e2e:update` | Re-take the visual baseline (only inside the Playwright docker image, see below)               |
 
 Documentation dev server: <http://localhost:7200/>.
+
+### Browser tests
+
+`test/e2e/` holds Playwright tests (Chromium only) that work through the demo pages of the documentation site:
+
+- `smoke/` opens every docs page; a test fails on any console error, uncaught page error or `[Vue warn]` (this check is part of every e2e test, see `test/e2e/fixtures.js`);
+- `components/` covers interactions that the happy-dom unit tests cannot reproduce: keyboard and click-outside in Select, hover/click triggers and popup positions of Dropdown/Tooltip/Popover, Escape/mask/queue of Modal and `$Modal`, Table sorting/pagination/selection, Tabs, InputNumber;
+- `visual/` compares a screenshot of every component demo page with the baseline in `test/e2e/__screenshots__/`.
+
+Playwright starts `pnpm dev` itself, or reuses a dev server that is already running (except in CI). `DOCS_PORT` changes the port (default 7200). A single suite or file is selected by path: `pnpm test:e2e smoke`, `pnpm test:e2e components/select`.
+
+Run the tests in the Playwright docker image, the same one CI uses: browsers are not installed on the host, and font rendering differs between systems, so screenshots taken elsewhere never match. The image tag is the `@playwright/test` version from `package.json`:
+
+```bash
+docker run --rm --network host --ipc=host --user "$(id -u):$(id -g)" \
+  -e HOME=/tmp -e COREPACK_ENABLE_DOWNLOAD_PROMPT=0 -v "$PWD":/work -w /work \
+  mcr.microsoft.com/playwright:v1.64.1-noble \
+  sh -c 'mkdir -p /tmp/bin && corepack enable --install-directory /tmp/bin && PATH=/tmp/bin:$PATH pnpm test:e2e'
+```
+
+Run `pnpm install` on the host first: the container uses the same `node_modules`. Replace `pnpm test:e2e` with `pnpm test:e2e:update` to re-take the baseline after an intended visual change, and review the changed PNG files before committing them. Never update the baseline outside this image. A failed run leaves `playwright-report/` with diffs and traces (`pnpm exec playwright show-report`).
+
+In CI the `e2e` job runs `pnpm test:e2e` in the same image and uploads `playwright-report` as an artifact when it fails. When `@playwright/test` is updated, update the image tag in `.github/workflows/ci.yml` and in the command above, then re-take the baseline.
 
 On push to the `main` branch GitHub Actions builds the documentation and publishes it to GitHub Pages.
 
