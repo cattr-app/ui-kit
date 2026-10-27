@@ -501,10 +501,11 @@ export default {
           break
         case 'Enter': {
           evt.preventDefault()
-          const focused = this.navigable.find(o => o.uid === this.focusUid)
-          // remote: the list still holds the results of the previous query
-          const pending = this.remote && (this.isLoading || this.searchTimer !== null)
-          const option = focused || (pending ? null : this.navigable[0]) || null
+          // remote: while a search is pending the list holds the results of the previous query,
+          // none of them is picked (neither highlighted nor the first one)
+          if (this.remote && (this.isLoading || this.searchTimer !== null)) break
+          const option =
+            this.navigable.find(o => o.uid === this.focusUid) || this.navigable[0] || null
           if (option) this.selectOption(option.value)
           break
         }
@@ -577,7 +578,11 @@ export default {
     },
     handleInput(evt) {
       this.filterQuery = evt.target.value
-      if (this.remote) this.scheduleSearch(this.filterQuery)
+      if (this.remote) {
+        // the highlight belongs to the results of the previous query
+        this.focusUid = null
+        this.scheduleSearch(this.filterQuery)
+      }
       if (!this.visible && !this.disabled) this.visible = true
     },
     handleBlur() {

@@ -491,6 +491,36 @@ describe('AtSelect remote mode', () => {
     expect(wrapper.vm.value).toBe('b1')
   })
 
+  it('a new query drops the keyboard highlight: Enter does not pick a previous result', async () => {
+    await mountRemote()
+    await open()
+    await respond(server.last(), page('a', 1, 3))
+    await key('ArrowDown')
+    await key('ArrowDown')
+    expect(wrapper.findAll('.at-select__option')[1].classes()).toContain('at-select__option--focus')
+
+    // during the debounce
+    await type('b')
+    expect(wrapper.find('.at-select__option--focus').exists()).toBe(false)
+    await key('Enter')
+    expect(wrapper.vm.value).toBe('')
+    expect(isOpen()).toBe(true)
+
+    // highlighted again while the request is in flight: the old list cannot be picked
+    vi.advanceTimersByTime(300)
+    await key('ArrowDown')
+    await key('Enter')
+    expect(wrapper.vm.value).toBe('')
+    expect(isOpen()).toBe(true)
+
+    // the search was not cancelled: its results arrive and can be picked
+    expect(server.last().query).toBe('b')
+    await respond(server.last(), page('b', 1, 2))
+    await key('ArrowDown')
+    await key('Enter')
+    expect(wrapper.vm.value).toBe('b1')
+  })
+
   it('renders #empty and #footer slots with the query and the loading state', async () => {
     await mountRemote({
       slots: `
