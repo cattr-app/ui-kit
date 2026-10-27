@@ -157,9 +157,11 @@ To set search mode, add `filterable` property to the Select.
 
 ## Remote
 
-Add `remote` and `remote-method` to load options from a server. `remote-method(query, { signal })` is called with an empty query when the dropdown opens and with the typed text after the user stops typing (`debounce`, 300 ms). The select shows the loading state until the latest call settles (resolves, rejects or throws), the outcome of a superseded call, such as an `AbortError`, is ignored; the options are rendered by the consumer with `at-option`, they are not filtered locally. `signal` is an `AbortSignal` that is aborted when a newer search starts: check it before applying a response (or pass it to `fetch`/axios), so a late answer to an old query does not replace the new results.
+Add `remote` and `remote-method` to load options from a server. `remote-method(query, { signal })` is called with an empty query when the dropdown opens and with the typed text after the user stops typing (`debounce`, 300 ms). The select shows the loading state until the latest call settles (resolves, rejects or throws), the outcome of a superseded or cancelled call, such as an `AbortError`, is ignored; the options are rendered by the consumer with `at-option`, they are not filtered locally. `signal` is an `AbortSignal` that is aborted when a newer search starts: check it before applying a response (or pass it to `fetch`/axios), so a late answer to an old query does not replace the new results.
 
 `on-load-more` is emitted with `{ query, signal }` when the end of the list comes into view (by scrolling, with the keyboard, or because the loaded page does not fill the dropdown), once per change of the list. Load the next page there and set `loading` while it is in flight; ignore the event when there is nothing more. `fallback-label` gives the label of a selected value whose option is not loaded yet; labels of options picked in this select are remembered. Slots `#empty` and `#footer` receive `{ query, loading }`.
+
+If the latest `remote-method` call rejects or throws, the select ends the loading state and emits `on-remote-error(error, { query })`; it does not rethrow the error, so show it from that event (e.g. in `#empty`). Errors of superseded or cancelled calls are ignored without an event. `on-load-more` handlers are not awaited: handle the errors of the next page in the handler.
 
 The demo server answers after 400 ms, 15 tasks per page, and searches by name. The footer button creates a task with the typed name and selects it; it can be reached with Tab and pressed with Enter.
 
@@ -297,6 +299,7 @@ With `placement="top"` the dropdown opens above the field and is re-positioned w
 | update:modelValue | Emitted when the user changes the selection (click or Enter on an option, removing a tag, the clear icon), used by `v-model` | the value / new array of values (also with `valueWithLabel`) |
 | on-change | Emitted together with `update:modelValue`, only on user actions (not when `modelValue` is changed by the parent) | the value / new array of values; `{ value, label }` with `valueWithLabel` |
 | on-load-more | `remote` only: the end of the list came into view while not loading; emitted once until the list changes or a new search starts | `{ query, signal }` — the query and `AbortSignal` of the current search |
+| on-remote-error | `remote` only: the latest `remote-method` call rejected or threw; the loading state is over and the error is not rethrown. Errors of superseded or cancelled calls are ignored | `(error, { query })` — the error and the query of the failed call |
 
 ## Select Slots
 

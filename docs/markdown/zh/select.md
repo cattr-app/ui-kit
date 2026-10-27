@@ -157,9 +157,11 @@
 
 ## 远程搜索
 
-设置 `remote` 和 `remote-method` 从服务器加载选项。打开下拉框时以空查询调用 `remote-method(query, { signal })`，用户停止输入后（`debounce`，300 毫秒）以输入的文本调用。在最近一次调用结束（完成、拒绝或同步抛出异常）前，选择器显示加载状态，已被取代的调用的结果（例如 `AbortError`）会被忽略；选项由使用方通过 `at-option` 渲染，不在本地过滤。`signal` 是 `AbortSignal`，开始新的搜索时会被中止：应用响应前先检查它（或传给 `fetch`/axios），这样旧查询的迟到响应不会覆盖新的结果。
+设置 `remote` 和 `remote-method` 从服务器加载选项。打开下拉框时以空查询调用 `remote-method(query, { signal })`，用户停止输入后（`debounce`，300 毫秒）以输入的文本调用。在最近一次调用结束（完成、拒绝或同步抛出异常）前，选择器显示加载状态，已被取代或取消的调用的结果（例如 `AbortError`）会被忽略；选项由使用方通过 `at-option` 渲染，不在本地过滤。`signal` 是 `AbortSignal`，开始新的搜索时会被中止：应用响应前先检查它（或传给 `fetch`/axios），这样旧查询的迟到响应不会覆盖新的结果。
 
 列表末尾进入可视区域时（滚动、键盘导航，或已加载的页不足以填满下拉框）触发 `on-load-more`，参数为 `{ query, signal }`，列表每变化一次最多触发一次。在其中加载下一页，并在加载期间设置 `loading`；没有更多数据时忽略该事件。`fallback-label` 为尚未加载选项的已选值提供显示文本；在本选择器中选过的选项的文本会被记住。插槽 `#empty` 和 `#footer` 接收 `{ query, loading }`。
+
+最近一次 `remote-method` 调用被拒绝或抛出异常时，选择器结束加载状态并触发 `on-remote-error(error, { query })`；错误不会再次抛出，请在该事件中展示它（例如在 `#empty` 中）。已被取代或取消的调用的错误会被忽略，不触发事件。`on-load-more` 的处理函数不会被等待：请在处理函数中处理下一页的错误。
 
 示例服务器 400 毫秒后响应，每页 15 个任务，按名称搜索。底部按钮以输入的名称新建任务并选中它；可以用 Tab 聚焦、用 Enter 触发。
 
@@ -296,6 +298,7 @@
 | update:modelValue | 用户选择、删除标签或清空时触发（用于 `v-model`） | 选中的选项值，类型为 `String`，`Number` 或者 `Array` |
 | on-change | 用户选择、删除标签或清空时触发，程序修改 `modelValue` 时不触发 | 选中的选项值，类型为 `String`，`Number` 或者 `Array`；设置 `value-with-label` 时为 `{ value, label }` 或其数组 |
 | on-load-more | 仅 `remote`：未在加载时列表末尾进入可视区域；在列表变化或开始新的搜索之前只触发一次 | `{ query, signal }`，当前搜索的查询和 `AbortSignal` |
+| on-remote-error | 仅 `remote`：最近一次 `remote-method` 调用被拒绝或抛出异常；加载状态结束，错误不会再次抛出。已被取代或取消的调用的错误会被忽略 | `(error, { query })`，错误和失败调用的查询 |
 
 ## Select 插槽
 

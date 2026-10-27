@@ -166,7 +166,7 @@ export default {
       type: Function,
     },
   },
-  emits: ['update:modelValue', 'on-change', 'on-load-more'],
+  emits: ['update:modelValue', 'on-change', 'on-load-more', 'on-remote-error'],
   setup(props) {
     const vm = getCurrentInstance().proxy
     const { children, register, unregister, sort } = useChildren()
@@ -469,11 +469,10 @@ export default {
     finishSearch(controller) {
       if (this.searchController === controller) this.remoteLoading = false
     },
-    // The one place that decides what an error of the latest `remoteMethod` call does.
-    // For now the rejection is passed on unchanged (the consumer's method handles its errors).
-    // Called as `handleRemoteError(error, query)` with the query of the failed call.
-    handleRemoteError(error) {
-      throw error
+    // An error of the latest `remoteMethod` call (the loading state is already over): reported
+    // as `on-remote-error` and swallowed, so it never becomes an unhandled rejection.
+    handleRemoteError(error, query) {
+      this.$emit('on-remote-error', error, { query })
     },
     cancelSearch() {
       clearTimeout(this.searchTimer)

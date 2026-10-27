@@ -285,20 +285,37 @@ describe('AtSelect remote mode', () => {
         { attachTo: document.body },
       )
       await nextTick()
-      // the decision for errors of the latest call lives in one place: recorded here
-      const handled = []
-      select().vm.handleRemoteError = (error, query) => handled.push([error.message, query])
+      // errors reported by the select: [message, { query }]
+      const handled = () =>
+        (select().emitted('on-remote-error') || []).map(([error, context]) => [
+          error.message,
+          context,
+        ])
       return { calls, handled }
     }
 
-    it('a synchronous throw ends the loading state and goes to handleRemoteError', async () => {
+    it('a synchronous throw ends the loading state and emits on-remote-error', async () => {
       const { handled } = await mountMethod('')
       expect(() => wrapper.find('.at-select__selection').trigger('click')).not.toThrow()
       await flush()
 
       expect(isOpen()).toBe(true)
       expect(notFound().text()).toBe('No matching data')
-      expect(handled).toEqual([['sync ', '']])
+      expect(handled()).toEqual([['sync ', { query: '' }]])
+      await settle()
+      expect(rejections).toEqual([])
+    })
+
+    it('a rejection of the latest call ends loading and emits on-remote-error', async () => {
+      const { calls, handled } = await mountMethod()
+      await open()
+      await type('b')
+      vi.advanceTimersByTime(300)
+      calls[1].reject(new Error('500'))
+      await flush()
+
+      expect(notFound().text()).toBe('No matching data')
+      expect(handled()).toEqual([['500', { query: 'b' }]])
       await settle()
       expect(rejections).toEqual([])
     })
@@ -316,7 +333,7 @@ describe('AtSelect remote mode', () => {
       // e.g. fetch(url, { signal }) rejects with an AbortError
       calls[0].reject(new DOMException('aborted', 'AbortError'))
       await flush()
-      expect(handled).toEqual([])
+      expect(handled()).toEqual([])
       expect(notFound().text()).toBe('Loading')
 
       calls[1].resolve()
@@ -336,7 +353,7 @@ describe('AtSelect remote mode', () => {
       expect(calls[0].signal.aborted).toBe(true)
       calls[0].reject(new Error('late'))
       await flush()
-      expect(handled).toEqual([])
+      expect(handled()).toEqual([])
       await settle()
       expect(rejections).toEqual([])
     })
