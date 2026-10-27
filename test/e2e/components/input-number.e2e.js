@@ -39,6 +39,8 @@ test('min/max: buttons are disabled at the limits, typed values are clamped', as
   await input.press('Enter')
   await expect(input).toHaveValue('5')
   await expect(up).toHaveClass(/at-input-number__up--disabled/)
+  await up.click()
+  await expect(input).toHaveValue('5')
 
   await input.fill('-3')
   await input.blur()

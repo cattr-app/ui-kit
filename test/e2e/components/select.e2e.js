@@ -65,6 +65,7 @@ test('option groups: a disabled option cannot be picked', async ({ page }) => {
   await trigger.click()
   await option('chengdu').click()
   await expect(dropdown).toBeVisible()
+  await expect(select.locator('.at-select__selection')).not.toContainText('chengdu')
   await option('kunming').click()
   await expect(dropdown).toBeHidden()
   await expect(select.locator('.at-select__selected')).toHaveText('kunming')

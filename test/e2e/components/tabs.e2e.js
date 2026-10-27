@@ -12,14 +12,14 @@ test('a click switches the active tab and slides its pane into view', async ({ p
   const tabs = demo(page, 'Basic').locator('.at-tabs')
 
   await expect(nav(tabs, 'Tab1')).toHaveClass(/at-tabs-nav__item--active/)
-  await expect(tabs.getByText('Content of Tab Pane 1')).toBeInViewport()
-  await expect(tabs.getByText('Content of Tab Pane 3')).not.toBeInViewport()
+  await expect(tabs.getByText('Content of Tab Pane 1', { exact: true })).toBeInViewport()
+  await expect(tabs.getByText('Content of Tab Pane 3', { exact: true })).not.toBeInViewport()
 
   await nav(tabs, 'Tab3').click()
   await expect(nav(tabs, 'Tab3')).toHaveClass(/at-tabs-nav__item--active/)
   await expect(nav(tabs, 'Tab1')).not.toHaveClass(/at-tabs-nav__item--active/)
-  await expect(tabs.getByText('Content of Tab Pane 3')).toBeInViewport()
-  await expect(tabs.getByText('Content of Tab Pane 1')).not.toBeInViewport()
+  await expect(tabs.getByText('Content of Tab Pane 3', { exact: true })).toBeInViewport()
+  await expect(tabs.getByText('Content of Tab Pane 1', { exact: true })).not.toBeInViewport()
 })
 
 test('a disabled tab cannot be activated', async ({ page }) => {

@@ -8,6 +8,11 @@ test.beforeEach(async ({ page }) => {
 const openModal = page => page.locator('.at-modal:visible')
 const message = page => page.locator('.at-message')
 
+// The modal leaves with a 0.2s fade, and `.at-modal:visible` still matches while it fades out. A "still open"
+// check right after Escape/a mask click would pass even if dismissal had started, so wait past the
+// transition first. An event cannot be awaited here: when the modal correctly stays open, none fires.
+const waitPastLeaveTransition = page => page.waitForTimeout(250)
+
 test('Escape closes the modal and emits on-cancel', async ({ page }) => {
   await demo(page, 'Component Mode').getByRole('button', { name: 'Show Customize Modal' }).click()
   await expect(openModal(page).locator('.at-modal__title')).toHaveText('Here is title')
@@ -40,6 +45,7 @@ test('show-close=false ignores Escape; mask-closable=false ignores the mask', as
   await expect(openModal(page)).toBeVisible()
   await expect(openModal(page).locator('.at-modal__close')).toHaveCount(0)
   await page.keyboard.press('Escape')
+  await waitPastLeaveTransition(page)
   await expect(openModal(page)).toBeVisible()
   await page.mouse.click(5, 5)
   await expect(openModal(page)).toHaveCount(0)
@@ -48,6 +54,7 @@ test('show-close=false ignores Escape; mask-closable=false ignores the mask', as
   await expect(openModal(page)).toBeVisible()
   await page.mouse.click(5, 5)
   await page.keyboard.press('Escape')
+  await waitPastLeaveTransition(page)
   await expect(openModal(page)).toBeVisible()
   await openModal(page).getByRole('button', { name: 'Cancel' }).click()
   await expect(openModal(page)).toHaveCount(0)
