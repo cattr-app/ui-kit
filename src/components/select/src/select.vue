@@ -445,10 +445,28 @@ export default {
         if (this.$refs.popover) this.$refs.popover.scrollTop = 0
       })
 
-      // only the latest search ends the loading state; a rejection is left to the consumer
-      Promise.resolve(this.remoteMethod(query, { signal: controller.signal })).finally(() => {
-        if (this.searchController === controller) this.remoteLoading = false
-      })
+      // called inside the promise, so a synchronous throw takes the same path as a rejection
+      new Promise(resolve => {
+        resolve(this.remoteMethod(query, { signal: controller.signal }))
+      }).then(
+        () => this.finishSearch(controller),
+        error => {
+          this.finishSearch(controller)
+          // a superseded or cancelled call (e.g. an AbortError of `fetch`): nothing to report
+          if (controller.signal.aborted) return
+          return this.handleRemoteError(error, query)
+        },
+      )
+    },
+    // only the latest search ends the loading state, whatever its outcome
+    finishSearch(controller) {
+      if (this.searchController === controller) this.remoteLoading = false
+    },
+    // The one place that decides what an error of the latest `remoteMethod` call does.
+    // For now the rejection is passed on unchanged (the consumer's method handles its errors).
+    // Called as `handleRemoteError(error, query)` with the query of the failed call.
+    handleRemoteError(error) {
+      throw error
     },
     cancelSearch() {
       clearTimeout(this.searchTimer)

@@ -157,7 +157,7 @@
 
 ## 远程搜索
 
-设置 `remote` 和 `remote-method` 从服务器加载选项。打开下拉框时以空查询调用 `remote-method(query, { signal })`，用户停止输入后（`debounce`，300 毫秒）以输入的文本调用。在最近一次调用结束前，选择器显示加载状态；选项由使用方通过 `at-option` 渲染，不在本地过滤。`signal` 是 `AbortSignal`，开始新的搜索时会被中止：应用响应前先检查它（或传给 `fetch`/axios），这样旧查询的迟到响应不会覆盖新的结果。
+设置 `remote` 和 `remote-method` 从服务器加载选项。打开下拉框时以空查询调用 `remote-method(query, { signal })`，用户停止输入后（`debounce`，300 毫秒）以输入的文本调用。在最近一次调用结束（完成、拒绝或同步抛出异常）前，选择器显示加载状态，已被取代的调用的结果（例如 `AbortError`）会被忽略；选项由使用方通过 `at-option` 渲染，不在本地过滤。`signal` 是 `AbortSignal`，开始新的搜索时会被中止：应用响应前先检查它（或传给 `fetch`/axios），这样旧查询的迟到响应不会覆盖新的结果。
 
 列表末尾进入可视区域时（滚动、键盘导航，或已加载的页不足以填满下拉框）触发 `on-load-more`，参数为 `{ query, signal }`，列表每变化一次最多触发一次。在其中加载下一页，并在加载期间设置 `loading`；没有更多数据时忽略该事件。`fallback-label` 为尚未加载选项的已选值提供显示文本；在本选择器中选过的选项的文本会被记住。插槽 `#empty` 和 `#footer` 接收 `{ query, loading }`。
 

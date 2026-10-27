@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { mount } from '../helpers/mount.js'
@@ -23,6 +24,8 @@ const page = (prefix, from, count) =>
 
 let wrapper
 let server
+// captured before the tests install fake timers
+const realSetTimeout = globalThis.setTimeout
 
 // The consumer pattern from the docs: the select owns the search lifecycle, the consumer owns
 // the options and drops responses whose `signal` is aborted.
@@ -248,6 +251,95 @@ describe('AtSelect remote mode', () => {
     wrapper.unmount()
     wrapper = null
     expect(calls[1].aborted).toBe(true)
+  })
+
+  describe('outcome of remoteMethod', () => {
+    // unhandled rejections are reported by Node after a macrotask: wait on a real timer
+    let rejections
+    const onRejection = reason => rejections.push(reason)
+    beforeEach(() => {
+      rejections = []
+      process.on('unhandledRejection', onRejection)
+    })
+    afterEach(() => {
+      process.off('unhandledRejection', onRejection)
+    })
+    const settle = () => new Promise(resolve => realSetTimeout(resolve, 10))
+
+    // calls[i] = { query, signal, resolve, reject }; `throwFor` throws synchronously
+    async function mountMethod(throwFor) {
+      const calls = []
+      wrapper = mount(
+        {
+          data: () => ({ value: '' }),
+          methods: {
+            search(query, { signal }) {
+              if (query === throwFor) throw new Error(`sync ${query}`)
+              return new Promise((resolve, reject) => {
+                calls.push({ query, signal, resolve, reject })
+              })
+            },
+          },
+          template: '<at-select v-model="value" remote clearable :remote-method="search" />',
+        },
+        { attachTo: document.body },
+      )
+      await nextTick()
+      // the decision for errors of the latest call lives in one place: recorded here
+      const handled = []
+      select().vm.handleRemoteError = (error, query) => handled.push([error.message, query])
+      return { calls, handled }
+    }
+
+    it('a synchronous throw ends the loading state and goes to handleRemoteError', async () => {
+      const { handled } = await mountMethod('')
+      expect(() => wrapper.find('.at-select__selection').trigger('click')).not.toThrow()
+      await flush()
+
+      expect(isOpen()).toBe(true)
+      expect(notFound().text()).toBe('No matching data')
+      expect(handled).toEqual([['sync ', '']])
+      await settle()
+      expect(rejections).toEqual([])
+    })
+
+    it('the rejection of a superseded call is ignored, the latest call keeps loading', async () => {
+      const { calls, handled } = await mountMethod()
+      await open()
+      await type('b')
+      vi.advanceTimersByTime(300)
+      expect(calls.map(c => [c.query, c.signal.aborted])).toEqual([
+        ['', true],
+        ['b', false],
+      ])
+
+      // e.g. fetch(url, { signal }) rejects with an AbortError
+      calls[0].reject(new DOMException('aborted', 'AbortError'))
+      await flush()
+      expect(handled).toEqual([])
+      expect(notFound().text()).toBe('Loading')
+
+      calls[1].resolve()
+      await flush()
+      expect(notFound().text()).toBe('No matching data')
+      await settle()
+      expect(rejections).toEqual([])
+    })
+
+    it('the rejection of a call cancelled by clearing is ignored', async () => {
+      const { calls, handled } = await mountMethod()
+      wrapper.vm.value = 'x'
+      await open()
+      await key('Escape')
+      // closed: clearing cancels the search in flight
+      await wrapper.find('.at-select__clear').trigger('click')
+      expect(calls[0].signal.aborted).toBe(true)
+      calls[0].reject(new Error('late'))
+      await flush()
+      expect(handled).toEqual([])
+      await settle()
+      expect(rejections).toEqual([])
+    })
   })
 
   it('drops a pending debounced search when the dropdown closes', async () => {
