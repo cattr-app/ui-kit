@@ -161,7 +161,7 @@ Add `remote` and `remote-method` to load options from a server. `remote-method(q
 
 `on-load-more` is emitted with `{ query, signal }` when the end of the list comes into view (by scrolling, with the keyboard, or because the loaded page does not fill the dropdown), once per change of the list. Load the next page there and set `loading` while it is in flight; ignore the event when there is nothing more. `fallback-label` gives the label of a selected value whose option is not loaded yet; labels of options picked in this select are remembered. Slots `#empty` and `#footer` receive `{ query, loading }`.
 
-The demo server answers after 400 ms, 15 tasks per page, and searches by name.
+The demo server answers after 400 ms, 15 tasks per page, and searches by name. The footer button creates a task with the typed name and selects it; it can be reached with Tab and pressed with Enter.
 
 :::demo
 ```html
@@ -171,7 +171,7 @@ The demo server answers after 400 ms, 15 tasks per page, and searches by name.
   clearable
   :remote-method="(query, ctx) => search(tasks, query, ctx)"
   :loading="tasks.loading"
-  :fallback-label="id => (id === initialTask.id ? initialTask.name : undefined)"
+  :fallback-label="id => (id === knownTask.id ? knownTask.name : undefined)"
   @on-load-more="ctx => loadMore(tasks, ctx)"
   style="width: 240px"
 >
@@ -180,7 +180,10 @@ The demo server answers after 400 ms, 15 tasks per page, and searches by name.
     <span v-if="loading">Loading tasks…</span>
     <span v-else>No tasks match "{{ query }}"</span>
   </template>
-  <template #footer>{{ tasks.items.length }} of {{ tasks.total }} loaded</template>
+  <template #footer="{ query }">
+    <span>{{ tasks.items.length }} of {{ tasks.total }} loaded</span>
+    <at-button v-if="query" size="small" type="primary" style="float: right" @click="create(query)">Create "{{ query }}"</at-button>
+  </template>
 </at-select>
 
 <script>
@@ -189,12 +192,18 @@ The demo server answers after 400 ms, 15 tasks per page, and searches by name.
     data () {
       return {
         model9: 42,
-        // the selected task as the server returned it with the form data
-        initialTask: { id: 42, name: 'Task 42' },
+        // the selected task known to the page: from the form data or just created
+        knownTask: { id: 42, name: 'Task 42' },
         tasks: { items: [], total: 0, page: 0, loading: false },
       }
     },
     methods: {
+      // createTask(name) is the API call that stores a task: resolves to { id, name }
+      async create (query) {
+        const task = await createTask(query)
+        this.knownTask = task
+        this.model9 = task.id
+      },
       async search (list, query, { signal }) {
         const { items, total } = await fetchTasks(query, 1)
         // a newer search has started: this response is stale
@@ -307,6 +316,16 @@ In `multiple` mode the query and the loaded results stay after a pick, so severa
     })
   }
 
+  function createTask (name) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const task = { id: TASKS.length + 1, name }
+        TASKS.push(task)
+        resolve(task)
+      }, DELAY)
+    })
+  }
+
   export default {
     data () {
       return {
@@ -320,12 +339,17 @@ In `multiple` mode the query and the loaded results stay after a pick, so severa
         model8: '',
         model9: 42,
         model10: [],
-        initialTask: { id: 42, name: 'Task 42' },
+        knownTask: { id: 42, name: 'Task 42' },
         tasks: { items: [], total: 0, page: 0, loading: false },
         tasks2: { items: [], total: 0, page: 0, loading: false },
       }
     },
     methods: {
+      async create (query) {
+        const task = await createTask(query)
+        this.knownTask = task
+        this.model9 = task.id
+      },
       async search (list, query, { signal }) {
         const { items, total } = await fetchTasks(query, 1)
         if (signal.aborted) return

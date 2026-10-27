@@ -161,7 +161,7 @@
 
 列表末尾进入可视区域时（滚动、键盘导航，或已加载的页不足以填满下拉框）触发 `on-load-more`，参数为 `{ query, signal }`，列表每变化一次最多触发一次。在其中加载下一页，并在加载期间设置 `loading`；没有更多数据时忽略该事件。`fallback-label` 为尚未加载选项的已选值提供显示文本；在本选择器中选过的选项的文本会被记住。插槽 `#empty` 和 `#footer` 接收 `{ query, loading }`。
 
-示例服务器 400 毫秒后响应，每页 15 个任务，按名称搜索。
+示例服务器 400 毫秒后响应，每页 15 个任务，按名称搜索。底部按钮以输入的名称新建任务并选中它；可以用 Tab 聚焦、用 Enter 触发。
 
 :::demo
 ```html
@@ -171,7 +171,7 @@
   clearable
   :remote-method="(query, ctx) => search(tasks, query, ctx)"
   :loading="tasks.loading"
-  :fallback-label="id => (id === initialTask.id ? initialTask.name : undefined)"
+  :fallback-label="id => (id === knownTask.id ? knownTask.name : undefined)"
   @on-load-more="ctx => loadMore(tasks, ctx)"
   style="width: 240px"
 >
@@ -180,7 +180,10 @@
     <span v-if="loading">正在加载任务…</span>
     <span v-else>没有匹配“{{ query }}”的任务</span>
   </template>
-  <template #footer>已加载 {{ tasks.items.length }} / {{ tasks.total }}</template>
+  <template #footer="{ query }">
+    <span>已加载 {{ tasks.items.length }} / {{ tasks.total }}</span>
+    <at-button v-if="query" size="small" type="primary" style="float: right" @click="create(query)">新建“{{ query }}”</at-button>
+  </template>
 </at-select>
 
 <script>
@@ -189,12 +192,18 @@
     data () {
       return {
         model9: 42,
-        // the selected task as the server returned it with the form data
-        initialTask: { id: 42, name: 'Task 42' },
+        // the selected task known to the page: from the form data or just created
+        knownTask: { id: 42, name: 'Task 42' },
         tasks: { items: [], total: 0, page: 0, loading: false },
       }
     },
     methods: {
+      // createTask(name) is the API call that stores a task: resolves to { id, name }
+      async create (query) {
+        const task = await createTask(query)
+        this.knownTask = task
+        this.model9 = task.id
+      },
       async search (list, query, { signal }) {
         const { items, total } = await fetchTasks(query, 1)
         // a newer search has started: this response is stale
@@ -306,6 +315,16 @@
     })
   }
 
+  function createTask (name) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const task = { id: TASKS.length + 1, name }
+        TASKS.push(task)
+        resolve(task)
+      }, DELAY)
+    })
+  }
+
   export default {
     data () {
       return {
@@ -319,12 +338,17 @@
         model8: '',
         model9: 42,
         model10: [],
-        initialTask: { id: 42, name: 'Task 42' },
+        knownTask: { id: 42, name: 'Task 42' },
         tasks: { items: [], total: 0, page: 0, loading: false },
         tasks2: { items: [], total: 0, page: 0, loading: false },
       }
     },
     methods: {
+      async create (query) {
+        const task = await createTask(query)
+        this.knownTask = task
+        this.model9 = task.id
+      },
       async search (list, query, { signal }) {
         const { items, total } = await fetchTasks(query, 1)
         if (signal.aborted) return

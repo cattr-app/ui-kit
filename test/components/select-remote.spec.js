@@ -543,6 +543,43 @@ describe('AtSelect remote mode', () => {
     expect(wrapper.find('.at-select__footer .create').exists()).toBe(true)
   })
 
+  it('keys on controls in #footer and #empty are theirs, not option navigation', async () => {
+    await mountRemote({
+      slots: `
+        <template #empty><button type="button" class="retry">retry</button></template>
+        <template #footer><button type="button" class="create">create</button></template>`,
+    })
+    await open()
+    await respond(server.last(), page('a', 1, 3))
+    await key('ArrowDown')
+    const highlighted = () => wrapper.find('.at-select__option--focus').text()
+    expect(highlighted()).toBe('a 1')
+
+    const press = async (el, k) => {
+      el.focus()
+      const evt = new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true })
+      el.dispatchEvent(evt)
+      await nextTick()
+      return evt
+    }
+    const create = wrapper.find('.create').element
+    expect((await press(create, 'ArrowDown')).defaultPrevented).toBe(false)
+    expect(highlighted()).toBe('a 1')
+    expect((await press(create, 'Enter')).defaultPrevented).toBe(false)
+    expect(wrapper.vm.value).toBe('')
+    expect(isOpen()).toBe(true)
+
+    await type('zzz')
+    vi.advanceTimersByTime(300)
+    await respond(server.last(), [])
+    expect((await press(wrapper.find('.retry').element, 'Enter')).defaultPrevented).toBe(false)
+    expect(isOpen()).toBe(true)
+
+    // Escape still closes the dropdown
+    await press(create, 'Escape')
+    expect(isOpen()).toBe(false)
+  })
+
   it('a click on a footer control keeps the query in the input', async () => {
     await mountRemote({
       slots: '<template #footer><button type="button" class="act">go</button></template>',

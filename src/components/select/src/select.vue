@@ -486,6 +486,18 @@ export default {
         return
       }
 
+      // a control in the dropdown (e.g. a button in #footer or #empty) handles its own keys;
+      // only Escape still closes the dropdown
+      const popover = this.$refs.popover
+      if (
+        evt.key !== 'Escape' &&
+        popover &&
+        evt.target instanceof Node &&
+        popover.contains(evt.target)
+      ) {
+        return
+      }
+
       switch (evt.key) {
         case 'Escape':
           evt.preventDefault()
