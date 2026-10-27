@@ -45,6 +45,8 @@ import AtTabs from './components/tabs'
 import AtTabPane from './components/tab-pane'
 import AtTimeline from './components/timeline'
 import AtTimelineItem from './components/timeline-item'
+import AtSkeleton from './components/skeleton'
+import AtAvatar from './components/avatar'
 import locale from './locale'
 import { CATTR_UI_KEY, setCurrentApp } from './utils/context.js'
 
@@ -92,6 +94,8 @@ const components = [
   AtTabPane,
   AtTimeline,
   AtTimelineItem,
+  AtSkeleton,
+  AtAvatar,
 ]
 
 /* global __CATTR_UI_VERSION__ */
@@ -163,6 +167,8 @@ export {
   AtTabPane,
   AtTimeline,
   AtTimelineItem,
+  AtSkeleton,
+  AtAvatar,
 }
 
 export default { install, version }

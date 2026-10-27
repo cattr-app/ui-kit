@@ -395,6 +395,17 @@ $badge-bg-color-info        : $blue-500!default;
 
 $badge-dot-size             : 10px!default;
 
+/* Skeleton */
+$skeleton-bg-color          : #EEEEEE!default;
+$skeleton-highlight-color   : #F5F5F5!default;
+$skeleton-highlight-width   : 200px!default;
+$skeleton-border-radius     : 3px!default;
+$skeleton-duration          : 1.5s!default;
+
+/* Avatar */
+$avatar-font-family         : Helvetica, Arial, sans-serif!default;
+$avatar-font-weight         : normal!default;
+
 /* Card */
 $card-bg-color              : $color-white!default;
 $card-border-color          : $grey-100!default;
