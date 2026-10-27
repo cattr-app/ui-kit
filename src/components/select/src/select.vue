@@ -450,6 +450,14 @@ export default {
         if (this.searchController === controller) this.remoteLoading = false
       })
     },
+    cancelSearch() {
+      clearTimeout(this.searchTimer)
+      this.searchTimer = null
+      if (this.searchController) this.searchController.abort()
+      this.searchController = null
+      this.searchQuery = ''
+      this.remoteLoading = false
+    },
     scheduleSearch(query) {
       clearTimeout(this.searchTimer)
       this.searchTimer = setTimeout(() => this.remoteSearch(query), this.debounce)
@@ -581,6 +589,11 @@ export default {
         // reset the active filter too: option visibility and `notFound` follow `filterQuery`
         this.query = ''
         this.filterQuery = ''
+      }
+      // remote: the typed text is gone, so is its search (pending or in flight)
+      if (this.remote) {
+        if (this.visible) this.remoteSearch('')
+        else this.cancelSearch()
       }
     },
     removeTag(value) {

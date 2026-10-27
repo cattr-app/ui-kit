@@ -439,6 +439,70 @@ describe('AtSelect remote mode', () => {
     expect(wrapper.find('.at-select').classes()).not.toContain('at-select--show-clear')
   })
 
+  describe('clearing during a search', () => {
+    const attrs = 'clearable :fallback-label="() => \'Seven\'"'
+    const clear = () => wrapper.find('.at-select__clear').trigger('click')
+
+    it('drops the debounced query and searches with an empty one when open', async () => {
+      await mountRemote({ value: 7, attrs })
+      stubScroll(() => 0)
+      await open()
+      await respond(server.last(), page('a', 1, 2), true)
+      // page 2 of the '' search, the last one
+      expect(server.last()).toMatchObject({ query: '', page: 2 })
+      await respond(server.last(), page('a', 3, 2), false)
+
+      await type('abc')
+      await clear()
+      expect(wrapper.vm.value).toBe('')
+      expect(input().element.value).toBe('')
+      vi.advanceTimersByTime(1000)
+
+      expect(server.requests.map(r => [r.query, r.page])).toEqual([
+        ['', 1],
+        ['', 2],
+        ['', 1],
+      ])
+      await respond(server.last(), page('b', 1, 2), true)
+      expect(labels()).toEqual(['b 1', 'b 2'])
+      // pagination follows the empty query, not the erased text
+      expect(server.last()).toMatchObject({ query: '', page: 2 })
+    })
+
+    it('aborts the request in flight and searches with an empty query when open', async () => {
+      await mountRemote({ value: 7, attrs })
+      await open()
+      await respond(server.last(), page('a', 1, 2))
+      await type('abc')
+      vi.advanceTimersByTime(300)
+      const stale = server.last()
+      expect(stale.query).toBe('abc')
+
+      await clear()
+      expect(server.last().query).toBe('')
+      await respond(server.last(), page('b', 1, 2))
+      await respond(stale, page('abc', 1, 3))
+      expect(labels()).toEqual(['b 1', 'b 2'])
+    })
+
+    it('aborts the request in flight and ends the loading state when closed', async () => {
+      await mountRemote({ value: 7, attrs })
+      await open()
+      await respond(server.last(), page('a', 1, 2))
+      await type('abc')
+      vi.advanceTimersByTime(300)
+      const stale = server.last()
+      await key('Escape')
+      expect(isOpen()).toBe(false)
+
+      await clear()
+      expect(server.requests).toHaveLength(2)
+      await respond(stale, page('abc', 1, 3))
+      expect(labels()).toEqual(['a 1', 'a 2'])
+      expect(loadingRow().exists()).toBe(false)
+    })
+  })
+
   it('navigates loaded pages with the keyboard and loads more at the last option', async () => {
     await mountRemote()
     const state = stubScroll(() => wrapper.findAll('.at-select__option').length * 30)
