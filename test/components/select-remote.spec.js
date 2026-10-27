@@ -102,12 +102,22 @@ async function key(k) {
   await nextTick()
 }
 
-// happy-dom has no layout: the dropdown is 100px high, its content `height()` px.
-function stubScroll(height) {
+// happy-dom has no layout: the dropdown is 100px high (viewport at y 0..100), the list of
+// options is `height()` px, followed by `footer` px of #footer.
+function stubScroll(height, footer = 0) {
   const el = dropdown().element
   const state = { scrollTop: 0, height }
   Object.defineProperty(el, 'clientHeight', { configurable: true, get: () => 100 })
-  Object.defineProperty(el, 'scrollHeight', { configurable: true, get: () => state.height() })
+  Object.defineProperty(el, 'scrollHeight', {
+    configurable: true,
+    get: () => state.height() + footer,
+  })
+  el.getBoundingClientRect = () => ({ top: 0, bottom: 100, height: 100 })
+  wrapper.find('.at-select__list').element.getBoundingClientRect = () => ({
+    top: -state.scrollTop,
+    bottom: state.height() - state.scrollTop,
+    height: state.height(),
+  })
   Object.defineProperty(el, 'scrollTop', {
     configurable: true,
     get: () => state.scrollTop,
@@ -551,6 +561,35 @@ describe('AtSelect remote mode', () => {
     await key('Enter')
     expect(wrapper.vm.value).toBe('a2')
     expect(isOpen()).toBe(false)
+  })
+
+  it('the end of the list is the last option, not the bottom of #footer', async () => {
+    await mountRemote({
+      slots: '<template #footer><button type="button">create</button></template>',
+    })
+    // a 60px footer under 5 options of 30px
+    const state = stubScroll(() => wrapper.findAll('.at-select__option').length * 30, 60)
+    await open()
+    await respond(server.last(), page('a', 1, 5), true)
+    expect(select().emitted('on-load-more')).toBeUndefined()
+
+    // the last option is at the bottom of the viewport, the footer below it
+    await scrollTo(state, 50)
+    expect(select().emitted('on-load-more')).toHaveLength(1)
+    await respond(server.last(), page('a', 6, 5), true)
+
+    // with the keyboard: the last option scrolled into view loads the next page,
+    // the next ArrowDown moves into it instead of wrapping to the first option
+    wrapper.findAll('.at-select__option').forEach((option, i) => {
+      option.element.getBoundingClientRect = () => ({ top: i * 30 - state.scrollTop, height: 30 })
+    })
+    state.scrollTop = 0
+    for (let i = 0; i < 10; i++) await key('ArrowDown')
+    expect(state.scrollTop).toBe(200)
+    expect(select().emitted('on-load-more')).toHaveLength(2)
+    await respond(server.last(), page('a', 11, 2), false)
+    await key('ArrowDown')
+    expect(wrapper.find('.at-select__option--focus').text()).toBe('a 11')
   })
 
   it('Enter does not pick a stale result while the new search is pending', async () => {

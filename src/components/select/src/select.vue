@@ -60,7 +60,7 @@
             <slot name="empty" :query="filterQuery" :loading="isLoading">{{ emptyText }}</slot>
           </li>
         </ul>
-        <ul v-show="!showEmpty" class="at-select__list">
+        <ul v-show="!showEmpty" ref="list" class="at-select__list">
           <slot></slot>
           <li v-if="remote && isLoading" class="at-select__loading">{{ localeLoadingText }}</li>
         </ul>
@@ -466,13 +466,19 @@ export default {
       clearTimeout(this.searchTimer)
       this.searchTimer = setTimeout(() => this.remoteSearch(query), this.debounce)
     },
+    // emits `on-load-more` when the end of the list of options is in view; measured from the
+    // list, not from the scroll height of the dropdown, which also holds #footer
     checkLoadMore() {
-      const popover = this.$refs.popover
+      const { popover, list } = this.$refs
+      if (!this.remote || !this.visible || !popover || !list) return
+      const view = popover.getBoundingClientRect()
+      const viewBottom = view.top + popover.clientTop + popover.clientHeight
+      if (list.getBoundingClientRect().bottom - viewBottom > LOAD_MORE_DISTANCE) return
+      this.requestLoadMore()
+    },
+    requestLoadMore() {
       if (!this.remote || !this.visible || this.isLoading || !this.loadMoreArmed) return
-      if (!popover || !this.children.length) return
-      if (popover.scrollHeight - popover.scrollTop - popover.clientHeight > LOAD_MORE_DISTANCE) {
-        return
-      }
+      if (!this.children.length) return
 
       this.loadMoreArmed = false
       this.$emit('on-load-more', {
@@ -554,7 +560,9 @@ export default {
 
       this.focusUid = list[next].uid
       this.resetScrollTop()
-      this.checkLoadMore()
+      // the last option reached with the keyboard is the end of the list, whatever the layout
+      if (next === list.length - 1) this.requestLoadMore()
+      else this.checkLoadMore()
     },
     resetScrollTop() {
       const popover = this.$refs.popover

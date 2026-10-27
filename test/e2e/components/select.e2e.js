@@ -279,3 +279,28 @@ test('remote placement top: the dropdown stays above the field as the results ch
   await expect(select.locator('.at-select__loading')).toHaveCount(0)
   await expectAbove()
 })
+
+test('remote: the keyboard loads the next page at the last option despite a tall footer', async ({
+  page,
+}) => {
+  const select = demo(page, 'Remote').locator('.at-select').first()
+  const input = select.locator('.at-select__input')
+  const options = select.locator('.at-select__option')
+  const focused = select.locator('.at-select__option--focus')
+
+  await input.click()
+  await expect(options).toHaveCount(15)
+  await input.fill('')
+  await input.pressSequentially('1')
+  // the footer holds the "Create" button now
+  await expect(select.locator('.at-select__footer .at-btn')).toBeVisible()
+  await expect(options.nth(1)).toHaveText('Task 10')
+
+  for (let i = 0; i < 15; i++) await page.keyboard.press('ArrowDown')
+  await expect(focused).toHaveText('Task 51')
+  await expect(options).toHaveCount(19)
+
+  // the next option is on the loaded page, not the first one
+  await page.keyboard.press('ArrowDown')
+  await expect(focused).toHaveText('Task 61')
+})
