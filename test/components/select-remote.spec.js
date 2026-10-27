@@ -537,6 +537,22 @@ describe('AtSelect remote mode', () => {
     expect(isOpen()).toBe(false)
   })
 
+  it('Enter picks a highlighted option while the next page is loading', async () => {
+    await mountRemote()
+    stubScroll(() => 0)
+    await open()
+    await respond(server.last(), page('a', 1, 3), true)
+    // the list does not fill the dropdown: page 2 of the same query is loading
+    expect(server.last()).toMatchObject({ query: '', page: 2 })
+    expect(loadingRow().exists()).toBe(true)
+
+    await key('ArrowDown')
+    await key('ArrowDown')
+    await key('Enter')
+    expect(wrapper.vm.value).toBe('a2')
+    expect(isOpen()).toBe(false)
+  })
+
   it('Enter does not pick a stale result while the new search is pending', async () => {
     await mountRemote()
     await open()

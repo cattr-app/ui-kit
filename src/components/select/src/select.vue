@@ -458,6 +458,10 @@ export default {
       this.searchQuery = ''
       this.remoteLoading = false
     },
+    // a search that will replace the results is under way (`searchTimer` is not reactive)
+    searchPending() {
+      return this.remote && (this.remoteLoading || this.searchTimer !== null)
+    },
     scheduleSearch(query) {
       clearTimeout(this.searchTimer)
       this.searchTimer = setTimeout(() => this.remoteSearch(query), this.debounce)
@@ -525,9 +529,10 @@ export default {
           break
         case 'Enter': {
           evt.preventDefault()
-          // remote: while a search is pending the list holds the results of the previous query,
-          // none of them is picked (neither highlighted nor the first one)
-          if (this.remote && (this.isLoading || this.searchTimer !== null)) break
+          // remote: while a search is pending (debounce or `remoteMethod`) the list holds the
+          // results of the previous query, none of them is picked; loading the next page of the
+          // same query (the `loading` prop) does not replace the list and blocks nothing
+          if (this.searchPending()) break
           const option =
             this.navigable.find(o => o.uid === this.focusUid) || this.navigable[0] || null
           if (option) this.selectOption(option.value)
