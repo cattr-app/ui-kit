@@ -130,6 +130,10 @@ export default {
                 name: 'Alert',
               },
               {
+                title: '头像',
+                name: 'Avatar',
+              },
+              {
                 title: '徽标',
                 name: 'Badge',
               },
@@ -164,6 +168,10 @@ export default {
               {
                 title: '进度条',
                 name: 'Progress',
+              },
+              {
+                title: '骨架屏',
+                name: 'Skeleton',
               },
               {
                 title: '时间轴',
@@ -342,6 +350,10 @@ export default {
                 name: 'Alert',
               },
               {
+                title: 'Avatar',
+                name: 'Avatar',
+              },
+              {
                 title: 'Badge',
                 name: 'Badge',
               },
@@ -376,6 +388,10 @@ export default {
               {
                 title: 'Progress',
                 name: 'Progress',
+              },
+              {
+                title: 'Skeleton',
+                name: 'Skeleton',
               },
               {
                 title: 'Timeline',

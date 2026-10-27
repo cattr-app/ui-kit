@@ -1,0 +1,24 @@
+/**
+ * Avatar Style
+ *
+ * Size, colours and the image are inline styles computed from the props.
+ */
+@use '../variables' as *;
+
+.at-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $avatar-font-family;
+  font-weight: $avatar-font-weight;
+  text-align: center;
+  user-select: none;
+
+  /* modifier */
+  &--inline {
+    display: inline-flex;
+  }
+  &--rounded {
+    border-radius: 50%;
+  }
+}

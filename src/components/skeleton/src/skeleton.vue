@@ -1,0 +1,85 @@
+<script>
+import { Comment, Fragment, Text, h } from 'vue'
+
+// Whether the slot renders anything visible: comments (`v-if` placeholders) and
+// whitespace-only text do not count, fragments (`v-for`, `<template>`) are checked inside.
+function hasContent(vnodes) {
+  return vnodes.some(vnode => {
+    if (vnode.type === Comment) return false
+    if (vnode.type === Text) return vnode.children.trim() !== ''
+    if (vnode.type === Fragment) return Array.isArray(vnode.children) && hasContent(vnode.children)
+    return true
+  })
+}
+
+const toSize = value => (typeof value === 'number' ? `${value}px` : value)
+// A size is set unless it is absent or an empty string; numeric 0 is a valid size.
+const isSet = value => value !== undefined && value !== null && value !== ''
+
+export default {
+  name: 'AtSkeleton',
+  props: {
+    // No default on purpose: when not passed, the skeleton shows while the default slot is empty.
+    loading: {
+      type: Boolean,
+      default: undefined,
+    },
+    count: {
+      type: Number,
+      default: 1,
+    },
+    // Seconds per shimmer cycle; 0 renders a static placeholder. Not set: the theme's $skeleton-duration.
+    duration: {
+      type: Number,
+      default: undefined,
+    },
+    width: {
+      type: [String, Number],
+    },
+    height: {
+      type: [String, Number],
+    },
+    circle: {
+      type: Boolean,
+      default: false,
+    },
+    // Wrapper element; an empty string renders the slot without a wrapper.
+    tag: {
+      type: String,
+      default: 'span',
+    },
+  },
+  render() {
+    const content = this.$slots.default ? this.$slots.default() : []
+    const showLoading = this.loading === undefined ? !hasContent(content) : this.loading
+
+    if (!showLoading) {
+      return this.tag ? h(this.tag, content) : content
+    }
+
+    const style = {}
+    if (isSet(this.width)) style.width = toSize(this.width)
+    if (isSet(this.height)) style.height = toSize(this.height)
+    if (this.circle) style.borderRadius = '50%'
+    const isStatic = this.duration === 0
+    if (this.duration) style.animationDuration = `${this.duration}s`
+
+    const elements = []
+    for (let i = 0; i < this.count; i += 1) {
+      elements.push(
+        h(
+          'span',
+          {
+            key: i,
+            class: ['at-skeleton', { 'at-skeleton--static': isStatic }],
+            style,
+          },
+          '‌',
+        ),
+      )
+    }
+
+    return h(this.tag || 'span', elements)
+  },
+}
+</script>
