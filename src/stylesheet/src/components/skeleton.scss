@@ -1,0 +1,37 @@
+/**
+ * Skeleton Style
+ */
+@use '../variables' as *;
+
+.at-skeleton {
+  display: inline-block;
+  width: 100%;
+  height: inherit;
+  line-height: 1;
+  border-radius: $skeleton-border-radius;
+  background-color: $skeleton-bg-color;
+  background-image: linear-gradient(
+    90deg,
+    $skeleton-bg-color,
+    $skeleton-highlight-color,
+    $skeleton-bg-color
+  );
+  background-size: $skeleton-highlight-width 100%;
+  background-repeat: no-repeat;
+  animation: at-skeleton-loading $skeleton-duration ease-in-out infinite;
+
+  /* modifier */
+  &--static {
+    background-image: none;
+    animation: none;
+  }
+}
+
+@keyframes at-skeleton-loading {
+  0% {
+    background-position: -$skeleton-highlight-width 0;
+  }
+  100% {
+    background-position: calc(#{$skeleton-highlight-width} + 100%) 0;
+  }
+}

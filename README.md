@@ -11,6 +11,7 @@ Cattr's UI component library for Vue 3 and Vite. The project is a fork of [AT UI
 - variables, grid, fonts and component styles are adapted to the Cattr interface;
 - individual components can be imported;
 - the `rowClick` event was added to table rows;
+- the `AtSkeleton` (loading placeholder) and `AtAvatar` (user picture or initials) components were added, with the API of `vue-loading-skeleton` and `vue-avatar`;
 - behaviour fixes for `InputNumber`, `Tabs`, `Table` and other components used in Cattr are included.
 
 ## Installation
@@ -138,7 +139,7 @@ Documentation dev server: <http://localhost:7200/>.
 `test/e2e/` holds Playwright tests (Chromium only) that work through the demo pages of the documentation site:
 
 - `smoke/` opens every docs page; a test fails on any console error, uncaught page error or `[Vue warn]` (this check is part of every e2e test, see `test/e2e/fixtures.js`);
-- `components/` covers interactions that the happy-dom unit tests cannot reproduce: keyboard, click-outside and remote search with scroll loading in Select, hover/click triggers and popup positions of Dropdown/Tooltip/Popover, Escape/mask/queue of Modal and `$Modal`, Table sorting/pagination/selection, Tabs, InputNumber;
+- `components/` covers interactions that the happy-dom unit tests cannot reproduce: keyboard, click-outside and remote search with scroll loading in Select, hover/click triggers and popup positions of Dropdown/Tooltip/Popover, Escape/mask/queue of Modal and `$Modal`, Table sorting/pagination/selection, Tabs, InputNumber, the image fallback of Avatar;
 - `visual/` compares a screenshot of every component demo page with the baseline in `test/e2e/__screenshots__/`.
 
 Playwright starts `pnpm dev` itself, or reuses a dev server that is already running (except in CI). `DOCS_PORT` changes the port (default 7200). A single suite or file is selected by path: `pnpm test:e2e smoke`, `pnpm test:e2e components/select`.

@@ -4,6 +4,21 @@
 
 ### Added
 
+**Skeleton** — new `AtSkeleton` (`<at-skeleton>`), a loading placeholder with the API of `vue-loading-skeleton` 1.1.9.
+
+- Before: `import { Skeleton } from 'vue-loading-skeleton'` (Vue 2 only), `<PuSkeleton>`/`<Skeleton>`. After: `<at-skeleton>` registered by `app.use(CattrUI)`, or `import { AtSkeleton } from '@amazingcat/cattr-ui'`. What to change: replace the tag, keep the props; drop the `vue-loading-skeleton` dependency.
+- Props: `loading` (not set: the placeholder is shown while the default slot is empty), `count` (1), `duration` (seconds; not set: the theme's `$skeleton-duration`, 1.5 s; `0` = no animation), `width`/`height` (a number is in px, `0` included; the original dropped a numeric `0`), `circle`, `tag` (`'span'`; `''` renders the slot without a wrapper). The default slot is the content.
+- Same colours (`#eeeeee` with a `#f5f5f5` shimmer), radius and animation as the original. The look moved from inline styles to the stylesheet: the class is `at-skeleton` (was `pu-skeleton`), theme variables `$skeleton-bg-color`, `$skeleton-highlight-color`, `$skeleton-highlight-width`, `$skeleton-border-radius`, `$skeleton-duration`. Not ported: `SkeletonTheme` and the `prefix` prop.
+- Difference: the slot counts as empty when it renders only comments (`v-if`) or whitespace, also when the first node is one of them and a later one has content (the original checked only the first node).
+
+**Avatar** — new `AtAvatar` (`<at-avatar>`), user picture or initials, with the API of `vue-avatar` 2.3.3.
+
+- Before: `import Avatar from 'vue-avatar'` (Vue 2 only). After: `<at-avatar>` registered by `app.use(CattrUI)`, or `import { AtAvatar } from '@amazingcat/cattr-ui'`. What to change: replace the tag, keep the props and the `@avatar-initials` listener; drop the `vue-avatar` dependency. CSS that targeted `.vue-avatar--wrapper` targets `.at-avatar`.
+- Props: `username`, `initials`, `parser` (`(username, defaultParser) => string`), `src`, `size` (50), `rounded` (true), `inline`, `backgroundColor`, `color`, `lighten` (80), `customStyle`, and new `alt`. Event `avatar-initials(username, initials)` on mount when no image is shown.
+- Accessibility (new): the avatar is `role="img"` named by `alt`, which defaults to `username`. An empty `alt` marks it as decorative (`aria-hidden`), for avatars shown next to the name; without a name it is hidden too. The original had no accessible name.
+- Same behaviour as the original: with `src` the image is shown, a load error falls back to the initials; the background is picked from the same 18-colour palette by the username (the same name always gets the same colour), the text colour is the background lightened by `lighten`.
+- Differences: a missing `username` renders an empty avatar instead of throwing; after a failed image a new `src` is tried again (the original kept the initials); a lightened colour keeps its leading zeroes (`#000a00`, not `#a00`); a `src` with quotes is escaped in the CSS background (the original produced an invalid `url()`); the `parser` prop is no longer probed with a made-up name by a prop validator (the original's validator could make a valid parser throw). Static styles (flex layout, `at-avatar--inline`, `at-avatar--rounded`, font) are in the stylesheet (`$avatar-font-family`, `$avatar-font-weight`), size and colours stay inline, `customStyle` still wins over both. The initials are not bold, as in the original (its `font` shorthand reset `font-weight: bold`).
+
 **Select** — remote mode: `AtSelect` searches and pages through options loaded from a server, so `vue-select` is no longer needed.
 
 - Before: `<at-select>` filtered only the options it already had (`filterable`); server search, infinite scroll and "create" buttons under the list needed `vue-select` (`:filterable="false"`, `@search`, an `IntersectionObserver` on a `#list-footer` loader, `#no-options`). After: `remote` + `remote-method` + `@on-load-more`, slots `#empty`/`#footer`. What to change: move the request into `remote-method`, render the results with `at-option`, load the next page in `on-load-more`; drop the debounce, the observer and the stale-response bookkeeping (`requestId`, timestamps) — the select does them.
