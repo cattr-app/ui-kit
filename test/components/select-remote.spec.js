@@ -521,6 +521,38 @@ describe('AtSelect remote mode', () => {
     expect(wrapper.vm.value).toBe('b1')
   })
 
+  it('placement top: the dropdown is re-positioned when results and loading change', async () => {
+    await mountRemote({ attrs: 'placement="top"' })
+    // happy-dom has no layout: the field is at y=100, the dropdown is 40px high when empty
+    // (the loading text), 30px per option otherwise, plus 30px for the loading row
+    const trigger = wrapper.find('.at-select__selection').element
+    Object.defineProperty(trigger, 'offsetTop', { configurable: true, get: () => 100 })
+    Object.defineProperty(trigger, 'offsetHeight', { configurable: true, get: () => 30 })
+    Object.defineProperty(dropdown().element, 'offsetHeight', {
+      configurable: true,
+      get: () => {
+        const count = wrapper.findAll('.at-select__option').length
+        return (count ? count * 30 : 40) + (count && loadingRow().exists() ? 30 : 0)
+      },
+    })
+    const top = () => dropdown().element.style.top
+
+    await open()
+    await flush()
+    expect(top()).toBe('60px')
+
+    await respond(server.last(), page('a', 1, 3))
+    expect(top()).toBe('10px')
+
+    // the consumer's loading flag adds the loading row under the list
+    wrapper.vm.loadingMore = true
+    await flush()
+    expect(top()).toBe('-20px')
+    wrapper.vm.loadingMore = false
+    await flush()
+    expect(top()).toBe('10px')
+  })
+
   it('renders #empty and #footer slots with the query and the loading state', async () => {
     await mountRemote({
       slots: `

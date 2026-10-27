@@ -307,9 +307,13 @@ export default {
       // a new page (or a new result) arrived: the end of the list may be reached again
       this.loadMoreArmed = true
       this.$nextTick(this.checkLoadMore)
+      // the dropdown height changed: `placement="top"` is measured from it
+      this.updatePosition()
     },
     isLoading(value) {
       if (!value) this.$nextTick(this.checkLoadMore)
+      // the loading text / row changes the dropdown height
+      this.updatePosition()
     },
     visible(value) {
       this.focusUid = null

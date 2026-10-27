@@ -248,3 +248,34 @@ test('remote: Enter on a footer button activates it instead of picking an option
   await input.pressSequentially('Brand')
   await expect(option('Brand new')).toHaveClass(/at-select__option--selected/)
 })
+
+test('remote placement top: the dropdown stays above the field as the results change', async ({
+  page,
+}) => {
+  const select = demo(page, 'Remote Top Placement').locator('.at-select')
+  const { trigger, dropdown } = parts(select)
+  const options = select.locator('.at-select__option')
+
+  async function expectAbove() {
+    const field = await trigger.boundingBox()
+    const list = await dropdown.boundingBox()
+    expect(list.y + list.height).toBeLessThanOrEqual(field.y)
+    // and not detached from it (2px margin)
+    expect(field.y - (list.y + list.height)).toBeLessThanOrEqual(4)
+  }
+
+  // in the middle of the viewport: there is room above the field
+  await trigger.scrollIntoViewIfNeeded()
+  await page.mouse.wheel(0, -300)
+  await trigger.click()
+  await expect(options).toHaveCount(15)
+  await expect(select.locator('.at-select__loading')).toHaveCount(0)
+  await expectAbove()
+
+  // the next page: the loading row comes and goes, the list grows
+  await dropdown.hover()
+  await page.mouse.wheel(0, 2000)
+  await expect(options).toHaveCount(30)
+  await expect(select.locator('.at-select__loading')).toHaveCount(0)
+  await expectAbove()
+})

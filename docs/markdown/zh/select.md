@@ -248,6 +248,26 @@
 ```
 :::
 
+## 远程搜索向上弹出
+
+设置 `placement="top"` 时下拉框在输入框上方打开，高度变化时重新定位：结果返回、追加一页以及加载行出现或消失时。
+
+:::demo
+```html
+<at-select
+  v-model="model11"
+  remote
+  placement="top"
+  :remote-method="(query, ctx) => search(tasks3, query, ctx)"
+  :loading="tasks3.loading"
+  @on-load-more="ctx => loadMore(tasks3, ctx)"
+  style="width: 240px"
+>
+  <at-option v-for="task in tasks3.items" :key="task.id" :value="task.id" :label="task.name" />
+</at-select>
+```
+:::
+
 ## Select 参数
 
 | 参数      | 说明          | 类型      | 可选值                           | 默认值  |
@@ -338,9 +358,11 @@
         model8: '',
         model9: 42,
         model10: [],
+        model11: '',
         knownTask: { id: 42, name: 'Task 42' },
         tasks: { items: [], total: 0, page: 0, loading: false },
         tasks2: { items: [], total: 0, page: 0, loading: false },
+        tasks3: { items: [], total: 0, page: 0, loading: false },
       }
     },
     methods: {

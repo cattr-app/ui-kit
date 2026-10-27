@@ -248,6 +248,26 @@ In `multiple` mode the query and the loaded results stay after a pick, so severa
 ```
 :::
 
+## Remote Top Placement
+
+With `placement="top"` the dropdown opens above the field and is re-positioned whenever its height changes: when the results arrive, when a page is added and when the loading row appears or goes away.
+
+:::demo
+```html
+<at-select
+  v-model="model11"
+  remote
+  placement="top"
+  :remote-method="(query, ctx) => search(tasks3, query, ctx)"
+  :loading="tasks3.loading"
+  @on-load-more="ctx => loadMore(tasks3, ctx)"
+  style="width: 240px"
+>
+  <at-option v-for="task in tasks3.items" :key="task.id" :value="task.id" :label="task.name" />
+</at-select>
+```
+:::
+
 ## Select Props
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
@@ -339,9 +359,11 @@ In `multiple` mode the query and the loaded results stay after a pick, so severa
         model8: '',
         model9: 42,
         model10: [],
+        model11: '',
         knownTask: { id: 42, name: 'Task 42' },
         tasks: { items: [], total: 0, page: 0, loading: false },
         tasks2: { items: [], total: 0, page: 0, loading: false },
+        tasks3: { items: [], total: 0, page: 0, loading: false },
       }
     },
     methods: {
