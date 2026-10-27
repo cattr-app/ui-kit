@@ -843,6 +843,65 @@ describe('AtSelect remote mode', () => {
     expect(input().element.value).toBe('')
   })
 
+  describe('closing without a pick restores the input', () => {
+    const footer = '<template #footer><button type="button" class="act">go</button></template>'
+    // the user types, moves the focus to a footer button and the blur timer runs out
+    async function typeAndLeave(text) {
+      await type(text)
+      wrapper.find('.act').element.focus()
+      await input().trigger('blur')
+      vi.advanceTimersByTime(300)
+      await flush()
+      expect(input().element.value).toBe(text)
+    }
+
+    it('single: Escape and a click outside show the selected label again', async () => {
+      await mountRemote({ value: 7, attrs: ':fallback-label="() => \'Seven\'"', slots: footer })
+      await open()
+      await respond(server.last(), page('a', 1, 2))
+      await typeAndLeave('abc')
+      await key('Escape')
+      expect(isOpen()).toBe(false)
+      expect(input().element.value).toBe('Seven')
+
+      await open()
+      await respond(server.last(), page('a', 1, 2))
+      await typeAndLeave('xyz')
+      document.body.click()
+      await flush()
+      expect(isOpen()).toBe(false)
+      expect(input().element.value).toBe('Seven')
+    })
+
+    it('single without a value: the input is emptied', async () => {
+      await mountRemote({ slots: footer })
+      await open()
+      await respond(server.last(), page('a', 1, 2))
+      await typeAndLeave('abc')
+      await key('Escape')
+      expect(input().element.value).toBe('')
+    })
+
+    it('multiple: the kept query is dropped on close, the tags stay', async () => {
+      await mountRemote({ value: [], attrs: 'multiple', slots: footer })
+      await open()
+      await respond(server.last(), page('a', 1, 2))
+      await type('a')
+      vi.advanceTimersByTime(300)
+      await respond(server.last(), page('a', 1, 2))
+      await wrapper.findAll('.at-select__option')[0].trigger('click')
+      wrapper.find('.act').element.focus()
+      await input().trigger('blur')
+      vi.advanceTimersByTime(300)
+      await flush()
+      expect(input().element.value).toBe('a')
+
+      await key('Escape')
+      expect(input().element.value).toBe('')
+      expect(wrapper.findAll('.at-tag__text').map(t => t.text())).toEqual(['a 1'])
+    })
+  })
+
   it('uses loadingText and the loading prop', async () => {
     await mountRemote({ attrs: 'loading-text="Fetching"' })
     await open()

@@ -321,6 +321,13 @@ export default {
         // a search typed right before closing is dropped: opening searches again
         clearTimeout(this.searchTimer)
         this.searchTimer = null
+        // remote: the input shows the selection again (empty in multiple mode). Not left to the
+        // blur timer: it skips while the focus is on a control in the dropdown, and the input may
+        // have no focus to lose when the dropdown closes
+        if (this.remote) {
+          clearTimeout(this.blurTimer)
+          this.query = this.restoredQuery()
+        }
       }
       if (value) {
         this.updatePosition()
@@ -651,8 +658,12 @@ export default {
       this.blurTimer = setTimeout(() => {
         // remote: focus moved to a control in the open dropdown (e.g. a footer button)
         if (this.remote && this.visible && this.$el.contains(document.activeElement)) return
-        this.query = !this.multiple && !isEmpty(this.model) ? String(this.selectedSingle) : ''
+        this.query = this.restoredQuery()
       }, BLUR_DELAY)
+    },
+    // input text when not searching: the label of the single selection, empty otherwise
+    restoredQuery() {
+      return !this.multiple && !isEmpty(this.model) ? String(this.selectedSingle) : ''
     },
     handleInputDelete() {
       if (this.multiple && this.values.length && this.query === '') {

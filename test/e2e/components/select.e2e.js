@@ -304,3 +304,33 @@ test('remote: the keyboard loads the next page at the last option despite a tall
   await page.keyboard.press('ArrowDown')
   await expect(focused).toHaveText('Task 61')
 })
+
+test('remote: closing from a footer button shows the selected label again', async ({ page }) => {
+  const select = demo(page, 'Remote').locator('.at-select').first()
+  const { trigger, dropdown } = parts(select)
+  const input = select.locator('.at-select__input')
+  const create = select.locator('.at-select__footer .at-btn')
+
+  async function typeAndLeave(text) {
+    await expect(select.locator('.at-select__option')).toHaveCount(15)
+    await input.fill('')
+    await input.pressSequentially(text)
+    await page.keyboard.press('Tab')
+    await expect(create).toBeFocused()
+    // past the 300 ms blur timer of the input: the query stays while the focus is in the dropdown
+    await page.waitForTimeout(500)
+    await expect(input).toHaveValue(text)
+  }
+
+  await input.click()
+  await typeAndLeave('xyz')
+  await page.keyboard.press('Escape')
+  await expect(dropdown).toBeHidden()
+  await expect(input).toHaveValue('Task 42')
+
+  await trigger.click()
+  await typeAndLeave('abc')
+  await page.locator('.at-markdown h1').click()
+  await expect(dropdown).toBeHidden()
+  await expect(input).toHaveValue('Task 42')
+})
