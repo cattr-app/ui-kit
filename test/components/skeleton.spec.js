@@ -117,6 +117,13 @@ describe('AtSkeleton', () => {
     expect(bones(mount(AtSkeleton))[0].element.style.borderRadius).toBe('')
   })
 
+  it('a numeric 0 width or height is kept as 0px', () => {
+    const bone = bones(mount(AtSkeleton, { props: { width: 0, height: 0 } }))[0]
+
+    expect(bone.element.style.width).toBe('0px')
+    expect(bone.element.style.height).toBe('0px')
+  })
+
   it('duration sets the shimmer cycle; 0 makes the placeholder static', () => {
     // Not set: no inline duration, so the theme's $skeleton-duration applies.
     const base = bones(mount(AtSkeleton))[0]

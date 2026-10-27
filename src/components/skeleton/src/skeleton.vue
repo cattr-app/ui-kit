@@ -13,6 +13,8 @@ function hasContent(vnodes) {
 }
 
 const toSize = value => (typeof value === 'number' ? `${value}px` : value)
+// A size is set unless it is absent or an empty string; numeric 0 is a valid size.
+const isSet = value => value !== undefined && value !== null && value !== ''
 
 export default {
   name: 'AtSkeleton',
@@ -56,8 +58,8 @@ export default {
     }
 
     const style = {}
-    if (this.width) style.width = toSize(this.width)
-    if (this.height) style.height = toSize(this.height)
+    if (isSet(this.width)) style.width = toSize(this.width)
+    if (isSet(this.height)) style.height = toSize(this.height)
     if (this.circle) style.borderRadius = '50%'
     const isStatic = this.duration === 0
     if (this.duration) style.animationDuration = `${this.duration}s`

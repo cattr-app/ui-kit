@@ -7,7 +7,7 @@
 **Skeleton** — new `AtSkeleton` (`<at-skeleton>`), a loading placeholder with the API of `vue-loading-skeleton` 1.1.9.
 
 - Before: `import { Skeleton } from 'vue-loading-skeleton'` (Vue 2 only), `<PuSkeleton>`/`<Skeleton>`. After: `<at-skeleton>` registered by `app.use(CattrUI)`, or `import { AtSkeleton } from '@amazingcat/cattr-ui'`. What to change: replace the tag, keep the props; drop the `vue-loading-skeleton` dependency.
-- Props: `loading` (not set: the placeholder is shown while the default slot is empty), `count` (1), `duration` (seconds; not set: the theme's `$skeleton-duration`, 1.5 s; `0` = no animation), `width`/`height` (a number is in px), `circle`, `tag` (`'span'`; `''` renders the slot without a wrapper). The default slot is the content.
+- Props: `loading` (not set: the placeholder is shown while the default slot is empty), `count` (1), `duration` (seconds; not set: the theme's `$skeleton-duration`, 1.5 s; `0` = no animation), `width`/`height` (a number is in px, `0` included; the original dropped a numeric `0`), `circle`, `tag` (`'span'`; `''` renders the slot without a wrapper). The default slot is the content.
 - Same colours (`#eeeeee` with a `#f5f5f5` shimmer), radius and animation as the original. The look moved from inline styles to the stylesheet: the class is `at-skeleton` (was `pu-skeleton`), theme variables `$skeleton-bg-color`, `$skeleton-highlight-color`, `$skeleton-highlight-width`, `$skeleton-border-radius`, `$skeleton-duration`. Not ported: `SkeletonTheme` and the `prefix` prop.
 - Difference: the slot counts as empty when it renders only comments (`v-if`) or whitespace, also when the first node is one of them and a later one has content (the original checked only the first node).
 
