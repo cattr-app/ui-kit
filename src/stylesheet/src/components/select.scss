@@ -106,6 +106,17 @@
     .at-select__not-found {
       padding: $dropdown-option-padding-base;
     }
+    .at-select__loading {
+      padding: $dropdown-option-padding-base;
+      color: $input-placeholder-color;
+      font-size: $select-dropdown-font-size-base;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .at-select__footer {
+      padding: $dropdown-option-padding-base;
+      border-top: 1px solid $border-color-split;
+    }
     .at-select__option {
       @include ellipsis();
       width: 100%;

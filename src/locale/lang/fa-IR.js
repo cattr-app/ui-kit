@@ -3,6 +3,7 @@ export default {
     select: {
       placeholder: 'انتخاب کنید',
       notFoundText: 'موردی یافت نشد',
+      loadingText: 'در حال بارگذاری',
     },
     modal: {
       okText: 'تایید',

@@ -3,6 +3,7 @@ export default {
     select: {
       placeholder: 'Auswählen',
       notFoundText: 'keine Übereinstimmung',
+      loadingText: 'Wird geladen',
     },
     modal: {
       okText: 'Bestätigen',
