@@ -88,7 +88,7 @@ Wrap the content that is being loaded. While `loading` is not set, the placehold
 | width | width of a placeholder, a number is in pixels | String / Number | - | 100% |
 | height | height of a placeholder, a number is in pixels | String / Number | - | - |
 | circle | whether the placeholder is round | Boolean | - | false |
-| duration | length of one animation cycle in seconds, `0` disables the animation | Number | - | 1.5 |
+| duration | length of one animation cycle in seconds, `0` disables the animation | Number | - | the theme's `$skeleton-duration` (1.5s) |
 | tag | wrapper element; an empty string renders the content without a wrapper | String | - | `span` |
 
 ## Skeleton Slots

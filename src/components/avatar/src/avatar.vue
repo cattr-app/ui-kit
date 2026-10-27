@@ -3,7 +3,7 @@
     class="at-avatar"
     :class="{ 'at-avatar--inline': inline, 'at-avatar--rounded': rounded }"
     :style="[avatarStyle, customStyle]"
-    aria-hidden="true"
+    v-bind="a11yAttrs"
   >
     <!-- Not displayed: detects that the background image failed to load. -->
     <img v-if="isImage" style="display: none" :src="src" alt="" @error="onImgError" />
@@ -25,6 +25,14 @@ export function getInitials(username) {
   }
 
   return initials.slice(0, 3).toUpperCase()
+}
+
+// A URL as a double-quoted CSS string: quotes, backslashes and line breaks would end or break it.
+function cssUrl(url) {
+  const escaped = url
+    .replace(/["'\\]/g, char => `\\${char}`)
+    .replace(/[\n\r\f]/g, char => `\\${char.charCodeAt(0).toString(16)} `)
+  return `url("${escaped}")`
 }
 
 const BACKGROUND_COLORS = [
@@ -101,7 +109,12 @@ export default {
     parser: {
       type: Function,
       default: getInitials,
-      validator: parser => typeof parser('John', getInitials) === 'string',
+    },
+    // Accessible name; defaults to `username`. An empty string marks the avatar as decorative
+    // (e.g. when the name is shown next to it), like an empty `alt` of an image.
+    alt: {
+      type: String,
+      default: undefined,
     },
   },
   emits: ['avatar-initials'],
@@ -127,7 +140,7 @@ export default {
       const style = { width: size, height: size }
 
       if (this.isImage) {
-        style.backgroundImage = `url('${this.src}')`
+        style.backgroundImage = cssUrl(this.src)
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = `${size} ${size}`
         style.backgroundOrigin = 'content-box'
@@ -139,6 +152,10 @@ export default {
       }
 
       return style
+    },
+    a11yAttrs() {
+      const label = this.alt === undefined ? this.username : this.alt
+      return label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' }
     },
     userInitial() {
       if (this.isImage) return ''

@@ -93,6 +93,7 @@ With `src` the avatar shows the image. If the image fails to load, the initials 
 | color | text colour of the initials | String | - | the background lightened by `lighten` |
 | lighten | how much the background is lightened for the text colour (added to each RGB channel) | Number | - | 80 |
 | custom-style | extra inline styles, applied over the computed ones | Object | - | - |
+| alt | accessible name; an empty string marks the avatar as decorative (hidden from screen readers) | String | - | `username` |
 
 ## Avatar Events
 

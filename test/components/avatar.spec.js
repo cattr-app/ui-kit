@@ -43,11 +43,13 @@ describe('AtAvatar', () => {
       expect(parser).toHaveBeenCalledWith('John Doe', getInitials)
     })
 
-    it('rejects a parser that does not return a string', () => {
-      const { validator } = AtAvatar.props.parser
+    it('a parser is only ever called with the real username', () => {
+      // A parser that needs two words must not be probed with a made-up single-word name.
+      const parser = vi.fn(name => name.split(' ')[1].toUpperCase())
+      const wrapper = mount(AtAvatar, { props: { username: 'John Doe', parser } })
 
-      expect(validator(name => name.toLowerCase())).toBe(true)
-      expect(validator(() => 42)).toBe(false)
+      expect(initials(wrapper).text()).toBe('DOE')
+      expect(parser.mock.calls.every(([name]) => name === 'John Doe')).toBe(true)
     })
 
     it('the initials prop overrides the parser', () => {
@@ -57,8 +59,7 @@ describe('AtAvatar', () => {
       })
 
       expect(initials(wrapper).text()).toBe('Q')
-      // the prop validator probes the parser once with 'John'
-      expect(parser).not.toHaveBeenCalledWith('John Doe', getInitials)
+      expect(parser).not.toHaveBeenCalled()
     })
   })
 
@@ -118,7 +119,6 @@ describe('AtAvatar', () => {
       const { style } = wrapper.element
 
       expect(wrapper.classes()).toEqual(['at-avatar', 'at-avatar--rounded'])
-      expect(wrapper.attributes('aria-hidden')).toBe('true')
       expect(style.width).toBe('50px')
       expect(style.height).toBe('50px')
       expect(style.lineHeight).toBe('50px')
@@ -151,6 +151,33 @@ describe('AtAvatar', () => {
     })
   })
 
+  describe('accessibility', () => {
+    it('is an image named after the user by default', () => {
+      const wrapper = mount(AtAvatar, { props: { username: 'John Doe' } })
+
+      expect(wrapper.attributes('role')).toBe('img')
+      expect(wrapper.attributes('aria-label')).toBe('John Doe')
+      expect(wrapper.attributes('aria-hidden')).toBeUndefined()
+    })
+
+    it('alt overrides the name; an empty alt makes it decorative', () => {
+      const named = mount(AtAvatar, { props: { username: 'John Doe', alt: 'Profile of John' } })
+      expect(named.attributes('aria-label')).toBe('Profile of John')
+
+      const decorative = mount(AtAvatar, { props: { username: 'John Doe', alt: '' } })
+      expect(decorative.attributes('aria-hidden')).toBe('true')
+      expect(decorative.attributes('role')).toBeUndefined()
+      expect(decorative.attributes('aria-label')).toBeUndefined()
+    })
+
+    it('without a name it is hidden from assistive technology', () => {
+      const wrapper = mount(AtAvatar)
+
+      expect(wrapper.attributes('aria-hidden')).toBe('true')
+      expect(wrapper.attributes('role')).toBeUndefined()
+    })
+  })
+
   describe('image', () => {
     const src = 'https://example.test/avatar.png'
 
@@ -167,6 +194,18 @@ describe('AtAvatar', () => {
       expect(initials(wrapper).text()).toBe('')
       expect(initials(wrapper).element.style.display).toBe('none')
     })
+
+    it.each([["/avatars/o'connor.png"], ['/avatars/say-"hi".png'], ['/avatars/back\\slash.png']])(
+      'keeps a URL with quotes intact in the CSS background: %s',
+      url => {
+        const wrapper = mount(AtAvatar, { props: { username: 'John Doe', src: url } })
+        const value = wrapper.element.style.backgroundImage
+        // An invalid url() would be dropped (empty); serialisation may keep or drop the escapes.
+        const unescaped = value.replace(/\\(.)/g, '$1')
+
+        expect(unescaped).toBe(`url("${url}")`)
+      },
+    )
 
     it('falls back to the initials when the image fails to load', async () => {
       const wrapper = mount(AtAvatar, { props: { username: 'John Doe', src } })

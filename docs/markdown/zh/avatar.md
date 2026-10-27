@@ -93,6 +93,7 @@
 | color | 首字母的文字颜色 | String | - | 背景色按 `lighten` 调亮 |
 | lighten | 文字颜色相对背景色的调亮程度（加到每个 RGB 通道） | Number | - | 80 |
 | custom-style | 额外的内联样式，覆盖计算出的样式 | Object | - | - |
+| alt | 无障碍名称；空字符串表示装饰性头像（对读屏软件隐藏） | String | - | `username` |
 
 ## Avatar 事件
 

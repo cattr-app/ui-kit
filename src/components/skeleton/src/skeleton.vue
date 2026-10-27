@@ -26,10 +26,10 @@ export default {
       type: Number,
       default: 1,
     },
-    // Seconds per shimmer cycle; 0 renders a static placeholder.
+    // Seconds per shimmer cycle; 0 renders a static placeholder. Not set: the theme's $skeleton-duration.
     duration: {
       type: Number,
-      default: 1.5,
+      default: undefined,
     },
     width: {
       type: [String, Number],
@@ -59,6 +59,7 @@ export default {
     if (this.width) style.width = toSize(this.width)
     if (this.height) style.height = toSize(this.height)
     if (this.circle) style.borderRadius = '50%'
+    const isStatic = this.duration === 0
     if (this.duration) style.animationDuration = `${this.duration}s`
 
     const elements = []
@@ -68,7 +69,7 @@ export default {
           'span',
           {
             key: i,
-            class: ['at-skeleton', { 'at-skeleton--static': !this.duration }],
+            class: ['at-skeleton', { 'at-skeleton--static': isStatic }],
             style,
           },
           '‌',

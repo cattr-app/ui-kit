@@ -88,7 +88,7 @@
 | width | 占位块宽度，数字单位为像素 | String / Number | - | 100% |
 | height | 占位块高度，数字单位为像素 | String / Number | - | - |
 | circle | 是否为圆形 | Boolean | - | false |
-| duration | 一次动画的时长（秒），`0` 关闭动画 | Number | - | 1.5 |
+| duration | 一次动画的时长（秒），`0` 关闭动画 | Number | - | 主题变量 `$skeleton-duration`（1.5s） |
 | tag | 外层元素；空字符串时内容不包裹外层元素 | String | - | `span` |
 
 ## Skeleton slot

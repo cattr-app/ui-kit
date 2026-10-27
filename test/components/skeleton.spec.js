@@ -118,8 +118,9 @@ describe('AtSkeleton', () => {
   })
 
   it('duration sets the shimmer cycle; 0 makes the placeholder static', () => {
+    // Not set: no inline duration, so the theme's $skeleton-duration applies.
     const base = bones(mount(AtSkeleton))[0]
-    expect(base.element.style.animationDuration).toBe('1.5s')
+    expect(base.element.style.animationDuration).toBe('')
     expect(base.classes()).not.toContain('at-skeleton--static')
 
     const slow = bones(mount(AtSkeleton, { props: { duration: 3 } }))[0]
