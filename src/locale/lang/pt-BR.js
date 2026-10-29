@@ -3,6 +3,7 @@ export default {
     select: {
       placeholder: 'Selecione',
       notFoundText: 'Nenhum dado correspondente',
+      loadingText: 'Carregando',
     },
     modal: {
       okText: 'OK',

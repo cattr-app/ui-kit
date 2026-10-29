@@ -3,6 +3,7 @@ export default {
     select: {
       placeholder: '선택',
       notFoundText: '찾는 데이터가 없습니다',
+      loadingText: '불러오는 중',
     },
     modal: {
       okText: '확인',

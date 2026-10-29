@@ -128,3 +128,209 @@ test('multiple: options toggle tags, the dropdown stays open, a tag can be remov
   await expect(tags).toHaveCount(0)
   await expect(dropdown).toBeHidden()
 })
+
+// The demo server answers in 400 ms: too short to poll for the loading state reliably on a busy
+// machine, so the select records every loading text it shows (empty list and the row under it).
+async function recordLoading(select) {
+  await select.evaluate(el => {
+    el.seenLoading = []
+    const record = () => {
+      const empty = el.querySelector('.at-select__not-found')
+      const row = el.querySelector('.at-select__loading')
+      if (empty && empty.style.display !== 'none') el.seenLoading.push(empty.textContent.trim())
+      if (row) el.seenLoading.push(row.textContent.trim())
+    }
+    new MutationObserver(record).observe(el, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+    })
+  })
+  return () => select.evaluate(el => el.seenLoading)
+}
+
+test('remote: search, loading, load more on scroll, pick, reopen', async ({ page }) => {
+  const select = demo(page, 'Remote').locator('.at-select').first()
+  const { dropdown, option } = parts(select)
+  const input = select.locator('.at-select__input')
+  const options = select.locator('.at-select__option')
+  const footer = select.locator('.at-select__footer')
+
+  // the selected task is not loaded: its label comes from fallback-label
+  await expect(input).toHaveValue('Task 42')
+  const seenLoading = await recordLoading(select)
+
+  await input.click()
+  await expect(dropdown).toBeVisible()
+  await expect(options).toHaveCount(15)
+  expect(await seenLoading()).toContain('Loading tasks…')
+  await expect(footer).toContainText('15 of 95 loaded')
+
+  // typing replaces the results after the debounce and the server delay
+  await input.fill('')
+  await input.pressSequentially('1')
+  await expect(footer).toContainText('15 of 19 loaded')
+  await expect(options.first()).toHaveText('Task 1')
+  await expect(options.nth(1)).toHaveText('Task 10')
+
+  // scrolling to the end loads the next page
+  await dropdown.hover()
+  await page.mouse.wheel(0, 2000)
+  await expect(footer).toContainText('19 of 19 loaded')
+  expect(await seenLoading()).toContain('Loading')
+  await expect(options).toHaveCount(19)
+
+  await option(/^Task 91$/).click()
+  await expect(dropdown).toBeHidden()
+  await expect(input).toHaveValue('Task 91')
+
+  // reopening searches again from the start; the picked task is not in the first page
+  await select.locator('.at-select__selection').click()
+  await expect(dropdown).toBeVisible()
+  await expect(footer).toContainText('15 of 95 loaded')
+  await expect(option(/^Task 91$/)).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(dropdown).toBeHidden()
+  await expect(input).toHaveValue('Task 91')
+})
+
+test('remote multiple: picks from two searches keep their tags', async ({ page }) => {
+  const select = demo(page, 'Remote Multiple').locator('.at-select')
+  const { dropdown, option } = parts(select)
+  const input = select.locator('.at-select__input')
+  const tags = select.locator('.at-tag__text')
+
+  await input.click()
+  await input.pressSequentially('Task 7')
+  await expect(select.locator('.at-select__option')).toHaveCount(11)
+  await option(/^Task 7$/).click()
+  await option(/^Task 77$/).click()
+  await expect(dropdown).toBeVisible()
+  await expect(input).toHaveValue('Task 7')
+
+  await input.fill('')
+  await input.pressSequentially('Task 3')
+  await expect(option(/^Task 7$/)).toHaveCount(0)
+  await option(/^Task 35$/).click()
+  await expect(tags).toHaveText(['Task 7', 'Task 77', 'Task 35'])
+
+  await page.locator('.at-markdown h1').click()
+  await expect(dropdown).toBeHidden()
+  await expect(tags).toHaveText(['Task 7', 'Task 77', 'Task 35'])
+})
+
+test('remote: Enter on a footer button activates it instead of picking an option', async ({
+  page,
+}) => {
+  const select = demo(page, 'Remote').locator('.at-select').first()
+  const { dropdown, option } = parts(select)
+  const input = select.locator('.at-select__input')
+  const create = select.locator('.at-select__footer .at-btn')
+
+  await input.click()
+  await expect(select.locator('.at-select__option')).toHaveCount(15)
+  await input.fill('')
+  await input.pressSequentially('Brand new')
+  await expect(select.locator('.at-select__not-found')).toHaveText('No tasks match "Brand new"')
+
+  await page.keyboard.press('Tab')
+  await expect(create).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(input).toHaveValue('Brand new')
+  await expect(dropdown).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(dropdown).toBeHidden()
+
+  // the created task is selected: it is highlighted among the search results
+  await select.locator('.at-select__selection').click()
+  await input.fill('')
+  await input.pressSequentially('Brand')
+  await expect(option('Brand new')).toHaveClass(/at-select__option--selected/)
+})
+
+test('remote placement top: the dropdown stays above the field as the results change', async ({
+  page,
+}) => {
+  const select = demo(page, 'Remote Top Placement').locator('.at-select')
+  const { trigger, dropdown } = parts(select)
+  const options = select.locator('.at-select__option')
+
+  async function expectAbove() {
+    const field = await trigger.boundingBox()
+    const list = await dropdown.boundingBox()
+    expect(list.y + list.height).toBeLessThanOrEqual(field.y)
+    // and not detached from it (2px margin)
+    expect(field.y - (list.y + list.height)).toBeLessThanOrEqual(4)
+  }
+
+  // in the middle of the viewport: there is room above the field
+  await trigger.scrollIntoViewIfNeeded()
+  await page.mouse.wheel(0, -300)
+  await trigger.click()
+  await expect(options).toHaveCount(15)
+  await expect(select.locator('.at-select__loading')).toHaveCount(0)
+  await expectAbove()
+
+  // the next page: the loading row comes and goes, the list grows
+  await dropdown.hover()
+  await page.mouse.wheel(0, 2000)
+  await expect(options).toHaveCount(30)
+  await expect(select.locator('.at-select__loading')).toHaveCount(0)
+  await expectAbove()
+})
+
+test('remote: the keyboard loads the next page at the last option despite a tall footer', async ({
+  page,
+}) => {
+  const select = demo(page, 'Remote').locator('.at-select').first()
+  const input = select.locator('.at-select__input')
+  const options = select.locator('.at-select__option')
+  const focused = select.locator('.at-select__option--focus')
+
+  await input.click()
+  await expect(options).toHaveCount(15)
+  await input.fill('')
+  await input.pressSequentially('1')
+  // the footer holds the "Create" button now
+  await expect(select.locator('.at-select__footer .at-btn')).toBeVisible()
+  await expect(options.nth(1)).toHaveText('Task 10')
+
+  for (let i = 0; i < 15; i++) await page.keyboard.press('ArrowDown')
+  await expect(focused).toHaveText('Task 51')
+  await expect(options).toHaveCount(19)
+
+  // the next option is on the loaded page, not the first one
+  await page.keyboard.press('ArrowDown')
+  await expect(focused).toHaveText('Task 61')
+})
+
+test('remote: closing from a footer button shows the selected label again', async ({ page }) => {
+  const select = demo(page, 'Remote').locator('.at-select').first()
+  const { trigger, dropdown } = parts(select)
+  const input = select.locator('.at-select__input')
+  const create = select.locator('.at-select__footer .at-btn')
+
+  async function typeAndLeave(text) {
+    await expect(select.locator('.at-select__option')).toHaveCount(15)
+    await input.fill('')
+    await input.pressSequentially(text)
+    await page.keyboard.press('Tab')
+    await expect(create).toBeFocused()
+    // past the 300 ms blur timer of the input: the query stays while the focus is in the dropdown
+    await page.waitForTimeout(500)
+    await expect(input).toHaveValue(text)
+  }
+
+  await input.click()
+  await typeAndLeave('xyz')
+  await page.keyboard.press('Escape')
+  await expect(dropdown).toBeHidden()
+  await expect(input).toHaveValue('Task 42')
+
+  await trigger.click()
+  await typeAndLeave('abc')
+  await page.locator('.at-markdown h1').click()
+  await expect(dropdown).toBeHidden()
+  await expect(input).toHaveValue('Task 42')
+})

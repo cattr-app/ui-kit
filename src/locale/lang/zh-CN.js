@@ -3,6 +3,7 @@ export default {
     select: {
       placeholder: '请选择',
       notFoundText: '无匹配数据',
+      loadingText: '加载中',
     },
     modal: {
       okText: '确定',

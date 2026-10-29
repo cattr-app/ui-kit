@@ -19,6 +19,54 @@
 - Same behaviour as the original: with `src` the image is shown, a load error falls back to the initials; the background is picked from the same 18-colour palette by the username (the same name always gets the same colour), the text colour is the background lightened by `lighten`.
 - Differences: a missing `username` renders an empty avatar instead of throwing; after a failed image a new `src` is tried again (the original kept the initials); a lightened colour keeps its leading zeroes (`#000a00`, not `#a00`); a `src` with quotes is escaped in the CSS background (the original produced an invalid `url()`); the `parser` prop is no longer probed with a made-up name by a prop validator (the original's validator could make a valid parser throw). Static styles (flex layout, `at-avatar--inline`, `at-avatar--rounded`, font) are in the stylesheet (`$avatar-font-family`, `$avatar-font-weight`), size and colours stay inline, `customStyle` still wins over both. The initials are not bold, as in the original (its `font` shorthand reset `font-weight: bold`).
 
+**Select** — remote mode: `AtSelect` searches and pages through options loaded from a server, so `vue-select` is no longer needed.
+
+- Before: `<at-select>` filtered only the options it already had (`filterable`); server search, infinite scroll and "create" buttons under the list needed `vue-select` (`:filterable="false"`, `@search`, an `IntersectionObserver` on a `#list-footer` loader, `#no-options`). After: `remote` + `remote-method` + `@on-load-more` + `@on-remote-error`, slots `#empty`/`#footer`. What to change: move the request into `remote-method`, render the results with `at-option`, load the next page in `on-load-more`; drop the debounce, the observer and the stale-response bookkeeping (`requestId`, timestamps) — the select does them.
+- `remote-method(query, { signal })` is called with `''` when the dropdown opens and with the typed text after `debounce` ms (default 300). The select shows the loading state until the latest call settles, whether it resolves, rejects or throws synchronously. Errors of superseded or cancelled calls (e.g. the `AbortError` of `fetch`) are ignored; an error of the latest call is emitted as `on-remote-error(error, { query })` and not rethrown by the select. `on-load-more` handlers are not awaited, they handle their own errors. `signal` (`AbortSignal`) is aborted when a newer search starts and on unmount: check it before applying a response, or pass it to axios/`fetch`. Remote options are not filtered locally.
+- `on-load-more` (`{ query, signal }` of the current search) fires when the end of the list comes into view — by scrolling, by keyboard navigation, or because the page does not fill the dropdown — once per change of the list and never while `loading`. Set `loading` while the next page is in flight (a "Loading" row is shown under the list); ignore the event when there is nothing more.
+- `fallback-label` (`value => label`) shows a selected value whose option is not loaded (e.g. the value came with the form data). In remote mode the labels of picked options are remembered, so the value and the tags keep their text when the results change; `value-with-label` uses the same labels.
+- `#empty="{ query, loading }"` replaces the "not found" text (and the loading text of an empty remote list), `#footer="{ query, loading }"` is rendered under the list even when nothing is found. Both also work without `remote`. New prop `loading-text`, locale key `at.select.loadingText` (all bundled languages).
+- In `multiple` remote mode the query and the loaded results stay after a pick, so several options can be chosen from one search. Enter picks the first option only when no search is pending (it does not pick a stale result).
+- Nothing changes for selects without `remote`: `fallback-label` is the only new prop that affects them, and only when set.
+
+```vue
+<at-select
+  v-model="taskId"
+  remote
+  clearable
+  :remote-method="searchTasks"
+  :loading="loadingMore"
+  :fallback-label="id => (id === task?.id ? task.name : undefined)"
+  @on-load-more="loadMoreTasks"
+>
+  <at-option v-for="t in tasks" :key="t.id" :value="t.id" :label="t.task_name" />
+  <template #empty="{ query, loading }">{{ loading ? 'Loading…' : `Nothing found for "${query}"` }}</template>
+  <template #footer="{ query }"><at-button size="small" @click="create(query)">Create</at-button></template>
+</at-select>
+```
+
+```js
+async searchTasks(query, { signal }) {
+  const { data } = await service.getWithFilters({ search: { query, fields: ['task_name'] }, page: 1 }, { signal })
+  if (signal.aborted) return
+  this.tasks = data.data
+  this.pagination = data.pagination
+},
+async loadMoreTasks({ query, signal }) {
+  const { currentPage, totalPages } = this.pagination
+  if (currentPage >= totalPages) return
+  this.loadingMore = true
+  try {
+    const { data } = await service.getWithFilters({ search: { query, fields: ['task_name'] }, page: currentPage + 1 }, { signal })
+    if (signal.aborted) return
+    this.tasks.push(...data.data)
+    this.pagination = data.pagination
+  } finally {
+    this.loadingMore = false
+  }
+},
+```
+
 ## 2.0.1 (2026-10-26)
 
 Bug-fix release: no public API changes. Every fix ships with a regression test.

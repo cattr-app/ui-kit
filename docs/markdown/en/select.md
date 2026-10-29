@@ -155,6 +155,121 @@ To set search mode, add `filterable` property to the Select.
 ```
 :::
 
+## Remote
+
+Add `remote` and `remote-method` to load options from a server. `remote-method(query, { signal })` is called with an empty query when the dropdown opens and with the typed text after the user stops typing (`debounce`, 300 ms). The select shows the loading state until the latest call settles (resolves, rejects or throws), the outcome of a superseded or cancelled call, such as an `AbortError`, is ignored; the options are rendered by the consumer with `at-option`, they are not filtered locally. `signal` is an `AbortSignal` that is aborted when a newer search starts: check it before applying a response (or pass it to `fetch`/axios), so a late answer to an old query does not replace the new results.
+
+`on-load-more` is emitted with `{ query, signal }` when the end of the list comes into view (by scrolling, with the keyboard, or because the loaded page does not fill the dropdown), once per change of the list. Load the next page there and set `loading` while it is in flight; ignore the event when there is nothing more. `fallback-label` gives the label of a selected value whose option is not loaded yet; labels of options picked in this select are remembered. Slots `#empty` and `#footer` receive `{ query, loading }`.
+
+If the latest `remote-method` call rejects or throws, the select ends the loading state and emits `on-remote-error(error, { query })`; it does not rethrow the error, so show it from that event (e.g. in `#empty`). Errors of superseded or cancelled calls are ignored without an event. `on-load-more` handlers are not awaited: handle the errors of the next page in the handler.
+
+The demo server answers after 400 ms, 15 tasks per page, and searches by name. The footer button creates a task with the typed name and selects it; it can be reached with Tab and pressed with Enter.
+
+:::demo
+```html
+<at-select
+  v-model="model9"
+  remote
+  clearable
+  :remote-method="(query, ctx) => search(tasks, query, ctx)"
+  :loading="tasks.loading"
+  :fallback-label="id => (id === knownTask.id ? knownTask.name : undefined)"
+  @on-load-more="ctx => loadMore(tasks, ctx)"
+  style="width: 240px"
+>
+  <at-option v-for="task in tasks.items" :key="task.id" :value="task.id" :label="task.name" />
+  <template #empty="{ query, loading }">
+    <span v-if="loading">Loading tasks…</span>
+    <span v-else>No tasks match "{{ query }}"</span>
+  </template>
+  <template #footer="{ query }">
+    <span>{{ tasks.items.length }} of {{ tasks.total }} loaded</span>
+    <at-button v-if="query" size="small" type="primary" style="float: right" @click="create(query)">Create "{{ query }}"</at-button>
+  </template>
+</at-select>
+
+<script>
+  // fetchTasks(query, page) is the API call: resolves to { items, total }
+  export default {
+    data () {
+      return {
+        model9: 42,
+        // the selected task known to the page: from the form data or just created
+        knownTask: { id: 42, name: 'Task 42' },
+        tasks: { items: [], total: 0, page: 0, loading: false },
+      }
+    },
+    methods: {
+      // createTask(name) is the API call that stores a task: resolves to { id, name }
+      async create (query) {
+        const task = await createTask(query)
+        this.knownTask = task
+        this.model9 = task.id
+      },
+      async search (list, query, { signal }) {
+        const { items, total } = await fetchTasks(query, 1)
+        // a newer search has started: this response is stale
+        if (signal.aborted) return
+        Object.assign(list, { items, total, page: 1 })
+      },
+      async loadMore (list, { query, signal }) {
+        if (list.items.length >= list.total) return
+        list.loading = true
+        try {
+          const { items } = await fetchTasks(query, list.page + 1)
+          if (signal.aborted) return
+          list.items.push(...items)
+          list.page += 1
+        } finally {
+          list.loading = false
+        }
+      },
+    },
+  }
+</script>
+```
+:::
+
+## Remote Multiple
+
+In `multiple` mode the query and the loaded results stay after a pick, so several options can be chosen from one search; tags keep their labels when the results change.
+
+:::demo
+```html
+<at-select
+  v-model="model10"
+  remote
+  multiple
+  :remote-method="(query, ctx) => search(tasks2, query, ctx)"
+  :loading="tasks2.loading"
+  @on-load-more="ctx => loadMore(tasks2, ctx)"
+  style="width: 320px"
+>
+  <at-option v-for="task in tasks2.items" :key="task.id" :value="task.id" :label="task.name" />
+</at-select>
+```
+:::
+
+## Remote Top Placement
+
+With `placement="top"` the dropdown opens above the field and is re-positioned whenever its height changes: when the results arrive, when a page is added and when the loading row appears or goes away.
+
+:::demo
+```html
+<at-select
+  v-model="model11"
+  remote
+  placement="top"
+  :remote-method="(query, ctx) => search(tasks3, query, ctx)"
+  :loading="tasks3.loading"
+  @on-load-more="ctx => loadMore(tasks3, ctx)"
+  style="width: 240px"
+>
+  <at-option v-for="task in tasks3.items" :key="task.id" :value="task.id" :label="task.name" />
+</at-select>
+```
+:::
+
 ## Select Props
 
 | Property      | Description          | Type      | Accepted Values                           | Default  |
@@ -170,6 +285,12 @@ To set search mode, add `filterable` property to the Select.
 | placement | the direction of popup | String | `top`, `bottom` | bottom |
 | trigger | the way to open the popup | String | `click` | `click` |
 | valueWithLabel | `on-change` carries `{ value, label }` (an array of them in `multiple` mode) instead of the value; `v-model` keeps the plain value | Boolean | - | false |
+| remote | load options with `remote-method`; the input is shown, options are not filtered locally | Boolean | - | false |
+| remoteMethod | `(query, { signal }) => Promise \| void`, called on open (empty query) and after typing; `signal` is aborted when a newer search starts | Function | - | - |
+| debounce | delay in ms between the last keystroke and the `remote-method` call | Number | - | 300 |
+| loading | shows the loading state (e.g. while the next page is loading); `on-load-more` is not emitted meanwhile | Boolean | - | false |
+| loadingText | text of the loading state | String | - | `Loading` (from locale) |
+| fallbackLabel | `value => label` for a selected value whose option is not rendered (e.g. not loaded yet); `undefined` — unknown | Function | - | - |
 
 ## Select Events
 
@@ -177,6 +298,16 @@ To set search mode, add `filterable` property to the Select.
 |---------- |-------------- |---------- |
 | update:modelValue | Emitted when the user changes the selection (click or Enter on an option, removing a tag, the clear icon), used by `v-model` | the value / new array of values (also with `valueWithLabel`) |
 | on-change | Emitted together with `update:modelValue`, only on user actions (not when `modelValue` is changed by the parent) | the value / new array of values; `{ value, label }` with `valueWithLabel` |
+| on-load-more | `remote` only: the end of the list came into view while not loading; emitted once until the list changes or a new search starts | `{ query, signal }` — the query and `AbortSignal` of the current search |
+| on-remote-error | `remote` only: the latest `remote-method` call rejected or threw; the loading state is over and the error is not rethrown. Errors of superseded or cancelled calls are ignored | `(error, { query })` — the error and the query of the failed call |
+
+## Select Slots
+
+| Name      | Description          | Scope  |
+|---------- |-------------- |---------- |
+| default | `at-option` / `at-option-group` | - |
+| empty | content shown instead of `notFoundText` (and, in `remote` mode, the loading text) when there are no options | `{ query, loading }` |
+| footer | content under the list, e.g. a "create" button; shown even when nothing is found | `{ query, loading }` |
 
 ## Option Props
 
@@ -193,6 +324,31 @@ To set search mode, add `filterable` property to the Select.
 | label | name of the group | String | - | - |
 
 <script>
+  // Remote demos: a fake server with a delay, pages and a search.
+  const TASKS = Array.from({ length: 95 }, (_, i) => ({ id: i + 1, name: `Task ${i + 1}` }))
+  const PAGE_SIZE = 15
+  const DELAY = 400
+
+  function fetchTasks (query, page) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const found = TASKS.filter(task => task.name.toLowerCase().includes(query.toLowerCase()))
+        const start = (page - 1) * PAGE_SIZE
+        resolve({ items: found.slice(start, start + PAGE_SIZE), total: found.length })
+      }, DELAY)
+    })
+  }
+
+  function createTask (name) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        const task = { id: TASKS.length + 1, name }
+        TASKS.push(task)
+        resolve(task)
+      }, DELAY)
+    })
+  }
+
   export default {
     data () {
       return {
@@ -204,7 +360,38 @@ To set search mode, add `filterable` property to the Select.
         model6: '',
         model7: [],
         model8: '',
+        model9: 42,
+        model10: [],
+        model11: '',
+        knownTask: { id: 42, name: 'Task 42' },
+        tasks: { items: [], total: 0, page: 0, loading: false },
+        tasks2: { items: [], total: 0, page: 0, loading: false },
+        tasks3: { items: [], total: 0, page: 0, loading: false },
       }
-    }
+    },
+    methods: {
+      async create (query) {
+        const task = await createTask(query)
+        this.knownTask = task
+        this.model9 = task.id
+      },
+      async search (list, query, { signal }) {
+        const { items, total } = await fetchTasks(query, 1)
+        if (signal.aborted) return
+        Object.assign(list, { items, total, page: 1 })
+      },
+      async loadMore (list, { query, signal }) {
+        if (list.items.length >= list.total) return
+        list.loading = true
+        try {
+          const { items } = await fetchTasks(query, list.page + 1)
+          if (signal.aborted) return
+          list.items.push(...items)
+          list.page += 1
+        } finally {
+          list.loading = false
+        }
+      },
+    },
   }
 </script>

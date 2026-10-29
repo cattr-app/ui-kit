@@ -6,6 +6,7 @@ import { createContext } from '../../../utils/context'
  *             children, register, unregister, select, isSelected, blur })`.
  *
  * - `modelValue` — current selection (internal copy of the prop: value, or array for `multiple`).
+ * - `filterable` — local filtering is on (`filterable` and not `remote`: remote options are not filtered).
  * - `query` — active filter text (`''` when not filtering); `AtOption` hides itself when its label does not match.
  * - `focusUid` — uid of the option highlighted with the keyboard (`null` when none).
  * - `children` / `register` / `unregister` — `useChildren()` registry; each `AtOption` registers
