@@ -414,6 +414,58 @@ describe('AtSelect remote mode', () => {
     expect(state.scrollTop).toBe(0)
   })
 
+  it('provides a usable signal when options are managed without remoteMethod', async () => {
+    const loadMore = vi.fn(async ({ signal }) => {
+      const response = await server.fetch('', 2)
+      if (signal.aborted) return
+      wrapper.vm.items.push(...response.items)
+    })
+    wrapper = mount({
+      data: () => ({ items: page('a', 1, 5) }),
+      methods: { loadMore },
+      template: `
+        <at-select remote @on-load-more="loadMore">
+          <at-option v-for="item in items" :key="item.value" :value="item.value" :label="item.label" />
+        </at-select>`,
+    })
+    await flush()
+    const state = stubScroll(() => wrapper.vm.items.length * 30)
+    await open()
+    await scrollTo(state, 50)
+
+    const { signal } = loadMore.mock.calls[0][0]
+    expect(signal).toBeInstanceOf(AbortSignal)
+    expect(signal.aborted).toBe(false)
+    await respond(server.last(), page('a', 6, 5))
+    expect(labels()).toHaveLength(10)
+
+    await scrollTo(state, 200)
+    expect(loadMore).toHaveBeenCalledTimes(2)
+    expect(loadMore.mock.calls[1][0].signal).toBe(signal)
+    await respond(server.last(), [])
+  })
+
+  it('does not load more after the search controller is cancelled', async () => {
+    await mountRemote()
+    const state = stubScroll(() => 150)
+    await open()
+    await respond(server.last(), page('a', 1, 5))
+    const signal = select().vm.searchController.signal
+    select().vm.cancelSearch()
+
+    await scrollTo(state, 50)
+    expect(signal.aborted).toBe(true)
+    expect(select().emitted('on-load-more')).toBeUndefined()
+
+    select().vm.remoteSearch('b')
+    await respond(server.last(), page('b', 1, 5))
+    await scrollTo(state, 50)
+    const events = select().emitted('on-load-more')
+    expect(events).toHaveLength(1)
+    expect(events[0][0].signal).toBe(select().vm.searchController.signal)
+    expect(events[0][0].signal.aborted).toBe(false)
+  })
+
   it('emits on-load-more right away when the loaded page does not fill the dropdown', async () => {
     await mountRemote()
     stubScroll(() => wrapper.findAll('.at-select__option').length * 30)

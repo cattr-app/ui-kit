@@ -83,6 +83,7 @@ import { SelectContext } from './context'
 const BLUR_DELAY = 300
 // remote mode: `on-load-more` fires when the end of the list is closer than this (px)
 const LOAD_MORE_DISTANCE = 20
+const IDLE_SIGNAL = new AbortController().signal
 
 function isEmpty(value) {
   return (
@@ -503,11 +504,12 @@ export default {
     requestLoadMore() {
       if (!this.remote || !this.visible || this.isLoading || !this.loadMoreArmed) return
       if (!this.children.length) return
+      if (this.remoteMethod && !this.searchController) return
 
       this.loadMoreArmed = false
       this.$emit('on-load-more', {
         query: this.searchQuery,
-        signal: this.searchController ? this.searchController.signal : undefined,
+        signal: this.searchController ? this.searchController.signal : IDLE_SIGNAL,
       })
     },
     hideMenu() {
